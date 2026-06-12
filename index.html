@@ -62,13 +62,18 @@ const fmt = n => n==null?"":Number(n).toLocaleString("pl-PL");
 const stOf = o => (DEC[o.u]||{}).st || ({new:"",seen:"seen",short:"short",rej:"rej"})[o.st] || "";
 function save(){ localStorage.vDec = JSON.stringify(DEC); }
 function setSt(o, st){
- if(stOf(o)===st){ delete DEC[o.u]; save(); render(); if(cur)drawD(); toast("Cofnięto lokalnie"); return; }
- DEC[o.u]={st, t:Date.now()}; save(); render(); if(cur)drawD();
- const map={seen:"seen",short:"short",rej:"rej"};
- const title=encodeURIComponent("["+map[st]+"] "+(o.t||"").slice(0,60));
- const body=encodeURIComponent("decyzja: "+map[st]+"\nurl: "+o.u+"\n(z przeglądarki ofert — zostanie zastosowane i zamknięte przy nocnym sweepie)");
- window.open("https://github.com/"+REPO+"/issues/new?labels=decyzja&title="+title+"&body="+body, "_blank");
- toast("Otwieram Issue — kliknij Submit"); }
+ if(stOf(o)===st){ delete DEC[o.u]; save(); render(); if(cur)drawD(); upBtn(); toast("Cofnięto"); return; }
+ DEC[o.u]={st, t:Date.now()}; save(); render(); if(cur)drawD(); upBtn();
+ toast(({seen:"👁 widziane",short:"⭐ shortlist",rej:"✕ odrzucone"})[st]+" — wyślij zbiorczo przyciskiem 📤"); }
+function pending(){ return Object.entries(DEC).filter(([u,v])=>{ const o=O.find(x=>x.u===u); return o && (({new:"",seen:"seen",short:"short",rej:"rej"})[o.st]||"")!==v.st; }); }
+function upBtn(){ const b=document.getElementById("sendBtn"); if(!b)return; const n=pending().length; b.textContent="📤 Wyślij decyzje ("+n+")"; b.style.display=n?"inline-block":"none"; }
+function sendAll(){
+ const pend=pending(); if(!pend.length) return toast("Brak nowych decyzji");
+ const lines=pend.map(([u,v])=>v.st+" "+u).join("\n");
+ const title=encodeURIComponent("decyzje: "+pend.length+" ("+new Date().toISOString().slice(0,10)+")");
+ const body=encodeURIComponent(lines+"\n\n(z przeglądarki ofert — nocny sweep zastosuje i zamknie)");
+ window.open("https://github.com/"+REPO+"/issues/new?labels=decyzja&title="+title+"&body="+body,"_blank");
+ toast("Kliknij Create w otwartej karcie"); }
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.style.display="block"; clearTimeout(t._x); t._x=setTimeout(()=>t.style.display="none",1600); }
 function render(){
  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.c===tab));
@@ -123,6 +128,7 @@ document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov
 fetch("data/offers.json?t="+Date.now()).then(r=>r.json()).then(d=>{
  O = d.offers.map(o=>({c:o.cat,t:o.title,u:o.url,pr:o.price,a:o.area,ph:o.photos||[],n:o.notes||"",loc:o.loc||"",s:o.score,d:o.added,po:o.portal,st:o.status||"new"}));
  document.title = "Oferty ("+O.length+")";
- render();
+ for(const [u,v] of Object.entries(DEC)){ const o=O.find(x=>x.u===u); if(o && (({new:"",seen:"seen",short:"short",rej:"rej"})[o.st]||"")===v.st) delete DEC[u]; }
+ save(); render(); upBtn();
 }).catch(e=>{ document.getElementById("grid").innerHTML='<div class="none">Błąd wczytywania danych: '+e+'</div>'; });
 </script></body></html>
