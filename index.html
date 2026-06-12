@@ -65,7 +65,7 @@ function setSt(o, st){
  DEC[o.u]={st, t:Date.now()}; save(); render(); if(cur)drawD(); upBtn();
  toast(({seen:"👁 widziane",short:"⭐ shortlist",rej:"✕ odrzucone"})[st]+" — wyślij zbiorczo przyciskiem 📤"); }
 function pending(){ return Object.entries(DEC).filter(([u,v])=>{ const o=O.find(x=>x.u===u); return o && (({new:"",seen:"seen",short:"short",rej:"rej"})[o.st]||"")!==v.st; }); }
-function upBtn(){ const b=document.getElementById("sendBtn"); if(!b)return; const n=pending().length; b.textContent="📤 Wyślij decyzje ("+n+")"; b.style.display=n?"inline-block":"none"; }
+function upBtn(){ const b=document.getElementById("sendBtn"); if(!b)return; const n=pending().length; b.textContent="📤 Wyślij decyzje ("+n+")"; b.style.display="inline-block"; b.style.opacity=n?"1":".45"; }
 function sendAll(){
  const pend=pending(); if(!pend.length) return toast("Brak nowych decyzji");
  const lines=pend.map(([u,v])=>v.st+" "+u).join("\n");
