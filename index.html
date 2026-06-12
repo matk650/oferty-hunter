@@ -1,0 +1,128 @@
+<!DOCTYPE html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Oferty — dom i jezioro</title>
+<style>body{font-family:system-ui;background:#f6f5f2;margin:0;padding:16px;color:#222}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;position:sticky;top:0;background:#f6f5f2;padding:8px 0;z-index:5}
+.tabs{display:flex;gap:4px;background:#e9e6df;border-radius:10px;padding:3px;flex-wrap:wrap}
+.tabs button{border:0;background:transparent;padding:7px 13px;border-radius:8px;font-size:13px;font-weight:600;color:#6b6a66;cursor:pointer}
+.tabs button.on{background:#fff;color:#1f1e1b;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.chip{border:1px solid #d8d5cc;background:#fff;border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer;color:#55534e}
+.chip.on{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
+.meta{margin-left:auto;font-size:12px;color:#8a877f}
+.exp{border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.c{position:relative;background:#fff;border:1px solid #e5e2da;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.c .top{cursor:pointer}
+.c:hover{box-shadow:0 4px 14px rgba(0,0,0,.1)}.c img.main,.noimg{width:100%;aspect-ratio:4/3;object-fit:cover;background:#eceae4;display:flex;align-items:center;justify-content:center;font-size:40px}
+.s{position:absolute;top:8px;left:8px;background:#2e7d46;color:#fff;font-weight:700;font-size:12px;padding:3px 8px;border-radius:99px;z-index:2}
+.np{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;padding:3px 8px;border-radius:99px;z-index:2}
+.b{padding:10px 12px}.b b{font-size:16px}.a{color:#888;font-size:12px;margin-left:6px}.b p{margin:4px 0;font-size:13px;line-height:1.3}small{color:#999}
+.ft{display:flex;gap:5px;padding:8px 10px 10px;border-top:1px solid #f1efe9}
+.ft button{flex:1;border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:6px 0;font-size:12px;font-weight:600;cursor:pointer;color:#55534e}
+.ft button:hover{background:#f6f5f2}
+.c.st-seen{opacity:.62}.c.st-short{outline:3px solid #2e7d46}.c.st-rej{opacity:.35}
+.stbadge{position:absolute;bottom:8px;right:8px;background:#1f1e1b;color:#fff;font-size:10.5px;padding:3px 9px;border-radius:99px;z-index:2}
+.none{color:#999;padding:30px 0}
+#ov{position:fixed;inset:0;background:rgba(15,14,12,.85);display:none;align-items:center;justify-content:center;z-index:9;padding:14px}
+#ov.on{display:flex}.sh{background:#fff;border-radius:16px;max-width:920px;width:100%;max-height:95vh;overflow:auto;position:relative}
+.gal{position:relative;background:#111;display:flex;align-items:center;justify-content:center;min-height:300px;max-height:62vh}
+.gal img{max-width:100%;max-height:62vh;object-fit:contain}
+.nv{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.92);border:0;width:42px;height:42px;border-radius:50%;font-size:18px;cursor:pointer}
+.pv{left:10px}.nx{right:10px}.cnt{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:2px 10px;border-radius:99px}
+.st{display:flex;gap:6px;padding:8px 10px;overflow-x:auto;background:#1c1b18}.st img{height:52px;border-radius:6px;cursor:pointer;opacity:.55}.st img.on{opacity:1;outline:2px solid #fff}
+.dt{padding:14px 18px 18px}.dt h3{margin:0 0 6px}.dt .nn{color:#777;font-size:12.5px;margin:6px 0}
+.acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.acts button,.acts a{flex:1;min-width:110px;text-align:center;border:1px solid #d8d5cc;background:#fff;border-radius:9px;padding:9px 0;font-size:13px;font-weight:600;cursor:pointer;color:#3c3a35;text-decoration:none}
+.acts a.go{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
+#cl{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.94);border:0;width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;z-index:3}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1f1e1b;color:#fff;padding:9px 18px;border-radius:99px;font-size:13px;display:none;z-index:99}</style></head><body>
+<div class="bar">
+ <div class="tabs" id="tabs">
+  <button data-c="m_dz" class="on">🏠 Mieszk. — działki</button>
+  <button data-c="m_dom">🏠 Mieszk. — domy</button>
+  <button data-c="jez_dz">🌊 Jeziora — działki</button>
+  <button data-c="jez_dom">🌊 Jeziora — domy</button>
+ </div>
+ <span class="chip on" data-f="todo">Do przejrzenia</span>
+ <span class="chip" data-f="seen">Widziane</span>
+ <span class="chip" data-f="short">⭐ Shortlist</span>
+ <span class="chip" data-f="rej">Odrzucone</span>
+ <span class="chip" data-f="all">Wszystkie</span>
+ <button class="exp" onclick="expD()">📋 Kopiuj decyzje</button>
+ <span class="meta" id="meta"></span>
+</div>
+<div class="g" id="grid"></div>
+<div id="ov"><div class="sh"><button id="cl" onclick="clO()">✕</button><div class="gal" id="gg"></div><div class="st" id="ss"></div><div class="dt" id="dd"></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+let O = [];
+const GEN = "2026-06-11 22:03";
+let tab = localStorage.vTab || "m_dz", flt = "todo", cur=null, ci=0;
+const REPO = "matk650/oferty-hunter"; // user/repo — uzupełniane przy deployu
+let DEC = JSON.parse(localStorage.vDec || "{}");   // lokalne nadpiski do czasu nocnej synchronizacji
+const fmt = n => n==null?"":Number(n).toLocaleString("pl-PL");
+const stOf = o => (DEC[o.u]||{}).st || ({new:"",seen:"seen",short:"short",rej:"rej"})[o.st] || "";
+function save(){ localStorage.vDec = JSON.stringify(DEC); }
+function setSt(o, st){
+ if(stOf(o)===st){ delete DEC[o.u]; save(); render(); if(cur)drawD(); toast("Cofnięto lokalnie"); return; }
+ DEC[o.u]={st, t:Date.now()}; save(); render(); if(cur)drawD();
+ const map={seen:"seen",short:"short",rej:"rej"};
+ const title=encodeURIComponent("["+map[st]+"] "+(o.t||"").slice(0,60));
+ const body=encodeURIComponent("decyzja: "+map[st]+"\nurl: "+o.u+"\n(z przeglądarki ofert — zostanie zastosowane i zamknięte przy nocnym sweepie)");
+ window.open("https://github.com/"+REPO+"/issues/new?labels=decyzja&title="+title+"&body="+body, "_blank");
+ toast("Otwieram Issue — kliknij Submit"); }
+function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.style.display="block"; clearTimeout(t._x); t._x=setTimeout(()=>t.style.display="none",1600); }
+function render(){
+ document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.c===tab));
+ document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on", c.dataset.f===flt));
+ const g=document.getElementById("grid"); g.innerHTML="";
+ let rows = O.filter(o=>o.c===tab);
+ const tot = rows.length;
+ rows = rows.filter(o=>{ const s=stOf(o);
+   if(flt==="todo") return !s;
+   if(flt==="seen") return s==="seen";
+   if(flt==="short") return s==="short";
+   if(flt==="rej") return s==="rej";
+   return true; });
+ document.getElementById("meta").textContent = rows.length+" / "+tot+" ofert · wygenerowano "+GEN;
+ if(!rows.length){ g.innerHTML='<div class="none">Pusto — zmień filtr lub kategorię</div>'; return; }
+ rows.forEach(o=>{
+  const i = O.indexOf(o);
+  const d=document.createElement("div");
+  const s=stOf(o);
+  d.className="c"+(s?" st-"+s:"");
+  const img = o.ph && o.ph.length ? `<img class="main" loading="lazy" src="${o.ph[0]}">` : `<div class="noimg">🏞️</div>`;
+  const np = o.ph && o.ph.length>1 ? `<span class="np">📷 ${o.ph.length}</span>` : "";
+  const sb = s ? `<span class="stbadge">${({seen:"👁 widziane",short:"⭐ shortlist",rej:"✕ odrzucone"})[s]}</span>` : "";
+  d.innerHTML = `<div class="top" onclick="openO(${i})">${img}<span class="s">${o.s??""}</span>${np}${sb}
+   <div class="b"><b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b><span class="a">${o.a?fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</span>
+   <p>${o.t}</p><small>${o.loc} · ${o.po||""} · ${o.d||""}</small></div></div>
+   <div class="ft"><button onclick="setSt(O[${i}],'seen')">👁</button><button onclick="setSt(O[${i}],'short')">⭐</button><button onclick="setSt(O[${i}],'rej')">✕</button></div>`;
+  g.appendChild(d);
+ });
+}
+function openO(i){ cur=O[i]; ci=0; document.getElementById("ov").classList.add("on"); drawD(); drawS(); draw(); }
+function clO(){ document.getElementById("ov").classList.remove("on"); cur=null; render(); }
+function draw(){ if(!cur)return; const g=document.getElementById("gg"); const ph=cur.ph||[];
+ g.innerHTML = ph.length? `<img src="${ph[ci]}">` : '<span style="color:#fff;opacity:.7">Brak zdjęć — otwórz ogłoszenie</span>';
+ if(ph.length>1) g.innerHTML += `<button class="nv pv" onclick="nav(-1)">←</button><button class="nv nx" onclick="nav(1)">→</button><span class="cnt">${ci+1} / ${ph.length}</span>`;
+ [...document.getElementById("ss").children].forEach((im,j)=>im.classList.toggle("on", j===ci)); }
+function drawS(){ const s=document.getElementById("ss"); s.innerHTML=""; (cur.ph||[]).forEach((u,j)=>{ const im=document.createElement("img"); im.src=u; im.onclick=()=>{ci=j;draw();}; s.appendChild(im); }); }
+function drawD(){ const d=document.getElementById("dd"); const s=stOf(cur);
+ d.innerHTML = `<h3>${cur.t}</h3><b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b> <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${cur.loc} · ${cur.po||""} · Score ${cur.s??"-"}${s?" · <b>"+({seen:"👁 widziane",short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span><div class="nn">${cur.n||""}</div>
+ <div class="acts"><button onclick="setSt(cur,'seen')">👁 Widziałem</button><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${cur.u}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
+function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
+function expD(){
+ const out = Object.entries(DEC).map(([u,v])=>({url:u, status:v.st, kiedy:new Date(v.t).toISOString().slice(0,16)}));
+ const txt = JSON.stringify(out, null, 1);
+ (navigator.clipboard? navigator.clipboard.writeText(txt) : Promise.reject()).then(()=>toast("Skopiowano "+out.length+" decyzji — wklej Claude'owi"))
+  .catch(()=>{ prompt("Skopiuj ręcznie:", txt); });
+}
+document.getElementById("tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; tab=b.dataset.c; localStorage.vTab=tab; render(); });
+document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ flt=c.dataset.f; render(); });
+document.addEventListener("keydown",e=>{ if(!cur)return; if(e.key==="Escape")clO(); if(e.key==="ArrowLeft")nav(-1); if(e.key==="ArrowRight")nav(1); });
+document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov")clO(); });
+fetch("data/offers.json?t="+Date.now()).then(r=>r.json()).then(d=>{
+ O = d.offers.map(o=>({c:o.cat,t:o.title,u:o.url,pr:o.price,a:o.area,ph:o.photos||[],n:o.notes||"",loc:o.loc||"",s:o.score,d:o.added,po:o.portal,st:o.status||"new"}));
+ document.title = "Oferty ("+O.length+")";
+ render();
+}).catch(e=>{ document.getElementById("grid").innerHTML='<div class="none">Błąd wczytywania danych: '+e+'</div>'; });
+</script></body></html>
