@@ -42,7 +42,6 @@
   <button data-c="jez_dom">🌊 Jeziora — domy</button>
  </div>
  <span class="chip on" data-f="todo">Do przejrzenia</span>
- <span class="chip" data-f="seen">Widziane</span>
  <span class="chip" data-f="short">⭐ Shortlist</span>
  <span class="chip" data-f="rej">Odrzucone</span>
  <span class="chip" data-f="all">Wszystkie</span>
@@ -58,13 +57,13 @@ let tab = localStorage.vTab || "m_dz", flt = "todo", cur=null, ci=0;
 const REPO = "matk650/oferty-hunter"; // user/repo — uzupełniane przy deployu
 let DEC = JSON.parse(localStorage.vDec || "{}");   // lokalne nadpiski do czasu nocnej synchronizacji
 const fmt = n => n==null?"":Number(n).toLocaleString("pl-PL");
-const stOf = o => (DEC[o.u]||{}).st || ({new:"",seen:"seen",short:"short",rej:"rej"})[o.st] || "";
+const stOf = o => (DEC[o.u]||{}).st || ({new:"",seen:"rej",short:"short",rej:"rej"})[o.st] || "";
 function save(){ localStorage.vDec = JSON.stringify(DEC); }
 function setSt(o, st){
  if(stOf(o)===st){ delete DEC[o.u]; save(); render(); if(cur)drawD(); upBtn(); toast("Cofnięto"); return; }
  DEC[o.u]={st, t:Date.now()}; save(); render(); if(cur)drawD(); upBtn();
- toast(({seen:"👁 widziane",short:"⭐ shortlist",rej:"✕ odrzucone"})[st]+" — wyślij zbiorczo przyciskiem 📤"); }
-function pending(){ return Object.entries(DEC).filter(([u,v])=>{ const o=O.find(x=>x.u===u); return o && (({new:"",seen:"seen",short:"short",rej:"rej"})[o.st]||"")!==v.st; }); }
+ toast(({short:"⭐ shortlist",rej:"✕ odrzucone"})[st]+" — wyślij przyciskiem 📤"); }
+function pending(){ return Object.entries(DEC).filter(([u,v])=>{ const o=O.find(x=>x.u===u); return o && (({new:"",seen:"rej",short:"short",rej:"rej"})[o.st]||"")!==v.st; }); }
 function upBtn(){ const b=document.getElementById("sendBtn"); if(!b)return; const n=pending().length; b.textContent="📤 Wyślij decyzje ("+n+")"; b.style.display="inline-block"; b.style.opacity=n?"1":".45"; }
 function sendAll(){
  const pend=pending(); if(!pend.length) return toast("Brak nowych decyzji");
@@ -82,7 +81,6 @@ function render(){
  const tot = rows.length;
  rows = rows.filter(o=>{ const s=stOf(o);
    if(flt==="todo") return !s;
-   if(flt==="seen") return s==="seen";
    if(flt==="short") return s==="short";
    if(flt==="rej") return s==="rej";
    return true; });
@@ -95,11 +93,11 @@ function render(){
   d.className="c"+(s?" st-"+s:"");
   const img = o.ph && o.ph.length ? `<img class="main" loading="lazy" src="${o.ph[0]}">` : `<div class="noimg">🏞️</div>`;
   const np = o.ph && o.ph.length>1 ? `<span class="np">📷 ${o.ph.length}</span>` : "";
-  const sb = s ? `<span class="stbadge">${({seen:"👁 widziane",short:"⭐ shortlist",rej:"✕ odrzucone"})[s]}</span>` : "";
+  const sb = s ? `<span class="stbadge">${({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]}</span>` : "";
   d.innerHTML = `<div class="top" onclick="openO(${i})">${img}<span class="s">${o.s??""}</span>${np}${sb}
    <div class="b"><b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b><span class="a">${o.a?fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</span>
-   <p>${o.t}</p><small>${o.loc} · ${o.po||""} · ${o.d||""}</small></div></div>
-   <div class="ft"><button onclick="setSt(O[${i}],'seen')">👁</button><button onclick="setSt(O[${i}],'short')">⭐</button><button onclick="setSt(O[${i}],'rej')">✕</button></div>`;
+   <p>${o.t}</p><small>${o.loc} · ${o.po||""} · ogł.: ${o.li||"?"} · w bazie: ${o.d||"?"}</small></div></div>
+   <div class="ft"><button onclick="setSt(O[${i}],'short')">⭐ Shortlist</button><button onclick="setSt(O[${i}],'rej')">✕ Odrzuć</button></div>`;
   g.appendChild(d);
  });
 }
@@ -111,16 +109,17 @@ function draw(){ if(!cur)return; const g=document.getElementById("gg"); const ph
  [...document.getElementById("ss").children].forEach((im,j)=>im.classList.toggle("on", j===ci)); }
 function drawS(){ const s=document.getElementById("ss"); s.innerHTML=""; (cur.ph||[]).forEach((u,j)=>{ const im=document.createElement("img"); im.src=u; im.onclick=()=>{ci=j;draw();}; s.appendChild(im); }); }
 function drawD(){ const d=document.getElementById("dd"); const s=stOf(cur);
- d.innerHTML = `<h3>${cur.t}</h3><b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b> <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${cur.loc} · ${cur.po||""} · Score ${cur.s??"-"}${s?" · <b>"+({seen:"👁 widziane",short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span><div class="nn">${cur.n||""}</div>
- <div class="acts"><button onclick="setSt(cur,'seen')">👁 Widziałem</button><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${cur.u}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
+ d.innerHTML = `<h3>${cur.t}</h3><b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b> <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${cur.loc} · ${cur.po||""} · Score ${cur.s??"-"}${s?" · <b>"+({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span><div class="nn">${cur.n||""}</div>
+ <div class="acts"><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${cur.u}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
 document.getElementById("tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; tab=b.dataset.c; localStorage.vTab=tab; render(); });
 document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ flt=c.dataset.f; render(); });
 document.addEventListener("keydown",e=>{ if(!cur)return; if(e.key==="Escape")clO(); if(e.key==="ArrowLeft")nav(-1); if(e.key==="ArrowRight")nav(1); });
 document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov")clO(); });
 fetch("data/offers.json?t="+Date.now()).then(r=>r.json()).then(d=>{
- O = d.offers.map(o=>({c:o.cat,t:o.title,u:o.url,pr:o.price,a:o.area,ph:o.photos||[],n:o.notes||"",loc:o.loc||"",s:o.score,d:o.added,po:o.portal,st:o.status||"new"}));
+ O = d.offers.map(o=>({c:o.cat,t:o.title,u:o.url,pr:o.price,a:o.area,ph:o.photos||[],n:o.notes||"",loc:o.loc||"",s:o.score,d:o.added,po:o.portal,st:o.status||"new", li:(o.listed||"").slice(0,10)}));
  document.title = "Oferty ("+O.length+")";
+ for(const v of Object.values(DEC)){ if(v.st==="seen") v.st="rej"; } save();
  for(const [u,v] of Object.entries(DEC)){ const o=O.find(x=>x.u===u); if(o && (({new:"",seen:"seen",short:"short",rej:"rej"})[o.st]||"")===v.st) delete DEC[u]; }
  save(); render(); upBtn();
 }).catch(e=>{ document.getElementById("grid").innerHTML='<div class="none">Błąd wczytywania danych: '+e+'</div>'; });
