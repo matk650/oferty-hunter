@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Oferty — dom i jezioro</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2e7d46">
@@ -7,17 +7,18 @@
 <meta name="apple-mobile-web-app-title" content="Oferty">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>body{font-family:system-ui;background:#f6f5f2;margin:0;padding:16px;color:#222}
+h1.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;position:sticky;top:0;background:#f6f5f2;padding:8px 0;z-index:5}
 .bar2{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
 .tabs{display:flex;gap:4px;background:#e9e6df;border-radius:10px;padding:3px;flex-wrap:wrap}
-.tabs button{border:0;background:transparent;padding:7px 13px;border-radius:8px;font-size:13px;font-weight:600;color:#6b6a66;cursor:pointer}
+.tabs button{border:0;background:transparent;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;color:#5c5b57;cursor:pointer;min-height:40px}
 .tabs button.on{background:#fff;color:#1f1e1b;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.chip{border:1px solid #d8d5cc;background:#fff;border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer;color:#55534e}
+.chip{border:1px solid #d8d5cc;background:#fff;border-radius:999px;padding:9px 14px;font-size:12.5px;cursor:pointer;color:#4a4945;min-height:40px;display:inline-flex;align-items:center}
 .chip.on{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
-.ctrl{border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:6px 10px;font-size:13px;color:#333}
+.ctrl{border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:9px 11px;font-size:14px;color:#333;min-height:42px}
 input.ctrl{width:120px}#q{flex:1;min-width:150px}
-.meta{margin-left:auto;font-size:12px;color:#8a877f;display:flex;align-items:center;gap:8px}
-.dot{width:8px;height:8px;border-radius:50%;background:#c4c1b8;display:inline-block}
+.meta{margin-left:auto;font-size:12px;color:#6b6a66;display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;background:#c4c1b8;display:inline-block}
 .dot.live{background:#2e7d46;box-shadow:0 0 0 3px rgba(46,125,70,.18)}
 .dot.off{background:#c08a2e}
 .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
@@ -25,70 +26,67 @@ input.ctrl{width:120px}#q{flex:1;min-width:150px}
 .c .top{cursor:pointer}
 .c:hover{box-shadow:0 4px 14px rgba(0,0,0,.1)}.c img.main,.noimg{width:100%;aspect-ratio:4/3;object-fit:cover;background:#eceae4;display:flex;align-items:center;justify-content:center;font-size:40px}
 .s{position:absolute;top:8px;left:8px;background:#2e7d46;color:#fff;font-weight:700;font-size:12px;padding:3px 8px;border-radius:99px;z-index:2}
-.np{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;padding:3px 8px;border-radius:99px;z-index:2}
+.np{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:3px 8px;border-radius:99px;z-index:2}
 .drop{display:inline-block;color:#fff;font-size:11px;font-weight:700;padding:1px 7px;border-radius:99px;margin-left:6px}
 .drop.down{background:#2e7d46}.drop.up{background:#c0392b}
-.b{padding:10px 12px}.b b{font-size:16px}.a{color:#888;font-size:12px;margin-left:6px}.b p{margin:4px 0;font-size:13px;line-height:1.3}small{color:#999}
-.ft{display:flex;gap:5px;padding:8px 10px 10px;border-top:1px solid #f1efe9}
-.ft button{flex:1;border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:6px 0;font-size:12px;font-weight:600;cursor:pointer;color:#55534e}
-.ft button:hover{background:#f6f5f2}
-.c.st-short{outline:3px solid #2e7d46}.c.st-rej{opacity:.35}
+.b{padding:10px 12px}.b b{font-size:16px}.a{color:#777;font-size:12px;margin-left:6px}.b p{margin:4px 0;font-size:13px;line-height:1.3}small{color:#6f6d67}
+.ft{display:flex;gap:6px;padding:8px 10px 10px;border-top:1px solid #f1efe9}
+.ft button{flex:1;border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:11px 0;font-size:13px;font-weight:600;cursor:pointer;color:#4a4945;min-height:44px}
+.ft button:hover{background:#f6f5f2}.ft button:active{background:#eceae4}
+.c.st-short{outline:3px solid #2e7d46}.c.st-rej{opacity:.4}
 .stbadge{position:absolute;bottom:8px;right:8px;background:#1f1e1b;color:#fff;font-size:10.5px;padding:3px 9px;border-radius:99px;z-index:2}
-.none{color:#999;padding:30px 0}
+.none{color:#8a877f;padding:30px 0}
+.grow{color:#2e7d46}.gred{color:#c0392b}
 #ov{position:fixed;inset:0;background:rgba(15,14,12,.85);display:none;align-items:center;justify-content:center;z-index:9;padding:14px}
 #ov.on{display:flex}.sh{background:#fff;border-radius:16px;max-width:920px;width:100%;max-height:95vh;overflow:auto;position:relative}
 .gal{position:relative;background:#111;display:flex;align-items:center;justify-content:center;min-height:300px;max-height:62vh}
 .gal img{max-width:100%;max-height:62vh;object-fit:contain}
-.nv{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.92);border:0;width:42px;height:42px;border-radius:50%;font-size:18px;cursor:pointer}
+.nv{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.94);border:0;width:46px;height:46px;border-radius:50%;font-size:18px;cursor:pointer}
 .pv{left:10px}.nx{right:10px}.cnt{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:2px 10px;border-radius:99px}
 .st{display:flex;gap:6px;padding:8px 10px;overflow-x:auto;background:#1c1b18}.st img{height:52px;border-radius:6px;cursor:pointer;opacity:.55}.st img.on{opacity:1;outline:2px solid #fff}
-.dt{padding:14px 18px 18px}.dt h3{margin:0 0 6px}.dt .nn{color:#777;font-size:12.5px;margin:6px 0}
-.loc{font-size:13px;margin:8px 0}.loc a{color:#2e7d46;text-decoration:none;font-weight:600}
-.call{display:inline-block;background:#2e7d46;color:#fff!important;padding:7px 14px;border-radius:9px;text-decoration:none;font-weight:600;font-size:13px;margin:6px 0}
+.dt{padding:14px 18px 18px}.dt h3{margin:0 0 6px}.dt .nn{color:#6f6d67;font-size:12.5px;margin:6px 0}
+.loc{font-size:13px;margin:8px 0}.loc a{color:#27693c;text-decoration:none;font-weight:600}
+.call{display:inline-block;background:#2e7d46;color:#fff!important;padding:10px 16px;border-radius:9px;text-decoration:none;font-weight:600;font-size:13px;margin:6px 0;min-height:44px}
 table.params{border-collapse:collapse;margin:10px 0;font-size:12.5px;width:100%}
 table.params td{border-bottom:1px solid #f1efe9;padding:4px 8px;vertical-align:top}
-table.params td:first-child{color:#888;width:42%}
+table.params td:first-child{color:#777;width:42%}
 .desc{white-space:pre-wrap;font-size:13px;line-height:1.5;color:#333;margin:10px 0 2px;max-height:340px;overflow:auto;border-top:1px solid #f1efe9;padding-top:10px}
 .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.acts button,.acts a{flex:1;min-width:110px;text-align:center;border:1px solid #d8d5cc;background:#fff;border-radius:9px;padding:9px 0;font-size:13px;font-weight:600;cursor:pointer;color:#3c3a35;text-decoration:none}
+.acts button,.acts a{flex:1;min-width:110px;text-align:center;border:1px solid #d8d5cc;background:#fff;border-radius:9px;padding:12px 0;font-size:13px;font-weight:600;cursor:pointer;color:#3c3a35;text-decoration:none;min-height:46px;display:flex;align-items:center;justify-content:center}
 .acts a.go{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
-#cl{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.94);border:0;width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;z-index:3}
-.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1f1e1b;color:#fff;padding:9px 18px;border-radius:99px;font-size:13px;display:none;z-index:99}
+#cl{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.96);border:0;width:40px;height:40px;border-radius:50%;font-size:17px;cursor:pointer;z-index:3}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1f1e1b;color:#fff;padding:11px 20px;border-radius:99px;font-size:13px;display:none;z-index:99}
 #stats{display:none}
 .panel{background:#fff;border:1px solid #e5e2da;border-radius:12px;padding:14px 16px;margin-bottom:14px}
-.panel h3{margin:0 0 10px;font-size:15px}.panel .sub{color:#999;font-size:12px;margin:-6px 0 10px}
+.panel h3{margin:0 0 10px;font-size:15px}.panel .sub{color:#777;font-size:12px;margin:-6px 0 10px}
 .stat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.stat-tabs button{border:1px solid #d8d5cc;background:#fff;border-radius:999px;padding:6px 13px;font-size:12.5px;cursor:pointer;color:#55534e}
+.stat-tabs button{border:1px solid #d8d5cc;background:#fff;border-radius:999px;padding:9px 14px;font-size:12.5px;cursor:pointer;color:#4a4945;min-height:40px}
 .stat-tabs button.on{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
 table.tbl{width:100%;border-collapse:collapse;font-size:13px}
-table.tbl th,table.tbl td{text-align:left;padding:5px 8px;border-bottom:1px solid #f1efe9;white-space:nowrap}
-table.tbl th{color:#888;font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.02em}
-table.tbl td.num,table.tbl th.num{text-align:right}
-.bar-row{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:12.5px}
-.bar-row .lbl{width:130px;color:#444;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar-track{flex:1;background:#eee;border-radius:6px;height:15px;overflow:hidden;min-width:60px}
-.bar-fill{height:100%;background:#2e7d46;border-radius:6px}
-.bar-row .val{width:74px;text-align:right;color:#666}
+table.tbl th,table.tbl td{text-align:left;padding:6px 8px;border-bottom:1px solid #f1efe9}
+table.tbl th{color:#777;font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.02em}
+table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
+.bar-row{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:12.5px}
+.bar-row .lbl{width:120px;color:#444;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;background:#eee;border-radius:6px;height:15px;overflow:hidden;min-width:50px}
+.bar-fill{display:block;height:100%;background:#2e7d46;border-radius:6px}
+.bar-row .val{width:96px;text-align:right;color:#555;white-space:nowrap}
 .kpi{display:flex;gap:10px;flex-wrap:wrap}
-.kpi .box{background:#f6f5f2;border-radius:10px;padding:10px 14px;min-width:96px;flex:1}
-.kpi .box b{font-size:21px;display:block;line-height:1.1}.kpi .box span{font-size:11px;color:#888}
-.cal{border-collapse:separate;border-spacing:3px}
-.cal th{font-size:10px;color:#999;font-weight:600;padding-bottom:2px}
-.cal td.wk{font-size:9.5px;color:#bbb;white-space:nowrap;padding-right:4px}
-.cal td.cell{width:42px;height:40px;text-align:center;border-radius:7px;background:#f0efea;vertical-align:middle;color:#555}
-.cal td.cell .d{font-size:9px;color:#b3b0a8;display:block;line-height:1}
-.cal td.cell .v{font-weight:700;font-size:11.5px;display:block;margin-top:2px}
-.cal td.h1{background:#d8ecdd}.cal td.h2{background:#aedcb9}.cal td.h3{background:#7cc491}.cal td.h4{background:#3f9159;color:#fff}
-.cal td.today{outline:2px solid #1f1e1b}
-.legend{display:flex;gap:5px;align-items:center;font-size:11px;color:#999;margin-top:8px}
-.legend i{width:16px;height:12px;border-radius:3px;display:inline-block}</style></head><body>
+.kpi .box{background:#f6f5f2;border-radius:10px;padding:12px 14px;min-width:92px;flex:1}
+.kpi .box b{font-size:22px;display:block;line-height:1.1}.kpi .box span{font-size:11px;color:#777}
+.slcard{border:1px solid #eceae4;border-radius:10px;padding:10px 12px;margin:8px 0}
+.slcard .t{font-weight:600;font-size:13px;margin-bottom:3px}
+.slcard .m{font-size:12px;color:#6f6d67}
+.slcard .lnk{margin-top:6px;display:flex;gap:10px}.slcard .lnk a{color:#27693c;text-decoration:none;font-weight:600;font-size:13px}
+@media(max-width:520px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}}</style></head><body>
+<h1 class="sr">Oferty nieruchomości — działki i domy</h1>
 <div class="bar">
- <div class="tabs" id="tabs">
+ <nav class="tabs" id="tabs" aria-label="Kategorie">
   <button data-c="m_dz" class="on">🏠 Mieszk. — działki</button>
   <button data-c="m_dom">🏠 Mieszk. — domy</button>
   <button data-c="jez_dz">🌊 Jeziora — działki</button>
   <button data-c="jez_dom">🌊 Jeziora — domy</button>
- </div>
+ </nav>
  <span class="chip on" data-f="todo">Do przejrzenia</span>
  <span class="chip" data-f="short">⭐ Shortlist</span>
  <span class="chip" data-f="rej">Odrzucone</span>
@@ -97,7 +95,7 @@ table.tbl td.num,table.tbl th.num{text-align:right}
  <span class="meta" id="meta"><span class="dot" id="dot"></span><span id="metaTxt">Łączę z bazą…</span></span>
 </div>
 <div class="bar2">
- <select class="ctrl" id="sort">
+ <select class="ctrl" id="sort" aria-label="Sortowanie">
   <option value="score">Sortuj: Score ↓</option>
   <option value="listed_desc">Najnowsze ogłoszenia</option>
   <option value="added_desc">Ostatnio dodane</option>
@@ -106,36 +104,46 @@ table.tbl td.num,table.tbl th.num{text-align:right}
   <option value="pm2_asc">zł/m² ↑</option>
   <option value="area_desc">Powierzchnia ↓</option>
  </select>
- <input class="ctrl" id="pmin" type="number" inputmode="numeric" placeholder="cena od">
- <input class="ctrl" id="pmax" type="number" inputmode="numeric" placeholder="cena do">
- <input class="ctrl" id="q" type="search" placeholder="szukaj: ulica, miejscowość, słowo…">
+ <input class="ctrl" id="pmin" type="number" inputmode="numeric" placeholder="cena od" aria-label="Cena od">
+ <input class="ctrl" id="pmax" type="number" inputmode="numeric" placeholder="cena do" aria-label="Cena do">
+ <input class="ctrl" id="q" type="search" placeholder="szukaj: ulica, miejscowość…" aria-label="Szukaj">
 </div>
-<div class="g" id="grid"></div>
+<main class="g" id="grid"><div class="none">Wczytuję oferty…</div></main>
 <div id="stats"></div>
-<div id="ov"><div class="sh"><button id="cl" onclick="clO()">✕</button><div class="gal" id="gg"></div><div class="st" id="ss"></div><div class="dt" id="dd"></div></div></div>
-<div class="toast" id="toast"></div>
+<div id="ov" role="dialog" aria-modal="true" aria-label="Szczegóły oferty"><div class="sh"><button id="cl" onclick="clO()" aria-label="Zamknij">✕</button><div class="gal" id="gg"></div><div class="st" id="ss"></div><div class="dt" id="dd"></div></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SB_URL = "https://gbmvooprdfqufptfggdb.supabase.co";
 const SB_KEY = "sb_publishable_-CNmiowgRI-WSnxnR42cOw_o0EFCRid";
 const sb = supabase.createClient(SB_URL, SB_KEY);
-const LIST_COLS = "id,cat,title,url,price,area,photos,loc,score,added,listed,portal,notes,status,address,lat,lon,phone,prev_price,orig_price";
+// lista: tylko kolumny potrzebne do kart/filtrów/statystyk. notes/address/opis/params doładowywane przy otwarciu oferty.
+const LIST_COLS = "id,cat,title,url,price,area,photos,loc,score,added,listed,portal,status,orig_price,lat,lon,phone";
 
 let O = [];
 let tab = localStorage.vTab || "m_dz", flt = "todo", sortBy="score", cur=null, ci=0;
-let q="", pmin=null, pmax=null;
+let q="", pmin=null, pmax=null, lastLoad=0, lastFocus=null;
 let DECS=[], view="list", statCat="all", ZM={};
 const median = arr => { if(!arr.length) return null; const s=[...arr].sort((a,b)=>a-b); const m=s.length>>1; return s.length%2?s[m]:(s[m-1]+s[m])/2; };
 const CATPL = {m_dz:"Mieszk. działki",m_dom:"Mieszk. domy",jez_dz:"Jeziora działki",jez_dom:"Jeziora domy"};
 const cap = s => s? s.charAt(0).toUpperCase()+s.slice(1) : s;
 function computeZoneMedians(){ ZM={}; const g={}; O.forEach(o=>{ const p=pm2(o); if(p==null||!o.loc) return; (g[o.c]=g[o.c]||{}); (g[o.c][o.loc]=g[o.c][o.loc]||[]).push(p); }); for(const c in g){ ZM[c]={}; for(const l in g[c]) ZM[c][l]=median(g[c][l]); } }
 const fmt = n => n==null?"":Number(n).toLocaleString("pl-PL");
-const esc = s => (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+// escapowanie do HTML (także cudzysłowy — bezpieczne też w atrybutach)
+const esc = s => (s==null?"":String(s)).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+// dekodowanie encji HTML ze scrapingu (m&sup2; -> m²) — bez tworzenia elementów (bezpieczne)
+const ENT={amp:"&",lt:"<",gt:">",quot:'"',apos:"'",nbsp:" ",sup2:"²",sup3:"³",deg:"°",hellip:"…",ndash:"–",mdash:"—",eacute:"é",oacute:"ó",aacute:"á"};
+const dec = s => s==null?"":String(s).replace(/&(#\d+|#x[0-9a-f]+|[a-z][a-z0-9]*);/gi,(m,e)=>{ if(e[0]==="#"){ const code=(e[1]==="x"||e[1]==="X")?parseInt(e.slice(2),16):parseInt(e.slice(1),10); return isNaN(code)?m:String.fromCodePoint(code);} const k=e.toLowerCase(); return ENT[k]!=null?ENT[k]:m; });
+const txt = s => esc(dec(s));                                   // pole tekstowe ze scrapingu: dekoduj encje, potem escapuj
+const safeUrl = u => /^https?:\/\//i.test(u||"") ? u : "";      // tylko http(s) w href
+const SL = {short:"⭐ shortlist",rej:"✕ odrzucone"};
+const statusLabel = s => SL[s] || "";
+const mapsUrl = q2 => "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q2);
 const norm = s => (s==="seen"?"rej":(s||"new"));
 const decit = o => { const s=norm(o.st); return s==="short"?"short":s==="rej"?"rej":""; };
 const pm2 = o => (o.pr&&o.a)? o.pr/o.a : null;
 // różnica vs cena pierwotna (orig_price): up=wzrost, pct ujemny = spadek
-const priceDelta = o => { if(o.op==null||o.pr==null||o.op==o.pr) return null; const d=o.pr-o.op; return {pct:Math.round(d/o.op*100), amt:d, up:d>0, op:o.op}; };
+const priceDelta = o => { if(o.op==null||o.pr==null||o.op<=0||o.op==o.pr) return null; const d=o.pr-o.op; return {pct:Math.round(d/o.op*100), amt:d, up:d>0, op:o.op}; };
 const dropTag = d => { if(!d) return ""; const sg=d.up?"+":""; return `<span class="drop ${d.up?'up':'down'}">${d.up?'🔺':'🔻'} ${sg}${d.pct}% · ${sg}${fmt(d.amt)} zł</span>`; };
 
 // słowniki parametrów (Otodom)
@@ -178,11 +186,13 @@ function sortRows(rows){
 async function setSt(o, st){
  const target = (norm(o.st)===st) ? "new" : st;
  const prev=o.st; o.st=target; render(); if(cur&&cur.id===o.id) drawD();
- toast(target==="new"?"Cofnięto":({short:"⭐ shortlist",rej:"✕ odrzucone"})[target]);
+ toast(target==="new"?"Cofnięto":statusLabel(target));
  const { error } = await sb.from("offers").update({status:target}).eq("id", o.id);
  if(error){ o.st=prev; render(); if(cur&&cur.id===o.id) drawD(); toast("Błąd zapisu — spróbuj ponownie"); return; }
- sb.from("decisions").insert({offer_id:o.id, status:target});            // dziennik aktywności
- DECS.push({offer_id:o.id, status:target, decided_at:new Date().toISOString()});
+ // dziennik aktywności — z obsługą błędu (cicha porażka psuła kalendarz)
+ const { error:de } = await sb.from("decisions").insert({offer_id:o.id, status:target});
+ if(de){ console.warn("decisions insert nieudany:", de.message); }
+ else { DECS.push({offer_id:o.id, status:target, decided_at:new Date().toISOString()}); }
  if(view==="stats") renderStats();
 }
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.style.display="block"; clearTimeout(t._x); t._x=setTimeout(()=>t.style.display="none",1600); }
@@ -193,55 +203,57 @@ function render(){
  const g=document.getElementById("grid"); g.innerHTML="";
  const inTab=O.filter(o=>o.c===tab);
  let rows=sortRows(inTab.filter(passFilters));
- document.getElementById("metaTxt").textContent = rows.length+" / "+inTab.length+" ofert"+(setDot._s==="live"?" · na żywo":"");
+ document.getElementById("metaTxt").textContent = rows.length+" / "+inTab.length+" ofert"+(setDot._s==="live"?" · na żywo":setDot._s==="off"?" · offline":"");
  if(!rows.length){ g.innerHTML='<div class="none">Pusto — zmień filtr, kategorię lub wyszukiwanie</div>'; return; }
  rows.forEach(o=>{
   const i=O.indexOf(o), s=decit(o);
   const d=document.createElement("div"); d.className="c"+(s?" st-"+s:"");
-  const img=o.ph&&o.ph.length?`<img class="main" loading="lazy" src="${o.ph[0]}">`:`<div class="noimg">🏞️</div>`;
+  const img=o.ph&&o.ph.length?`<img class="main" loading="lazy" decoding="async" alt="${esc(o.t||'oferta')}" src="${esc(o.ph[0])}">`:`<div class="noimg" aria-hidden="true">🏞️</div>`;
   const np=o.ph&&o.ph.length>1?`<span class="np">📷 ${o.ph.length}</span>`:"";
-  const sb2=s?`<span class="stbadge">${({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]}</span>`:"";
+  const sb2=s?`<span class="stbadge">${statusLabel(s)}</span>`:"";
   const drop=dropTag(priceDelta(o));
   d.innerHTML=`<div class="top" onclick="openO(${i})">${img}<span class="s">${o.s??""}</span>${np}${sb2}
    <div class="b"><b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b>${drop}<span class="a">${o.a?fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</span>
-   <p>${esc(o.t)}</p><small>${esc(o.loc)} · ${o.po||""} · ogł.: ${o.li||"?"}</small></div></div>
+   <p>${txt(o.t)}</p><small>${txt(cap(o.loc))} · ${esc(o.po||"")} · ogł.: ${esc(o.li||"?")}</small></div></div>
    <div class="ft"><button onclick="setSt(O[${i}],'short')">⭐ Shortlist</button><button onclick="setSt(O[${i}],'rej')">✕ Odrzuć</button></div>`;
   g.appendChild(d);
  });
 }
 
 async function openO(i){
- cur=O[i]; ci=0; document.getElementById("ov").classList.add("on"); drawS(); draw(); drawD();
+ cur=O[i]; ci=0; lastFocus=document.activeElement;
+ document.getElementById("ov").classList.add("on"); drawS(); draw(); drawD();
+ document.getElementById("cl").focus();
  if(cur.de===undefined){
-   const { data } = await sb.from("offers").select("description,params").eq("id",cur.id).single();
-   if(data){ cur.de=data.description||""; cur.prm=data.params||{}; }
+   const { data } = await sb.from("offers").select("url,notes,address,description,params").eq("id",cur.id).single();
+   if(data){ cur.de=data.description||""; cur.prm=data.params||{}; cur.n=data.notes||""; cur.adr=data.address||""; if(data.url)cur.u=data.url; }
    else { cur.de=""; cur.prm={}; }
    if(cur&&O[i]===cur) drawD();
  }
 }
-function clO(){ document.getElementById("ov").classList.remove("on"); cur=null; render(); }
+function clO(){ document.getElementById("ov").classList.remove("on"); cur=null; render(); if(lastFocus&&lastFocus.focus){ lastFocus.focus(); lastFocus=null; } }
 function draw(){ if(!cur)return; const g=document.getElementById("gg"); const ph=cur.ph||[];
- g.innerHTML=ph.length?`<img src="${ph[ci]}">`:'<span style="color:#fff;opacity:.7">Brak zdjęć — otwórz ogłoszenie</span>';
- if(ph.length>1) g.innerHTML+=`<button class="nv pv" onclick="nav(-1)">←</button><button class="nv nx" onclick="nav(1)">→</button><span class="cnt">${ci+1} / ${ph.length}</span>`;
+ g.innerHTML=ph.length?`<img alt="${esc(cur.t||'zdjęcie oferty')}" src="${esc(ph[ci])}">`:'<span style="color:#fff;opacity:.7">Brak zdjęć — otwórz ogłoszenie</span>';
+ if(ph.length>1) g.innerHTML+=`<button class="nv pv" onclick="nav(-1)" aria-label="Poprzednie zdjęcie">←</button><button class="nv nx" onclick="nav(1)" aria-label="Następne zdjęcie">→</button><span class="cnt">${ci+1} / ${ph.length}</span>`;
  [...document.getElementById("ss").children].forEach((im,j)=>im.classList.toggle("on", j===ci)); }
-function drawS(){ const s=document.getElementById("ss"); s.innerHTML=""; (cur.ph||[]).forEach((u,j)=>{ const im=document.createElement("img"); im.src=u; im.onclick=()=>{ci=j;draw();}; s.appendChild(im); }); }
+function drawS(){ const s=document.getElementById("ss"); s.innerHTML=""; (cur.ph||[]).forEach((u,j)=>{ const im=document.createElement("img"); im.loading="lazy"; im.alt="miniatura "+(j+1); im.src=u; im.onclick=()=>{ci=j;draw();}; s.appendChild(im); }); }
 function paramsTable(p){
  if(!p||!Object.keys(p).length) return "";
- const rows=Object.entries(p).map(([k,v])=>`<tr><td>${esc(keyPL(k))}</td><td>${esc(valPL(v))}</td></tr>`).join("");
+ const rows=Object.entries(p).map(([k,v])=>`<tr><td>${txt(keyPL(k))}</td><td>${txt(valPL(v))}</td></tr>`).join("");
  return `<table class="params">${rows}</table>`;
 }
 function drawD(){ const d=document.getElementById("dd"); const s=decit(cur); const pdl=priceDelta(cur);
  const q2=(cur.lat!=null&&cur.lon!=null)?(cur.lat+","+cur.lon):(cur.adr||"");
- const loc=q2?`<div class="loc">📍 <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q2)}" target="_blank" rel="noopener">${esc(cur.adr||"Otwórz w Mapach Google")} ↗</a></div>`:"";
+ const loc=q2?`<div class="loc">📍 <a href="${esc(mapsUrl(q2))}" target="_blank" rel="noopener">${txt(cur.adr||"Otwórz w Mapach Google")} ↗</a></div>`:"";
  const tel=cur.tel?`<div><a class="call" href="tel:${esc(cur.tel)}">📞 Zadzwoń ${esc(cur.tel)}</a></div>`:"";
- const priceLine=`<b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b>${pdl?` ${dropTag(pdl)} <span style="color:#888;font-size:12px">(pierwotnie ${fmt(pdl.op)} zł)</span>`:""}`;
+ const priceLine=`<b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b>${pdl?` ${dropTag(pdl)} <span style="color:#777;font-size:12px">(pierwotnie ${fmt(pdl.op)} zł)</span>`:""}`;
  let zctx="";
  const zm=(ZM[cur.c]||{})[cur.loc], mine=pm2(cur);
  if(zm&&mine){ const diff=Math.round((mine/zm-1)*100); const cls=diff>0?'up':(diff<0?'down':''); zctx=`<div class="loc">📊 ${fmt(Math.round(mine))} zł/m² vs mediana strefy <b>${fmt(Math.round(zm))} zł/m²</b>${cls?` <span class="drop ${cls}">${diff>0?'+':''}${diff}%</span> ${diff>0?'drożej':diff<0?'taniej':'='} niż w okolicy`:''}</div>`; }
- const descBlock = cur.de===undefined ? `<div class="desc" style="color:#aaa">wczytuję opis…</div>` : (cur.de?`<div class="desc">${esc(cur.de)}</div>`:"");
- d.innerHTML=`<h3>${esc(cur.t)}</h3>${priceLine} <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${esc(cur.loc)} · ${cur.po||""} · ogł.: ${cur.li||"?"} · Score ${cur.s??"-"}${s?" · <b>"+({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span>
- ${loc}${zctx}${tel}${paramsTable(cur.prm)}<div class="nn">${esc(cur.n||"")}</div>${descBlock}
- <div class="acts"><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${cur.u}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
+ const descBlock = cur.de===undefined ? `<div class="desc" style="color:#999">wczytuję opis…</div>` : (cur.de?`<div class="desc">${txt(cur.de)}</div>`:"");
+ d.innerHTML=`<h3>${txt(cur.t)}</h3>${priceLine} <span style="color:#777">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${txt(cap(cur.loc))} · ${esc(cur.po||"")} · ogł.: ${esc(cur.li||"?")} · Score ${cur.s??"-"}${s?" · <b>"+statusLabel(s)+"</b>":""}</span>
+ ${loc}${zctx}${tel}${paramsTable(cur.prm)}<div class="nn">${txt(cur.n||"")}</div>${descBlock}
+ <div class="acts"><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${esc(safeUrl(cur.u))}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
 
 document.getElementById("tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; tab=b.dataset.c; localStorage.vTab=tab; render(); });
@@ -249,12 +261,18 @@ document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ flt=c.dataset.f; r
 document.getElementById("sort").onchange=e=>{ sortBy=e.target.value; render(); };
 const deb=(fn,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};};
 document.getElementById("q").addEventListener("input",deb(e=>{ q=e.target.value.trim().toLowerCase(); render(); },200));
-document.getElementById("pmin").addEventListener("input",deb(e=>{ pmin=e.target.value?+e.target.value:null; render(); },300));
-document.getElementById("pmax").addEventListener("input",deb(e=>{ pmax=e.target.value?+e.target.value:null; render(); },300));
-document.addEventListener("keydown",e=>{ if(!cur)return; if(e.key==="Escape")clO(); if(e.key==="ArrowLeft")nav(-1); if(e.key==="ArrowRight")nav(1); });
+document.getElementById("pmin").addEventListener("input",deb(e=>{ pmin=e.target.value!==""?+e.target.value:null; render(); },300));
+document.getElementById("pmax").addEventListener("input",deb(e=>{ pmax=e.target.value!==""?+e.target.value:null; render(); },300));
+document.addEventListener("keydown",e=>{ if(!cur)return;
+ if(e.key==="Escape"){ clO(); return; }
+ if(e.key==="ArrowLeft"){ nav(-1); return; }
+ if(e.key==="ArrowRight"){ nav(1); return; }
+ if(e.key==="Tab"){ const f=[...document.querySelectorAll("#ov button, #ov a[href]")].filter(el=>el.offsetParent!==null); if(!f.length)return; let i=f.indexOf(document.activeElement);
+   if(e.shiftKey){ if(i<=0){ f[f.length-1].focus(); e.preventDefault(); } } else { if(i===f.length-1){ f[0].focus(); e.preventDefault(); } } }
+});
 document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov")clO(); });
 
-// ---------- STATYSTYKI ----------
+// ---------- STATYSTYKI (uproszczone, mobile-first: tylko panele wpływające na decyzję) ----------
 function setView(v){ view=v;
  document.getElementById("grid").style.display=v==="list"?"":"none";
  document.querySelector(".bar2").style.display=v==="list"?"":"none";
@@ -262,101 +280,70 @@ function setView(v){ view=v;
  const b=document.getElementById("statsToggle"); b.classList.toggle("on",v==="stats"); b.textContent=v==="stats"?"← Oferty":"📊 Statystyki";
  if(v==="stats") renderStats();
 }
-const isoWeek = d => { const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const day=(t.getUTCDay()+6)%7; t.setUTCDate(t.getUTCDate()-day+3); const f=new Date(Date.UTC(t.getUTCFullYear(),0,4)); const w=1+Math.round(((t-f)/864e5-3+((f.getUTCDay()+6)%7))/7); return t.getUTCFullYear()+"-W"+String(w).padStart(2,"0"); };
 const daysBetween = (a,b)=> Math.round((b-a)/864e5);
 const statSet = () => statCat==="all"?O:O.filter(o=>o.c===statCat);
 const panel = (title,sub,html)=>`<div class="panel"><h3>${title}</h3>${sub?`<div class="sub">${sub}</div>`:""}${html}</div>`;
 const bar = (label,val,max,valTxt)=>{ const w=max?Math.round(val/max*100):0; return `<div class="bar-row"><span class="lbl">${esc(label)}</span><span class="bar-track"><span class="bar-fill" style="width:${w}%"></span></span><span class="val">${valTxt??val}</span></div>`; };
 
-function panelBenchmark(rows){
- const g={}; rows.forEach(o=>{ const p=pm2(o); if(p==null||!o.loc)return; (g[o.loc]=g[o.loc]||[]).push(o); });
- const arr=Object.entries(g).map(([loc,os])=>{ const ps=os.map(pm2).filter(x=>x!=null), prc=os.map(o=>o.pr).filter(x=>x!=null);
-   return {loc,n:os.length,mp:median(ps),mpr:median(prc),mn:Math.min(...ps),mx:Math.max(...ps)}; }).filter(x=>x.mp!=null).sort((a,b)=>b.n-a.n);
- if(!arr.length) return panel("Benchmark zł/m² wg strefy","Brak ofert z ceną i metrażem w tej kategorii.","");
- const body=arr.map(r=>`<tr><td>${esc(cap(r.loc))}</td><td class="num">${r.n}</td><td class="num"><b>${fmt(Math.round(r.mp))}</b></td><td class="num">${fmt(Math.round(r.mn))}–${fmt(Math.round(r.mx))}</td><td class="num">${fmt(Math.round(r.mpr))} zł</td></tr>`).join("");
- return panel("Benchmark zł/m² wg strefy","Mediana zł/m² i widełki w każdej strefie — podstawa oceny tanio/drogo.",
-  `<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Strefa</th><th class="num">Ofert</th><th class="num">Med. zł/m²</th><th class="num">Widełki zł/m²</th><th class="num">Med. ceny</th></tr></thead><tbody>${body}</tbody></table></div>`);
-}
 function panelLejek(rows){
  const c={new:0,short:0,rej:0}; rows.forEach(o=>{ const k=norm(o.st); c[k]=(c[k]||0)+1; });
  const decided=c.short+c.rej, rejPct=decided?Math.round(c.rej/decided*100):0;
- const wk={}; rows.forEach(o=>{ if(o.d){ const w=isoWeek(new Date(o.d)); wk[w]=(wk[w]||0)+1; } });
- const weeks=Object.keys(wk).length, perWeek=weeks?Math.round(rows.length/weeks):rows.length;
- return panel("Twój lejek decyzyjny","Postęp przeglądu i tempo napływu ofert.",
-  `<div class="kpi"><div class="box"><b>${c.new}</b><span>do przejrzenia</span></div><div class="box"><b class="grow">${c.short}</b><span>⭐ shortlist</span></div><div class="box"><b class="gred">${c.rej}</b><span>✕ odrzucone</span></div><div class="box"><b>${rejPct}%</b><span>odrzuceń</span></div><div class="box"><b>${perWeek}</b><span>napływ / tydz.</span></div></div>`);
+ return panel("Przegląd","Ile ofert do zrobienia i jak rozkładają się decyzje.",
+  `<div class="kpi"><div class="box"><b>${c.new}</b><span>do przejrzenia</span></div><div class="box"><b class="grow">${c.short}</b><span>⭐ shortlist</span></div><div class="box"><b class="gred">${c.rej}</b><span>✕ odrzucone</span></div><div class="box"><b>${rejPct}%</b><span>odrzuceń z ocenionych</span></div></div>`);
+}
+function panelBenchmark(rows){
+ const g={}; rows.forEach(o=>{ const p=pm2(o); if(p==null||!o.loc)return; (g[o.loc]=g[o.loc]||[]).push(o); });
+ const arr=Object.entries(g).map(([loc,os])=>{ const ps=os.map(pm2).filter(x=>x!=null);
+   return {loc,n:os.length,mp:median(ps),mn:Math.min(...ps),mx:Math.max(...ps)}; }).filter(x=>x.mp!=null).sort((a,b)=>b.n-a.n);
+ if(!arr.length) return panel("Tanio czy drogo? (zł/m² wg strefy)","Brak ofert z ceną i metrażem w tej kategorii.","");
+ const body=arr.map(r=>`<tr><td>${txt(cap(r.loc))}</td><td class="num">${r.n}</td><td class="num"><b>${fmt(Math.round(r.mp))}</b></td><td class="num">${fmt(Math.round(r.mn))}–${fmt(Math.round(r.mx))}</td></tr>`).join("");
+ return panel("Tanio czy drogo? (zł/m² wg strefy)","Mediana zł/m² i widełki w każdej strefie — szybka ocena, czy oferta jest poniżej/powyżej rynku.",
+  `<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Strefa</th><th class="num">Ofert</th><th class="num">Med. zł/m²</th><th class="num">Widełki</th></tr></thead><tbody>${body}</tbody></table></div>`);
 }
 function panelOkazje(rows){
- const drops=rows.map(o=>({o,d:priceDelta(o)})).filter(x=>x.d&&!x.d.up).sort((a,b)=>a.d.pct-b.d.pct).slice(0,8);
+ const drops=rows.map(o=>({o,d:priceDelta(o)})).filter(x=>x.d&&!x.d.up).sort((a,b)=>a.d.pct-b.d.pct).slice(0,6);
  const today=new Date();
- const hang=rows.filter(o=>norm(o.st)==="new"&&o.li&&/^\d{4}-\d{2}-\d{2}/.test(o.li)).map(o=>({o,days:daysBetween(new Date(o.li),today)})).filter(x=>x.days>=0).sort((a,b)=>b.days-a.days).slice(0,8);
- const dHtml=drops.length?`<table class="tbl"><thead><tr><th>Oferta</th><th class="num">Teraz</th><th class="num">Spadek</th></tr></thead><tbody>`+drops.map(x=>`<tr><td>${esc((x.o.t||"").slice(0,38))}</td><td class="num">${fmt(x.o.pr)} zł</td><td class="num gred">${x.d.pct}% · ${fmt(x.d.amt)} zł</td></tr>`).join("")+`</tbody></table>`:`<div class="sub">Brak spadków (pojawią się, gdy ceny ofert spadną).</div>`;
- const hHtml=hang.length?`<table class="tbl"><thead><tr><th>Oferta</th><th class="num">Cena</th><th class="num">Wisi</th></tr></thead><tbody>`+hang.map(x=>`<tr><td>${esc((x.o.t||"").slice(0,38))}</td><td class="num">${x.o.pr?fmt(x.o.pr)+" zł":"—"}</td><td class="num">${x.days} dni</td></tr>`).join("")+`</tbody></table>`:`<div class="sub">Brak dat ogłoszeń.</div>`;
+ const hang=rows.filter(o=>norm(o.st)==="new"&&o.li&&/^\d{4}-\d{2}-\d{2}/.test(o.li)).map(o=>({o,days:daysBetween(new Date(o.li),today)})).filter(x=>x.days>=0).sort((a,b)=>b.days-a.days).slice(0,6);
+ const dHtml=drops.length?`<table class="tbl"><thead><tr><th>Oferta</th><th class="num">Teraz</th><th class="num">Spadek</th></tr></thead><tbody>`+drops.map(x=>`<tr><td>${txt((x.o.t||"").slice(0,34))}</td><td class="num">${fmt(x.o.pr)} zł</td><td class="num gred">${x.d.pct}%</td></tr>`).join("")+`</tbody></table>`:`<div class="sub">Brak spadków (pojawią się, gdy ceny ofert spadną).</div>`;
+ const hHtml=hang.length?`<table class="tbl"><thead><tr><th>Oferta</th><th class="num">Cena</th><th class="num">Wisi</th></tr></thead><tbody>`+hang.map(x=>`<tr><td>${txt((x.o.t||"").slice(0,34))}</td><td class="num">${x.o.pr?fmt(x.o.pr)+" zł":"—"}</td><td class="num">${x.days} dni</td></tr>`).join("")+`</tbody></table>`:`<div class="sub">Brak dat ogłoszeń.</div>`;
  return panel("Okazje negocjacyjne","Największe spadki cen i oferty wiszące najdłużej (potencjał negocjacji).",
   `<b style="font-size:13px">🔻 Największe spadki</b>${dHtml}<div style="height:12px"></div><b style="font-size:13px">⏳ Najdłużej wiszące</b>${hHtml}`);
 }
 function panelPodaz(rows){
  const bz={},bp={}; rows.forEach(o=>{ if(o.loc)bz[o.loc]=(bz[o.loc]||0)+1; if(o.po)bp[o.po]=(bp[o.po]||0)+1; });
- const za=Object.entries(bz).sort((a,b)=>b[1]-a[1]).slice(0,12), zmax=Math.max(1,...za.map(x=>x[1]));
+ const za=Object.entries(bz).sort((a,b)=>b[1]-a[1]).slice(0,8), zmax=Math.max(1,...za.map(x=>x[1]));
  const pa=Object.entries(bp).sort((a,b)=>b[1]-a[1]), pmax=Math.max(1,...pa.map(x=>x[1]));
  const priced=rows.map(o=>o.pr).filter(x=>x);
  const bk=[[0,250000,"<250k"],[250000,500000,"250–500k"],[500000,750000,"500–750k"],[750000,1000000,"750k–1M"],[1000000,1e12,">1M"]];
  const hp=bk.map(([a,b,l])=>[l,priced.filter(p=>p>=a&&p<b).length]), hpmax=Math.max(1,...hp.map(x=>x[1]));
- return panel("Rozkład podaży","Gdzie i ile jest ofert — strefa, portal, przedział cenowy.",
-  `<b style="font-size:13px">Wg strefy</b>${za.map(([l,n])=>bar(cap(l),n,zmax,n)).join("")}<div style="height:10px"></div><b style="font-size:13px">Wg portalu</b>${pa.map(([l,n])=>bar(l,n,pmax,n)).join("")}<div style="height:10px"></div><b style="font-size:13px">Przedział ceny</b>${hp.map(([l,n])=>bar(l,n,hpmax,n)).join("")}`);
-}
-function panelTrend(rows){
- const wkN={},wkP={}; rows.forEach(o=>{ if(o.d){ const w=isoWeek(new Date(o.d)); wkN[w]=(wkN[w]||0)+1; (wkP[w]=wkP[w]||[]).push(o.pr); } });
- const weeks=Object.keys(wkN).sort(), nmax=Math.max(1,...weeks.map(w=>wkN[w]));
- const bars=weeks.map(w=>{ const mp=median((wkP[w]||[]).filter(x=>x)); return bar(w,wkN[w],nmax,`${wkN[w]} ofert${mp?" · med "+fmt(Math.round(mp))+" zł":""}`); }).join("");
- const note=weeks.length<2?`<div class="sub">Trend nabiera sensu z czasem — mamy ${weeks.length} tydz. danych (rośnie z każdym sweepem).</div>`:"";
- return panel("Trend tydzień-do-tygodnia","Napływ nowych ofert i mediana cen w czasie.",note+bars);
+ return panel("Gdzie jest podaż","Ile ofert w strefie, na portalu i w przedziale ceny.",
+  `<b style="font-size:13px">Wg strefy (top 8)</b>${za.map(([l,n])=>bar(cap(l),n,zmax,n)).join("")}<div style="height:10px"></div><b style="font-size:13px">Wg portalu</b>${pa.map(([l,n])=>bar(l,n,pmax,n)).join("")}<div style="height:10px"></div><b style="font-size:13px">Przedział ceny</b>${hp.map(([l,n])=>bar(l,n,hpmax,n)).join("")}`);
 }
 function panelShortlist(){
  const sl=O.filter(o=>norm(o.st)==="short");
- if(!sl.length) return panel("Porównywarka shortlisty","Tu pojawią się oferty oznaczone ⭐ — zestawione obok siebie.","");
- const body=sl.map(o=>`<tr><td>${esc((o.t||"").slice(0,38))}</td><td>${CATPL[o.c]||""}</td><td class="num">${o.pr?fmt(o.pr)+" zł":"—"}</td><td class="num">${o.a?fmt(o.a)+" m²":"—"}</td><td class="num">${o.pr&&o.a?fmt(Math.round(o.pr/o.a)):"—"}</td><td>${esc(cap(o.loc))}</td><td>${o.tel?`<a href="tel:${esc(o.tel)}">📞</a> `:""}${(o.lat!=null&&o.lon!=null)?`<a href="https://www.google.com/maps/search/?api=1&query=${o.lat},${o.lon}" target="_blank" rel="noopener">📍</a>`:""}</td></tr>`).join("");
- return panel("Porównywarka shortlisty (⭐ "+sl.length+")","Twoi faworyci obok siebie do finalnej decyzji.",
-  `<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Oferta</th><th>Kategoria</th><th class="num">Cena</th><th class="num">Metraż</th><th class="num">zł/m²</th><th>Strefa</th><th>Kontakt</th></tr></thead><tbody>${body}</tbody></table></div>`);
-}
-function panelKalendarz(){
- const day={}; let first=null;
- DECS.forEach(r=>{ if(r.status!=="short"&&r.status!=="rej")return; const d=new Date(r.decided_at); const key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); day[key]=day[key]||{s:0,r:0}; if(r.status==="short")day[key].s++; else day[key].r++; if(!first||d<first)first=d; });
- const totS=Object.values(day).reduce((a,b)=>a+b.s,0), totR=Object.values(day).reduce((a,b)=>a+b.r,0), total=totS+totR;
- const today=new Date(); today.setHours(0,0,0,0);
- const spanDays=first?daysBetween(new Date(first.getFullYear(),first.getMonth(),first.getDate()),today)+1:0;
- const avg=spanDays?total/spanDays:0, activeDays=Object.keys(day).length;
- const dow=(today.getDay()+6)%7; const monday=new Date(today); monday.setDate(today.getDate()-dow);
- const WK=8, start=new Date(monday); start.setDate(monday.getDate()-7*(WK-1));
- const dn=["Pon","Wt","Śr","Czw","Pt","Sob","Nd"];
- let body="";
- for(let w=0;w<WK;w++){ const ws=new Date(start); ws.setDate(start.getDate()+7*w); let tds=`<td class="wk">${String(ws.getDate()).padStart(2,"0")}.${String(ws.getMonth()+1).padStart(2,"0")}</td>`;
-   for(let i=0;i<7;i++){ const cell=new Date(ws); cell.setDate(ws.getDate()+i); const key=cell.getFullYear()+"-"+String(cell.getMonth()+1).padStart(2,"0")+"-"+String(cell.getDate()).padStart(2,"0");
-     const v=day[key], tot=v?v.s+v.r:0, future=cell>today; const h=tot===0?"":tot<=2?"h1":tot<=5?"h2":tot<=9?"h3":"h4"; const isT=cell.getTime()===today.getTime();
-     tds+=`<td class="cell ${h} ${isT?"today":""}" style="${future?"opacity:.25":""}"><span class="d">${cell.getDate()}</span><span class="v">${tot?("⭐"+v.s+" ✕"+v.r):"·"}</span></td>`; }
-   body+=`<tr>${tds}</tr>`; }
- const head=`<tr><th></th>${dn.map(n=>`<th>${n}</th>`).join("")}</tr>`;
- const kpi=`<div class="kpi" style="margin-bottom:12px"><div class="box"><b>${total}</b><span>oznaczonych łącznie</span></div><div class="box"><b class="grow">${totS}</b><span>⭐ shortlist</span></div><div class="box"><b class="gred">${totR}</b><span>✕ odrzucone</span></div><div class="box"><b>${avg.toFixed(1)}</b><span>średnio / dzień</span></div><div class="box"><b>${activeDays}</b><span>dni aktywnych</span></div></div>`;
- const legend=`<div class="legend">mniej <i style="background:#f0efea"></i><i style="background:#d8ecdd"></i><i style="background:#aedcb9"></i><i style="background:#7cc491"></i><i style="background:#3f9159"></i> więcej</div>`;
- const empty=total===0?`<div class="sub">Jeszcze nic nie oznaczono — każde ⭐/✕ pojawi się tu jako aktywność dnia.</div>`:"";
- return panel("Kalendarz aktywności","Ile ofert dziennie oznaczasz (⭐ shortlist / ✕ odrzucone) + średnia z całego okresu.",
-  kpi+`<div style="overflow-x:auto"><table class="cal">${head}${body}</table></div>${legend}${empty}`);
+ if(!sl.length) return panel("⭐ Shortlist","Tu pojawią się oferty oznaczone ⭐ — zestawione do finalnej decyzji.","");
+ const body=sl.map(o=>{ const links=[]; if(o.tel)links.push(`<a href="tel:${esc(o.tel)}">📞 ${esc(o.tel)}</a>`); if(o.lat!=null&&o.lon!=null)links.push(`<a href="${esc(mapsUrl(o.lat+','+o.lon))}" target="_blank" rel="noopener">📍 Mapa</a>`);
+   return `<div class="slcard"><div class="t">${txt(o.t)}</div><div class="m">${o.pr?fmt(o.pr)+" zł":"—"}${o.a?" · "+fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""} · ${txt(cap(o.loc))} · ${esc(CATPL[o.c]||"")}</div>${links.length?`<div class="lnk">${links.join("")}</div>`:""}</div>`; }).join("");
+ return panel("⭐ Shortlist ("+sl.length+")","Twoi faworyci do finalnej decyzji.",body);
 }
 function renderStats(){
  const rows=statSet();
  const tabs=`<div class="stat-tabs">`+[["all","Wszystkie"],["m_dz","🏠 Działki"],["m_dom","🏠 Domy"],["jez_dz","🌊 Jez. działki"],["jez_dom","🌊 Jez. domy"]].map(([v,l])=>`<button class="${statCat===v?"on":""}" onclick="statCat='${v}';renderStats()">${l}</button>`).join("")+`</div>`;
- document.getElementById("stats").innerHTML = tabs + panelKalendarz() + panelLejek(rows) + panelBenchmark(rows) + panelOkazje(rows) + panelShortlist() + panelPodaz(rows) + panelTrend(rows);
+ document.getElementById("stats").innerHTML = tabs + panelLejek(rows) + panelBenchmark(rows) + panelOkazje(rows) + panelShortlist() + panelPodaz(rows);
 }
 document.getElementById("statsToggle").onclick=()=>setView(view==="stats"?"list":"stats");
 
-const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",s:r.score,d:r.added,po:r.portal,st:r.status||"new",li:(r.listed||""),adr:r.address||"",lat:r.lat,lon:r.lon,tel:r.phone||"",pp:r.prev_price,op:r.orig_price});
+const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",s:r.score,d:r.added,po:r.portal,st:r.status||"new",li:(r.listed||""),adr:r.address||"",lat:r.lat,lon:r.lon,tel:r.phone||"",op:r.orig_price});
 
 async function load(){
  const { data, error } = await sb.from("offers").select(LIST_COLS);
- if(error){ document.getElementById("grid").innerHTML='<div class="none">Błąd wczytywania bazy: '+error.message+'</div>'; setDot("off"); return; }
+ if(error){ if(!O.length) document.getElementById("grid").innerHTML='<div class="none">Błąd wczytywania bazy: '+esc(error.message)+'</div>'; setDot("off"); setDot._s="off"; return; }
  const byId={}; O.forEach(o=>byId[o.id]=o);
- O = data.map(r=>{ const m=mapRow(r); const old=byId[r.id]; if(old){ m.de=old.de; m.prm=old.prm; } return m; });
+ O = data.map(r=>{ const m=mapRow(r); const old=byId[r.id]; if(old){ m.de=old.de; m.prm=old.prm; if(old.n)m.n=old.n; if(old.adr)m.adr=old.adr; } return m; });
  computeZoneMedians();
+ if(cur){ const c=O.find(x=>x.id===cur.id); if(c){ cur=c; drawD(); } }   // re-link otwartej oferty po przeładowaniu
  const dr = await sb.from("decisions").select("offer_id,status,decided_at"); DECS = dr.data||[];
+ lastLoad=Date.now();
  document.title="Oferty ("+O.length+")"; render(); if(view==="stats") renderStats();
 }
 function subscribe(){
@@ -365,8 +352,10 @@ function subscribe(){
    if(payload.eventType==="DELETE"){ O=O.filter(o=>o.id!==r.id); }
    else { const o=O.find(x=>x.id===r.id); const m=mapRow(payload.new); if(o){ Object.assign(o,m); } else { O.push(m); } }
    render(); if(cur){ const c=O.find(x=>x.id===cur.id); if(c){ const de=cur.de,prm=cur.prm; cur=c; cur.de=de; cur.prm=prm; drawD(); } }
- }).subscribe(s=>{ setDot._s=(s==="SUBSCRIBED"?"live":"off"); setDot(setDot._s); });
+ }).subscribe(s=>{ setDot._s=(s==="SUBSCRIBED"?"live":"off"); setDot(setDot._s); render(); });
 }
-document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") load(); });
+// odśwież po powrocie do karty, ale nie częściej niż co 60 s (realtime i tak trzyma dane świeże)
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && Date.now()-lastLoad>60000) load(); });
 load().then(subscribe);
+if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{})); }
 </script></body></html>
