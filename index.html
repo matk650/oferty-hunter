@@ -122,9 +122,10 @@ function draw(){ if(!cur)return; const g=document.getElementById("gg"); const ph
  [...document.getElementById("ss").children].forEach((im,j)=>im.classList.toggle("on", j===ci)); }
 function drawS(){ const s=document.getElementById("ss"); s.innerHTML=""; (cur.ph||[]).forEach((u,j)=>{ const im=document.createElement("img"); im.src=u; im.onclick=()=>{ci=j;draw();}; s.appendChild(im); }); }
 function drawD(){ const d=document.getElementById("dd"); const s=decit(cur);
- const loc = (cur.lat!=null&&cur.lon!=null)
-   ? `<div class="loc">📍 <a href="https://www.google.com/maps?q=${cur.lat},${cur.lon}" target="_blank" rel="noopener">${esc(cur.adr||"Pokaż na mapie")} ↗</a></div>`
-   : (cur.adr?`<div class="loc">📍 ${esc(cur.adr)}</div>`:"");
+ const q = (cur.lat!=null&&cur.lon!=null) ? (cur.lat+","+cur.lon) : (cur.adr||"");
+ const loc = q
+   ? `<div class="loc">📍 <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}" target="_blank" rel="noopener">${esc(cur.adr||"Otwórz w Mapach Google")} ↗</a></div>`
+   : "";
  d.innerHTML = `<h3>${cur.t}</h3><b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b> <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${cur.loc} · ${cur.po||""} · Score ${cur.s??"-"}${s?" · <b>"+({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span>
  ${loc}<div class="nn">${cur.n||""}</div>${cur.de?`<div class="desc">${esc(cur.de)}</div>`:""}
  <div class="acts"><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${cur.u}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
