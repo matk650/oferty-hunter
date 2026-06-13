@@ -31,6 +31,8 @@
 .pv{left:10px}.nx{right:10px}.cnt{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:2px 10px;border-radius:99px}
 .st{display:flex;gap:6px;padding:8px 10px;overflow-x:auto;background:#1c1b18}.st img{height:52px;border-radius:6px;cursor:pointer;opacity:.55}.st img.on{opacity:1;outline:2px solid #fff}
 .dt{padding:14px 18px 18px}.dt h3{margin:0 0 6px}.dt .nn{color:#777;font-size:12.5px;margin:6px 0}
+.loc{font-size:13px;margin:8px 0}.loc a{color:#2e7d46;text-decoration:none;font-weight:600}
+.desc{white-space:pre-wrap;font-size:13px;line-height:1.5;color:#333;margin:10px 0 2px;max-height:340px;overflow:auto;border-top:1px solid #f1efe9;padding-top:10px}
 .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .acts button,.acts a{flex:1;min-width:110px;text-align:center;border:1px solid #d8d5cc;background:#fff;border-radius:9px;padding:9px 0;font-size:13px;font-weight:600;cursor:pointer;color:#3c3a35;text-decoration:none}
 .acts a.go{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
@@ -61,6 +63,7 @@ const sb = supabase.createClient(SB_URL, SB_KEY);
 let O = [];
 let tab = localStorage.vTab || "m_dz", flt = "todo", cur=null, ci=0;
 const fmt = n => n==null?"":Number(n).toLocaleString("pl-PL");
+const esc = s => (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const norm = s => (s==="seen"?"rej":(s||"new"));          // legacy 'seen' -> 'rej'
 const decit = o => { const s=norm(o.st); return s==="short"?"short":s==="rej"?"rej":""; };
 
@@ -119,7 +122,11 @@ function draw(){ if(!cur)return; const g=document.getElementById("gg"); const ph
  [...document.getElementById("ss").children].forEach((im,j)=>im.classList.toggle("on", j===ci)); }
 function drawS(){ const s=document.getElementById("ss"); s.innerHTML=""; (cur.ph||[]).forEach((u,j)=>{ const im=document.createElement("img"); im.src=u; im.onclick=()=>{ci=j;draw();}; s.appendChild(im); }); }
 function drawD(){ const d=document.getElementById("dd"); const s=decit(cur);
- d.innerHTML = `<h3>${cur.t}</h3><b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b> <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${cur.loc} · ${cur.po||""} · Score ${cur.s??"-"}${s?" · <b>"+({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span><div class="nn">${cur.n||""}</div>
+ const loc = (cur.lat!=null&&cur.lon!=null)
+   ? `<div class="loc">📍 <a href="https://www.google.com/maps?q=${cur.lat},${cur.lon}" target="_blank" rel="noopener">${esc(cur.adr||"Pokaż na mapie")} ↗</a></div>`
+   : (cur.adr?`<div class="loc">📍 ${esc(cur.adr)}</div>`:"");
+ d.innerHTML = `<h3>${cur.t}</h3><b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b> <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${cur.loc} · ${cur.po||""} · Score ${cur.s??"-"}${s?" · <b>"+({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span>
+ ${loc}<div class="nn">${cur.n||""}</div>${cur.de?`<div class="desc">${esc(cur.de)}</div>`:""}
  <div class="acts"><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${cur.u}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
 
@@ -128,7 +135,7 @@ document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ flt=c.dataset.f; r
 document.addEventListener("keydown",e=>{ if(!cur)return; if(e.key==="Escape")clO(); if(e.key==="ArrowLeft")nav(-1); if(e.key==="ArrowRight")nav(1); });
 document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov")clO(); });
 
-const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",s:r.score,d:r.added,po:r.portal,st:r.status||"new",li:(r.listed||"")});
+const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",s:r.score,d:r.added,po:r.portal,st:r.status||"new",li:(r.listed||""),de:r.description||"",adr:r.address||"",lat:r.lat,lon:r.lon});
 
 async function load(){
  const { data, error } = await sb.from("offers").select("*");
