@@ -100,8 +100,8 @@ const norm = s => (s==="seen"?"rej":(s||"new"));
 const decit = o => { const s=norm(o.st); return s==="short"?"short":s==="rej"?"rej":""; };
 const pm2 = o => (o.pr&&o.a)? o.pr/o.a : null;
 // różnica vs cena pierwotna (orig_price): up=wzrost, pct ujemny = spadek
-const priceDelta = o => { if(o.op==null||o.pr==null||o.op==o.pr) return null; const d=o.pr-o.op; return {pct:Math.round(d/o.op*100), up:d>0, op:o.op}; };
-const dropTag = d => d ? `<span class="drop ${d.up?'up':'down'}">${d.up?'🔺 +':'🔻 '}${d.pct}%</span>` : "";
+const priceDelta = o => { if(o.op==null||o.pr==null||o.op==o.pr) return null; const d=o.pr-o.op; return {pct:Math.round(d/o.op*100), amt:d, up:d>0, op:o.op}; };
+const dropTag = d => { if(!d) return ""; const sg=d.up?"+":""; return `<span class="drop ${d.up?'up':'down'}">${d.up?'🔺':'🔻'} ${sg}${d.pct}% · ${sg}${fmt(d.amt)} zł</span>`; };
 
 // słowniki parametrów (Otodom)
 const PL_KEY={type:"Typ",fence:"Ogrodzenie",location:"Lokalizacja",vacant:"Wolne od zaraz",
@@ -196,7 +196,7 @@ function drawD(){ const d=document.getElementById("dd"); const s=decit(cur); con
  const q2=(cur.lat!=null&&cur.lon!=null)?(cur.lat+","+cur.lon):(cur.adr||"");
  const loc=q2?`<div class="loc">📍 <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q2)}" target="_blank" rel="noopener">${esc(cur.adr||"Otwórz w Mapach Google")} ↗</a></div>`:"";
  const tel=cur.tel?`<div><a class="call" href="tel:${esc(cur.tel)}">📞 Zadzwoń ${esc(cur.tel)}</a></div>`:"";
- const priceLine=`<b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b>${pdl?` <span class="drop ${pdl.up?'up':'down'}">${pdl.up?'🔺 +':'🔻 '}${pdl.pct}% ${pdl.up?'wzrost':'spadek'} (pierwotnie ${fmt(pdl.op)} zł)</span>`:""}`;
+ const priceLine=`<b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b>${pdl?` ${dropTag(pdl)} <span style="color:#888;font-size:12px">(pierwotnie ${fmt(pdl.op)} zł)</span>`:""}`;
  const descBlock = cur.de===undefined ? `<div class="desc" style="color:#aaa">wczytuję opis…</div>` : (cur.de?`<div class="desc">${esc(cur.de)}</div>`:"");
  d.innerHTML=`<h3>${esc(cur.t)}</h3>${priceLine} <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${esc(cur.loc)} · ${cur.po||""} · ogł.: ${cur.li||"?"} · Score ${cur.s??"-"}${s?" · <b>"+({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span>
  ${loc}${tel}${paramsTable(cur.prm)}<div class="nn">${esc(cur.n||"")}</div>${descBlock}
