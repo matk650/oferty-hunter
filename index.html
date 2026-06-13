@@ -1,11 +1,21 @@
-<!DOCTYPE html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Oferty — dom i jezioro</title>
+<!DOCTYPE html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oferty — dom i jezioro</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2e7d46">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Oferty">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>body{font-family:system-ui;background:#f6f5f2;margin:0;padding:16px;color:#222}
-.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;position:sticky;top:0;background:#f6f5f2;padding:8px 0;z-index:5}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;position:sticky;top:0;background:#f6f5f2;padding:8px 0;z-index:5}
+.bar2{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
 .tabs{display:flex;gap:4px;background:#e9e6df;border-radius:10px;padding:3px;flex-wrap:wrap}
 .tabs button{border:0;background:transparent;padding:7px 13px;border-radius:8px;font-size:13px;font-weight:600;color:#6b6a66;cursor:pointer}
 .tabs button.on{background:#fff;color:#1f1e1b;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .chip{border:1px solid #d8d5cc;background:#fff;border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer;color:#55534e}
 .chip.on{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
+.ctrl{border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:6px 10px;font-size:13px;color:#333}
+input.ctrl{width:120px}#q{flex:1;min-width:150px}
 .meta{margin-left:auto;font-size:12px;color:#8a877f;display:flex;align-items:center;gap:8px}
 .dot{width:8px;height:8px;border-radius:50%;background:#c4c1b8;display:inline-block}
 .dot.live{background:#2e7d46;box-shadow:0 0 0 3px rgba(46,125,70,.18)}
@@ -16,6 +26,7 @@
 .c:hover{box-shadow:0 4px 14px rgba(0,0,0,.1)}.c img.main,.noimg{width:100%;aspect-ratio:4/3;object-fit:cover;background:#eceae4;display:flex;align-items:center;justify-content:center;font-size:40px}
 .s{position:absolute;top:8px;left:8px;background:#2e7d46;color:#fff;font-weight:700;font-size:12px;padding:3px 8px;border-radius:99px;z-index:2}
 .np{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;padding:3px 8px;border-radius:99px;z-index:2}
+.drop{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:700;padding:1px 7px;border-radius:99px;margin-left:6px}
 .b{padding:10px 12px}.b b{font-size:16px}.a{color:#888;font-size:12px;margin-left:6px}.b p{margin:4px 0;font-size:13px;line-height:1.3}small{color:#999}
 .ft{display:flex;gap:5px;padding:8px 10px 10px;border-top:1px solid #f1efe9}
 .ft button{flex:1;border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:6px 0;font-size:12px;font-weight:600;cursor:pointer;color:#55534e}
@@ -32,6 +43,10 @@
 .st{display:flex;gap:6px;padding:8px 10px;overflow-x:auto;background:#1c1b18}.st img{height:52px;border-radius:6px;cursor:pointer;opacity:.55}.st img.on{opacity:1;outline:2px solid #fff}
 .dt{padding:14px 18px 18px}.dt h3{margin:0 0 6px}.dt .nn{color:#777;font-size:12.5px;margin:6px 0}
 .loc{font-size:13px;margin:8px 0}.loc a{color:#2e7d46;text-decoration:none;font-weight:600}
+.call{display:inline-block;background:#2e7d46;color:#fff!important;padding:7px 14px;border-radius:9px;text-decoration:none;font-weight:600;font-size:13px;margin:6px 0}
+table.params{border-collapse:collapse;margin:10px 0;font-size:12.5px;width:100%}
+table.params td{border-bottom:1px solid #f1efe9;padding:4px 8px;vertical-align:top}
+table.params td:first-child{color:#888;width:42%}
 .desc{white-space:pre-wrap;font-size:13px;line-height:1.5;color:#333;margin:10px 0 2px;max-height:340px;overflow:auto;border-top:1px solid #f1efe9;padding-top:10px}
 .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .acts button,.acts a{flex:1;min-width:110px;text-align:center;border:1px solid #d8d5cc;background:#fff;border-radius:9px;padding:9px 0;font-size:13px;font-weight:600;cursor:pointer;color:#3c3a35;text-decoration:none}
@@ -51,6 +66,20 @@
  <span class="chip" data-f="all">Wszystkie</span>
  <span class="meta" id="meta"><span class="dot" id="dot"></span><span id="metaTxt">Łączę z bazą…</span></span>
 </div>
+<div class="bar2">
+ <select class="ctrl" id="sort">
+  <option value="score">Sortuj: Score ↓</option>
+  <option value="listed_desc">Najnowsze ogłoszenia</option>
+  <option value="added_desc">Ostatnio dodane</option>
+  <option value="price_asc">Cena ↑</option>
+  <option value="price_desc">Cena ↓</option>
+  <option value="pm2_asc">zł/m² ↑</option>
+  <option value="area_desc">Powierzchnia ↓</option>
+ </select>
+ <input class="ctrl" id="pmin" type="number" inputmode="numeric" placeholder="cena od">
+ <input class="ctrl" id="pmax" type="number" inputmode="numeric" placeholder="cena do">
+ <input class="ctrl" id="q" type="search" placeholder="szukaj: ulica, miejscowość, słowo…">
+</div>
 <div class="g" id="grid"></div>
 <div id="ov"><div class="sh"><button id="cl" onclick="clO()">✕</button><div class="gal" id="gg"></div><div class="st" id="ss"></div><div class="dt" id="dd"></div></div></div>
 <div class="toast" id="toast"></div>
@@ -59,27 +88,58 @@
 const SB_URL = "https://gbmvooprdfqufptfggdb.supabase.co";
 const SB_KEY = "sb_publishable_-CNmiowgRI-WSnxnR42cOw_o0EFCRid";
 const sb = supabase.createClient(SB_URL, SB_KEY);
+const LIST_COLS = "id,cat,title,url,price,area,photos,loc,score,added,listed,portal,notes,status,address,lat,lon,phone,prev_price";
 
 let O = [];
-let tab = localStorage.vTab || "m_dz", flt = "todo", cur=null, ci=0;
+let tab = localStorage.vTab || "m_dz", flt = "todo", sortBy="score", cur=null, ci=0;
+let q="", pmin=null, pmax=null;
 const fmt = n => n==null?"":Number(n).toLocaleString("pl-PL");
 const esc = s => (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-const norm = s => (s==="seen"?"rej":(s||"new"));          // legacy 'seen' -> 'rej'
+const norm = s => (s==="seen"?"rej":(s||"new"));
 const decit = o => { const s=norm(o.st); return s==="short"?"short":s==="rej"?"rej":""; };
+const pm2 = o => (o.pr&&o.a)? o.pr/o.a : null;
+const dropPct = o => (o.pp && o.pr && o.pp>o.pr)? Math.round((1-o.pr/o.pp)*100) : 0;
 
-function setDot(state){ // 'live' | 'off' | ''
- const d=document.getElementById("dot"); d.className="dot"+(state?" "+state:"");
+// słowniki parametrów (Otodom)
+const PL_KEY={type:"Typ",fence:"Ogrodzenie",location:"Lokalizacja",vacant:"Wolne od zaraz",
+ build_year:"Rok budowy",building_type:"Typ zabudowy",building_material:"Materiał",
+ construction_status:"Stan",heating:"Ogrzewanie",market:"Rynek",rooms_num:"Pokoje",
+ floors_num:"Kondygnacje",floor_no:"Piętro",media_types:"Media",utilities:"Media",
+ access_types:"Dojazd",remote_services:"Obsługa zdalna",equipment_types:"Wyposażenie",
+ security_types:"Ochrona",windows_type:"Okna",roof_type:"Dach",roofing:"Pokrycie dachu"};
+const PL_VAL={recreational:"rekreacyjna",building:"budowlana",agricultural:"rolna",
+ habitation:"siedliskowa",investment:"inwestycyjna",city:"miasto",country:"poza miastem",
+ suburban:"podmiejska",primary:"pierwotny",secondary:"wtórny",detached:"wolnostojący",
+ semi_detached:"bliźniak",terraced:"szeregowy",to_renovation:"do remontu",
+ ready_to_use:"do zamieszkania",to_completion:"do wykończenia",tak:"tak",nie:"nie",
+ brick:"cegła",cellular_concrete:"beton kom.",wood:"drewno"};
+const valPL = v => { if(v==null)return""; const a=String(v).split(",").map(x=>PL_VAL[x.trim()]||x.trim().replace(/_/g," ")); return a.join(", "); };
+const keyPL = k => PL_KEY[k]||k.replace(/_/g," ");
+
+function setDot(state){ document.getElementById("dot").className="dot"+(state?" "+state:""); }
+
+function passFilters(o){
+ const s=decit(o);
+ if(flt==="todo"&&s) return false;
+ if((flt==="short"||flt==="rej")&&s!==flt) return false;
+ if(pmin!=null&&(o.pr==null||o.pr<pmin)) return false;
+ if(pmax!=null&&(o.pr==null||o.pr>pmax)) return false;
+ if(q){ const hay=((o.t||"")+" "+(o.loc||"")+" "+(o.adr||"")+" "+(o.n||"")).toLowerCase(); if(!hay.includes(q)) return false; }
+ return true;
 }
-function setMeta(extra){
- const rows = O.filter(o=>o.c===tab);
- const shown = rows.filter(o=>{const s=decit(o); return flt==="todo"?!s:flt==="all"?true:s===flt;}).length;
- document.getElementById("metaTxt").textContent = shown+" / "+rows.length+" ofert"+(extra?" · "+extra:"");
+function sortRows(rows){
+ const nn=(v)=>v==null?Infinity:v, nnd=(v)=>v==null?-Infinity:v;
+ const f={ score:(a,b)=>(b.s??-1)-(a.s??-1),
+   price_asc:(a,b)=>nn(a.pr)-nn(b.pr), price_desc:(a,b)=>nnd(b.pr)-nnd(a.pr),
+   pm2_asc:(a,b)=>nn(pm2(a))-nn(pm2(b)), area_desc:(a,b)=>nnd(b.a)-nnd(a.a),
+   listed_desc:(a,b)=>String(b.li||"").localeCompare(String(a.li||"")),
+   added_desc:(a,b)=>String(b.d||"").localeCompare(String(a.d||"")) }[sortBy];
+ return rows.sort(f);
 }
 
 async function setSt(o, st){
- const target = (norm(o.st)===st) ? "new" : st;   // ponowny klik = cofnięcie
- const prev = o.st;
- o.st = target; render(); if(cur && cur.id===o.id) drawD();      // optymistycznie
+ const target = (norm(o.st)===st) ? "new" : st;
+ const prev=o.st; o.st=target; render(); if(cur&&cur.id===o.id) drawD();
  toast(target==="new"?"Cofnięto":({short:"⭐ shortlist",rej:"✕ odrzucone"})[target]);
  const { error } = await sb.from("offers").update({status:target}).eq("id", o.id);
  if(error){ o.st=prev; render(); if(cur&&cur.id===o.id) drawD(); toast("Błąd zapisu — spróbuj ponownie"); }
@@ -90,76 +150,83 @@ function render(){
  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.c===tab));
  document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on", c.dataset.f===flt));
  const g=document.getElementById("grid"); g.innerHTML="";
- let rows = O.filter(o=>o.c===tab);
- rows = rows.filter(o=>{ const s=decit(o);
-   if(flt==="todo") return !s;
-   if(flt==="short") return s==="short";
-   if(flt==="rej") return s==="rej";
-   return true; });
- rows.sort((a,b)=>(b.s??-1)-(a.s??-1));
- setMeta();
- if(!rows.length){ g.innerHTML='<div class="none">Pusto — zmień filtr lub kategorię</div>'; return; }
+ const inTab=O.filter(o=>o.c===tab);
+ let rows=sortRows(inTab.filter(passFilters));
+ document.getElementById("metaTxt").textContent = rows.length+" / "+inTab.length+" ofert"+(setDot._s==="live"?" · na żywo":"");
+ if(!rows.length){ g.innerHTML='<div class="none">Pusto — zmień filtr, kategorię lub wyszukiwanie</div>'; return; }
  rows.forEach(o=>{
-  const i = O.indexOf(o);
-  const d=document.createElement("div");
-  const s=decit(o);
-  d.className="c"+(s?" st-"+s:"");
-  const img = o.ph && o.ph.length ? `<img class="main" loading="lazy" src="${o.ph[0]}">` : `<div class="noimg">🏞️</div>`;
-  const np = o.ph && o.ph.length>1 ? `<span class="np">📷 ${o.ph.length}</span>` : "";
-  const sb2 = s ? `<span class="stbadge">${({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]}</span>` : "";
-  d.innerHTML = `<div class="top" onclick="openO(${i})">${img}<span class="s">${o.s??""}</span>${np}${sb2}
-   <div class="b"><b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b><span class="a">${o.a?fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</span>
-   <p>${o.t}</p><small>${o.loc} · ${o.po||""} · ogł.: ${o.li||"?"} · w bazie: ${o.d||"?"}</small></div></div>
+  const i=O.indexOf(o), s=decit(o), dp=dropPct(o);
+  const d=document.createElement("div"); d.className="c"+(s?" st-"+s:"");
+  const img=o.ph&&o.ph.length?`<img class="main" loading="lazy" src="${o.ph[0]}">`:`<div class="noimg">🏞️</div>`;
+  const np=o.ph&&o.ph.length>1?`<span class="np">📷 ${o.ph.length}</span>`:"";
+  const sb2=s?`<span class="stbadge">${({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]}</span>`:"";
+  const drop=dp?`<span class="drop">🔻 -${dp}%</span>`:"";
+  d.innerHTML=`<div class="top" onclick="openO(${i})">${img}<span class="s">${o.s??""}</span>${np}${sb2}
+   <div class="b"><b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b>${drop}<span class="a">${o.a?fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</span>
+   <p>${esc(o.t)}</p><small>${esc(o.loc)} · ${o.po||""} · ogł.: ${o.li||"?"}</small></div></div>
    <div class="ft"><button onclick="setSt(O[${i}],'short')">⭐ Shortlist</button><button onclick="setSt(O[${i}],'rej')">✕ Odrzuć</button></div>`;
   g.appendChild(d);
  });
 }
-function openO(i){ cur=O[i]; ci=0; document.getElementById("ov").classList.add("on"); drawD(); drawS(); draw(); }
+
+async function openO(i){
+ cur=O[i]; ci=0; document.getElementById("ov").classList.add("on"); drawS(); draw(); drawD();
+ if(cur.de===undefined){
+   const { data } = await sb.from("offers").select("description,params").eq("id",cur.id).single();
+   if(data){ cur.de=data.description||""; cur.prm=data.params||{}; }
+   else { cur.de=""; cur.prm={}; }
+   if(cur&&O[i]===cur) drawD();
+ }
+}
 function clO(){ document.getElementById("ov").classList.remove("on"); cur=null; render(); }
 function draw(){ if(!cur)return; const g=document.getElementById("gg"); const ph=cur.ph||[];
- g.innerHTML = ph.length? `<img src="${ph[ci]}">` : '<span style="color:#fff;opacity:.7">Brak zdjęć — otwórz ogłoszenie</span>';
- if(ph.length>1) g.innerHTML += `<button class="nv pv" onclick="nav(-1)">←</button><button class="nv nx" onclick="nav(1)">→</button><span class="cnt">${ci+1} / ${ph.length}</span>`;
+ g.innerHTML=ph.length?`<img src="${ph[ci]}">`:'<span style="color:#fff;opacity:.7">Brak zdjęć — otwórz ogłoszenie</span>';
+ if(ph.length>1) g.innerHTML+=`<button class="nv pv" onclick="nav(-1)">←</button><button class="nv nx" onclick="nav(1)">→</button><span class="cnt">${ci+1} / ${ph.length}</span>`;
  [...document.getElementById("ss").children].forEach((im,j)=>im.classList.toggle("on", j===ci)); }
 function drawS(){ const s=document.getElementById("ss"); s.innerHTML=""; (cur.ph||[]).forEach((u,j)=>{ const im=document.createElement("img"); im.src=u; im.onclick=()=>{ci=j;draw();}; s.appendChild(im); }); }
-function drawD(){ const d=document.getElementById("dd"); const s=decit(cur);
- const q = (cur.lat!=null&&cur.lon!=null) ? (cur.lat+","+cur.lon) : (cur.adr||"");
- const loc = q
-   ? `<div class="loc">📍 <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}" target="_blank" rel="noopener">${esc(cur.adr||"Otwórz w Mapach Google")} ↗</a></div>`
-   : "";
- d.innerHTML = `<h3>${cur.t}</h3><b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b> <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${cur.loc} · ${cur.po||""} · Score ${cur.s??"-"}${s?" · <b>"+({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span>
- ${loc}<div class="nn">${cur.n||""}</div>${cur.de?`<div class="desc">${esc(cur.de)}</div>`:""}
+function paramsTable(p){
+ if(!p||!Object.keys(p).length) return "";
+ const rows=Object.entries(p).map(([k,v])=>`<tr><td>${esc(keyPL(k))}</td><td>${esc(valPL(v))}</td></tr>`).join("");
+ return `<table class="params">${rows}</table>`;
+}
+function drawD(){ const d=document.getElementById("dd"); const s=decit(cur); const dp=dropPct(cur);
+ const q2=(cur.lat!=null&&cur.lon!=null)?(cur.lat+","+cur.lon):(cur.adr||"");
+ const loc=q2?`<div class="loc">📍 <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q2)}" target="_blank" rel="noopener">${esc(cur.adr||"Otwórz w Mapach Google")} ↗</a></div>`:"";
+ const tel=cur.tel?`<div><a class="call" href="tel:${esc(cur.tel)}">📞 Zadzwoń ${esc(cur.tel)}</a></div>`:"";
+ const priceLine=`<b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b>${dp?` <span class="drop">🔻 -${dp}% (z ${fmt(cur.pp)})</span>`:""}`;
+ const descBlock = cur.de===undefined ? `<div class="desc" style="color:#aaa">wczytuję opis…</div>` : (cur.de?`<div class="desc">${esc(cur.de)}</div>`:"");
+ d.innerHTML=`<h3>${esc(cur.t)}</h3>${priceLine} <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${esc(cur.loc)} · ${cur.po||""} · ogł.: ${cur.li||"?"} · Score ${cur.s??"-"}${s?" · <b>"+({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span>
+ ${loc}${tel}${paramsTable(cur.prm)}<div class="nn">${esc(cur.n||"")}</div>${descBlock}
  <div class="acts"><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${cur.u}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
 
 document.getElementById("tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; tab=b.dataset.c; localStorage.vTab=tab; render(); });
 document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ flt=c.dataset.f; render(); });
+document.getElementById("sort").onchange=e=>{ sortBy=e.target.value; render(); };
+const deb=(fn,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};};
+document.getElementById("q").addEventListener("input",deb(e=>{ q=e.target.value.trim().toLowerCase(); render(); },200));
+document.getElementById("pmin").addEventListener("input",deb(e=>{ pmin=e.target.value?+e.target.value:null; render(); },300));
+document.getElementById("pmax").addEventListener("input",deb(e=>{ pmax=e.target.value?+e.target.value:null; render(); },300));
 document.addEventListener("keydown",e=>{ if(!cur)return; if(e.key==="Escape")clO(); if(e.key==="ArrowLeft")nav(-1); if(e.key==="ArrowRight")nav(1); });
 document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov")clO(); });
 
-const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",s:r.score,d:r.added,po:r.portal,st:r.status||"new",li:(r.listed||""),de:r.description||"",adr:r.address||"",lat:r.lat,lon:r.lon});
+const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",s:r.score,d:r.added,po:r.portal,st:r.status||"new",li:(r.listed||""),adr:r.address||"",lat:r.lat,lon:r.lon,tel:r.phone||"",pp:r.prev_price});
 
 async function load(){
- const { data, error } = await sb.from("offers").select("*");
+ const { data, error } = await sb.from("offers").select(LIST_COLS);
  if(error){ document.getElementById("grid").innerHTML='<div class="none">Błąd wczytywania bazy: '+error.message+'</div>'; setDot("off"); return; }
- O = data.map(mapRow);
- document.title = "Oferty ("+O.length+")";
- render();
+ const byId={}; O.forEach(o=>byId[o.id]=o);
+ O = data.map(r=>{ const m=mapRow(r); const old=byId[r.id]; if(old){ m.de=old.de; m.prm=old.prm; } return m; });
+ document.title="Oferty ("+O.length+")"; render();
 }
-
-// sync na żywo: zmiana na jednym urządzeniu od razu widoczna na innych
 function subscribe(){
- sb.channel("offers-rt")
-  .on("postgres_changes",{event:"*",schema:"public",table:"offers"}, payload=>{
-    const r = payload.new || payload.old; if(!r) return;
-    if(payload.eventType==="DELETE"){ O = O.filter(o=>o.id!==r.id); }
-    else { const o=O.find(x=>x.id===r.id); if(o){ Object.assign(o, mapRow(payload.new)); } else { O.push(mapRow(payload.new)); } }
-    render(); if(cur){ const c=O.find(x=>x.id===cur.id); if(c){cur=c;drawD();} }
-  })
-  .subscribe(s=>{ setDot(s==="SUBSCRIBED"?"live":"off"); setMeta(s==="SUBSCRIBED"?"na żywo":"odśwież ręcznie"); });
+ sb.channel("offers-rt").on("postgres_changes",{event:"*",schema:"public",table:"offers"}, payload=>{
+   const r=payload.new||payload.old; if(!r) return;
+   if(payload.eventType==="DELETE"){ O=O.filter(o=>o.id!==r.id); }
+   else { const o=O.find(x=>x.id===r.id); const m=mapRow(payload.new); if(o){ Object.assign(o,m); } else { O.push(m); } }
+   render(); if(cur){ const c=O.find(x=>x.id===cur.id); if(c){ const de=cur.de,prm=cur.prm; cur=c; cur.de=de; cur.prm=prm; drawD(); } }
+ }).subscribe(s=>{ setDot._s=(s==="SUBSCRIBED"?"live":"off"); setDot(setDot._s); });
 }
-
-// awaryjnie: po powrocie do karty dociągnij świeże dane
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") load(); });
-
 load().then(subscribe);
 </script></body></html>
