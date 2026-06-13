@@ -54,7 +54,7 @@ table.params td:first-child{color:#777;width:42%}
 .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .acts button,.acts a{flex:1;min-width:110px;text-align:center;border:1px solid #d8d5cc;background:#fff;border-radius:9px;padding:12px 0;font-size:13px;font-weight:600;cursor:pointer;color:#3c3a35;text-decoration:none;min-height:46px;display:flex;align-items:center;justify-content:center}
 .acts a.go{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
-#cl{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.96);border:0;width:40px;height:40px;border-radius:50%;font-size:17px;cursor:pointer;z-index:3}
+#cl{position:fixed;top:max(10px,env(safe-area-inset-top));right:14px;background:rgba(20,18,15,.82);color:#fff;border:0;width:44px;height:44px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;z-index:30;box-shadow:0 2px 12px rgba(0,0,0,.4)}
 .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1f1e1b;color:#fff;padding:11px 20px;border-radius:99px;font-size:13px;display:none;z-index:99}
 #stats{display:none}
 .panel{background:#fff;border:1px solid #e5e2da;border-radius:12px;padding:14px 16px;margin-bottom:14px}
@@ -88,7 +88,7 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
 .cal td.today{outline:2px solid #1f1e1b}
 .legend{display:flex;gap:5px;align-items:center;flex-wrap:wrap;font-size:11px;color:#999;margin-top:8px}
 .legend i{width:16px;height:12px;border-radius:3px;display:inline-block}
-@media(max-width:520px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}}</style></head><body>
+@media(max-width:520px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}}</style></head><body>
 <h1 class="sr">Oferty nieruchomości — działki i domy</h1>
 <div class="bar">
  <nav class="tabs" id="tabs" aria-label="Kategorie">
@@ -132,7 +132,7 @@ const LIST_COLS = "id,cat,title,url,price,area,photos,loc,score,added,listed,por
 
 let O = [];
 let tab = localStorage.vTab || "m_dz", flt = "todo", sortBy="score", cur=null, ci=0;
-let q="", pmin=null, pmax=null, lastLoad=0, lastFocus=null;
+let q="", pmin=null, pmax=null, lastLoad=0, lastFocus=null, reviewQ=[], reviewI=-1;
 let DECS=[], view="list", statCat="all", ZM={};
 const median = arr => { if(!arr.length) return null; const s=[...arr].sort((a,b)=>a-b); const m=s.length>>1; return s.length%2?s[m]:(s[m-1]+s[m])/2; };
 const CATPL = {m_dz:"Mieszk. działki",m_dom:"Mieszk. domy",jez_dz:"Jeziora działki",jez_dom:"Jeziora domy"};
@@ -204,15 +204,18 @@ async function setSt(o, st){
  if(de){ console.warn("decisions insert nieudany:", de.message); }
  else { DECS.push({offer_id:o.id, status:target, decided_at:new Date().toISOString()}); }
  if(view==="stats") renderStats();
+ // auto-przeskok do następnej oferty po ocenie z poziomu modala (nie przy cofnięciu / nie z poziomu listy)
+ if(cur && cur.id===o.id && (target==="short"||target==="rej")) nextOffer();
 }
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.style.display="block"; clearTimeout(t._x); t._x=setTimeout(()=>t.style.display="none",1600); }
 
+function visibleRows(){ return sortRows(O.filter(o=>o.c===tab).filter(passFilters)); }
 function render(){
  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.c===tab));
  document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on", c.dataset.f===flt));
  const g=document.getElementById("grid"); g.innerHTML="";
  const inTab=O.filter(o=>o.c===tab);
- let rows=sortRows(inTab.filter(passFilters));
+ let rows=visibleRows();
  document.getElementById("metaTxt").textContent = rows.length+" / "+inTab.length+" ofert"+(setDot._s==="live"?" · na żywo":setDot._s==="off"?" · offline":"");
  if(!rows.length){ g.innerHTML='<div class="none">Pusto — zmień filtr, kategorię lub wyszukiwanie</div>'; return; }
  rows.forEach(o=>{
@@ -230,16 +233,23 @@ function render(){
  });
 }
 
-async function openO(i){
- cur=O[i]; ci=0; lastFocus=document.activeElement;
+async function openOffer(o){
+ cur=o; ci=0;
  document.getElementById("ov").classList.add("on"); drawS(); draw(); drawD();
  document.getElementById("cl").focus();
  if(cur.de===undefined){
    const { data } = await sb.from("offers").select("url,notes,address,description,params").eq("id",cur.id).single();
    if(data){ cur.de=data.description||""; cur.prm=data.params||{}; cur.n=data.notes||""; cur.adr=data.address||""; if(data.url)cur.u=data.url; }
-   else { cur.de=""; cur.prm={}; }
-   if(cur&&O[i]===cur) drawD();
+   else if(cur===o){ cur.de=""; cur.prm={}; }
+   if(cur===o) drawD();
  }
+}
+function openO(i){ lastFocus=document.activeElement; reviewQ=visibleRows(); reviewI=reviewQ.indexOf(O[i]); openOffer(O[i]); }
+function nextOffer(){
+ if(reviewI<0||!reviewQ.length){ clO(); return; }
+ reviewI++;
+ if(reviewI<reviewQ.length){ openOffer(reviewQ[reviewI]); toast("Następna oferta ("+(reviewI+1)+" / "+reviewQ.length+")"); }
+ else { clO(); toast("To była ostatnia oferta z listy ✓"); }
 }
 function clO(){ document.getElementById("ov").classList.remove("on"); cur=null; render(); if(lastFocus&&lastFocus.focus){ lastFocus.focus(); lastFocus=null; } }
 function draw(){ if(!cur)return; const g=document.getElementById("gg"); const ph=cur.ph||[];
