@@ -258,7 +258,7 @@ document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov
 function setView(v){ view=v;
  document.getElementById("grid").style.display=v==="list"?"":"none";
  document.querySelector(".bar2").style.display=v==="list"?"":"none";
- document.getElementById("stats").style.display=v==="stats"?"":"none";
+ document.getElementById("stats").style.display=v==="stats"?"block":"none";
  const b=document.getElementById("statsToggle"); b.classList.toggle("on",v==="stats"); b.textContent=v==="stats"?"← Oferty":"📊 Statystyki";
  if(v==="stats") renderStats();
 }
