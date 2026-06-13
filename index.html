@@ -26,7 +26,8 @@ input.ctrl{width:120px}#q{flex:1;min-width:150px}
 .c:hover{box-shadow:0 4px 14px rgba(0,0,0,.1)}.c img.main,.noimg{width:100%;aspect-ratio:4/3;object-fit:cover;background:#eceae4;display:flex;align-items:center;justify-content:center;font-size:40px}
 .s{position:absolute;top:8px;left:8px;background:#2e7d46;color:#fff;font-weight:700;font-size:12px;padding:3px 8px;border-radius:99px;z-index:2}
 .np{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;padding:3px 8px;border-radius:99px;z-index:2}
-.drop{display:inline-block;background:#c0392b;color:#fff;font-size:11px;font-weight:700;padding:1px 7px;border-radius:99px;margin-left:6px}
+.drop{display:inline-block;color:#fff;font-size:11px;font-weight:700;padding:1px 7px;border-radius:99px;margin-left:6px}
+.drop.down{background:#2e7d46}.drop.up{background:#c0392b}
 .b{padding:10px 12px}.b b{font-size:16px}.a{color:#888;font-size:12px;margin-left:6px}.b p{margin:4px 0;font-size:13px;line-height:1.3}small{color:#999}
 .ft{display:flex;gap:5px;padding:8px 10px 10px;border-top:1px solid #f1efe9}
 .ft button{flex:1;border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:6px 0;font-size:12px;font-weight:600;cursor:pointer;color:#55534e}
@@ -88,7 +89,7 @@ table.params td:first-child{color:#888;width:42%}
 const SB_URL = "https://gbmvooprdfqufptfggdb.supabase.co";
 const SB_KEY = "sb_publishable_-CNmiowgRI-WSnxnR42cOw_o0EFCRid";
 const sb = supabase.createClient(SB_URL, SB_KEY);
-const LIST_COLS = "id,cat,title,url,price,area,photos,loc,score,added,listed,portal,notes,status,address,lat,lon,phone,prev_price";
+const LIST_COLS = "id,cat,title,url,price,area,photos,loc,score,added,listed,portal,notes,status,address,lat,lon,phone,prev_price,orig_price";
 
 let O = [];
 let tab = localStorage.vTab || "m_dz", flt = "todo", sortBy="score", cur=null, ci=0;
@@ -98,7 +99,9 @@ const esc = s => (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 const norm = s => (s==="seen"?"rej":(s||"new"));
 const decit = o => { const s=norm(o.st); return s==="short"?"short":s==="rej"?"rej":""; };
 const pm2 = o => (o.pr&&o.a)? o.pr/o.a : null;
-const dropPct = o => (o.pp && o.pr && o.pp>o.pr)? Math.round((1-o.pr/o.pp)*100) : 0;
+// różnica vs cena pierwotna (orig_price): up=wzrost, pct ujemny = spadek
+const priceDelta = o => { if(o.op==null||o.pr==null||o.op==o.pr) return null; const d=o.pr-o.op; return {pct:Math.round(d/o.op*100), up:d>0, op:o.op}; };
+const dropTag = d => d ? `<span class="drop ${d.up?'up':'down'}">${d.up?'🔺 +':'🔻 '}${d.pct}%</span>` : "";
 
 // słowniki parametrów (Otodom)
 const PL_KEY={type:"Typ",fence:"Ogrodzenie",location:"Lokalizacja",vacant:"Wolne od zaraz",
@@ -155,12 +158,12 @@ function render(){
  document.getElementById("metaTxt").textContent = rows.length+" / "+inTab.length+" ofert"+(setDot._s==="live"?" · na żywo":"");
  if(!rows.length){ g.innerHTML='<div class="none">Pusto — zmień filtr, kategorię lub wyszukiwanie</div>'; return; }
  rows.forEach(o=>{
-  const i=O.indexOf(o), s=decit(o), dp=dropPct(o);
+  const i=O.indexOf(o), s=decit(o);
   const d=document.createElement("div"); d.className="c"+(s?" st-"+s:"");
   const img=o.ph&&o.ph.length?`<img class="main" loading="lazy" src="${o.ph[0]}">`:`<div class="noimg">🏞️</div>`;
   const np=o.ph&&o.ph.length>1?`<span class="np">📷 ${o.ph.length}</span>`:"";
   const sb2=s?`<span class="stbadge">${({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]}</span>`:"";
-  const drop=dp?`<span class="drop">🔻 -${dp}%</span>`:"";
+  const drop=dropTag(priceDelta(o));
   d.innerHTML=`<div class="top" onclick="openO(${i})">${img}<span class="s">${o.s??""}</span>${np}${sb2}
    <div class="b"><b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b>${drop}<span class="a">${o.a?fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</span>
    <p>${esc(o.t)}</p><small>${esc(o.loc)} · ${o.po||""} · ogł.: ${o.li||"?"}</small></div></div>
@@ -189,11 +192,11 @@ function paramsTable(p){
  const rows=Object.entries(p).map(([k,v])=>`<tr><td>${esc(keyPL(k))}</td><td>${esc(valPL(v))}</td></tr>`).join("");
  return `<table class="params">${rows}</table>`;
 }
-function drawD(){ const d=document.getElementById("dd"); const s=decit(cur); const dp=dropPct(cur);
+function drawD(){ const d=document.getElementById("dd"); const s=decit(cur); const pdl=priceDelta(cur);
  const q2=(cur.lat!=null&&cur.lon!=null)?(cur.lat+","+cur.lon):(cur.adr||"");
  const loc=q2?`<div class="loc">📍 <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q2)}" target="_blank" rel="noopener">${esc(cur.adr||"Otwórz w Mapach Google")} ↗</a></div>`:"";
  const tel=cur.tel?`<div><a class="call" href="tel:${esc(cur.tel)}">📞 Zadzwoń ${esc(cur.tel)}</a></div>`:"";
- const priceLine=`<b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b>${dp?` <span class="drop">🔻 -${dp}% (z ${fmt(cur.pp)})</span>`:""}`;
+ const priceLine=`<b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b>${pdl?` <span class="drop ${pdl.up?'up':'down'}">${pdl.up?'🔺 +':'🔻 '}${pdl.pct}% ${pdl.up?'wzrost':'spadek'} (pierwotnie ${fmt(pdl.op)} zł)</span>`:""}`;
  const descBlock = cur.de===undefined ? `<div class="desc" style="color:#aaa">wczytuję opis…</div>` : (cur.de?`<div class="desc">${esc(cur.de)}</div>`:"");
  d.innerHTML=`<h3>${esc(cur.t)}</h3>${priceLine} <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${esc(cur.loc)} · ${cur.po||""} · ogł.: ${cur.li||"?"} · Score ${cur.s??"-"}${s?" · <b>"+({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span>
  ${loc}${tel}${paramsTable(cur.prm)}<div class="nn">${esc(cur.n||"")}</div>${descBlock}
@@ -210,7 +213,7 @@ document.getElementById("pmax").addEventListener("input",deb(e=>{ pmax=e.target.
 document.addEventListener("keydown",e=>{ if(!cur)return; if(e.key==="Escape")clO(); if(e.key==="ArrowLeft")nav(-1); if(e.key==="ArrowRight")nav(1); });
 document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov")clO(); });
 
-const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",s:r.score,d:r.added,po:r.portal,st:r.status||"new",li:(r.listed||""),adr:r.address||"",lat:r.lat,lon:r.lon,tel:r.phone||"",pp:r.prev_price});
+const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",s:r.score,d:r.added,po:r.portal,st:r.status||"new",li:(r.listed||""),adr:r.address||"",lat:r.lat,lon:r.lon,tel:r.phone||"",pp:r.prev_price,op:r.orig_price});
 
 async function load(){
  const { data, error } = await sb.from("offers").select(LIST_COLS);
