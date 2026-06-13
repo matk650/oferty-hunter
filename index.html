@@ -6,8 +6,10 @@
 .tabs button.on{background:#fff;color:#1f1e1b;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .chip{border:1px solid #d8d5cc;background:#fff;border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer;color:#55534e}
 .chip.on{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
-.meta{margin-left:auto;font-size:12px;color:#8a877f}
-.exp{border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer}
+.meta{margin-left:auto;font-size:12px;color:#8a877f;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#c4c1b8;display:inline-block}
+.dot.live{background:#2e7d46;box-shadow:0 0 0 3px rgba(46,125,70,.18)}
+.dot.off{background:#c08a2e}
 .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
 .c{position:relative;background:#fff;border:1px solid #e5e2da;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
 .c .top{cursor:pointer}
@@ -18,7 +20,7 @@
 .ft{display:flex;gap:5px;padding:8px 10px 10px;border-top:1px solid #f1efe9}
 .ft button{flex:1;border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:6px 0;font-size:12px;font-weight:600;cursor:pointer;color:#55534e}
 .ft button:hover{background:#f6f5f2}
-.c.st-seen{opacity:.62}.c.st-short{outline:3px solid #2e7d46}.c.st-rej{opacity:.35}
+.c.st-short{outline:3px solid #2e7d46}.c.st-rej{opacity:.35}
 .stbadge{position:absolute;bottom:8px;right:8px;background:#1f1e1b;color:#fff;font-size:10.5px;padding:3px 9px;border-radius:99px;z-index:2}
 .none{color:#999;padding:30px 0}
 #ov{position:fixed;inset:0;background:rgba(15,14,12,.85);display:none;align-items:center;justify-content:center;z-index:9;padding:14px}
@@ -45,56 +47,64 @@
  <span class="chip" data-f="short">⭐ Shortlist</span>
  <span class="chip" data-f="rej">Odrzucone</span>
  <span class="chip" data-f="all">Wszystkie</span>
- <span class="meta" id="meta"></span>
+ <span class="meta" id="meta"><span class="dot" id="dot"></span><span id="metaTxt">Łączę z bazą…</span></span>
 </div>
 <div class="g" id="grid"></div>
 <div id="ov"><div class="sh"><button id="cl" onclick="clO()">✕</button><div class="gal" id="gg"></div><div class="st" id="ss"></div><div class="dt" id="dd"></div></div></div>
 <div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SB_URL = "https://gbmvooprdfqufptfggdb.supabase.co";
+const SB_KEY = "sb_publishable_-CNmiowgRI-WSnxnR42cOw_o0EFCRid";
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
 let O = [];
-const GEN = "2026-06-11 22:03";
 let tab = localStorage.vTab || "m_dz", flt = "todo", cur=null, ci=0;
-const REPO = "matk650/oferty-hunter"; // user/repo — uzupełniane przy deployu
-let DEC = JSON.parse(localStorage.vDec || "{}");   // lokalne nadpiski do czasu nocnej synchronizacji
 const fmt = n => n==null?"":Number(n).toLocaleString("pl-PL");
-const stOf = o => (DEC[o.u]||{}).st || ({new:"",seen:"rej",short:"short",rej:"rej"})[o.st] || "";
-function save(){ localStorage.vDec = JSON.stringify(DEC); }
-function setSt(o, st){
- if(stOf(o)===st){ delete DEC[o.u]; save(); render(); if(cur)drawD(); upBtn(); toast("Cofnięto"); return; }
- DEC[o.u]={st, t:Date.now()}; save(); render(); if(cur)drawD(); upBtn();
- toast(({short:"⭐ shortlist",rej:"✕ odrzucone"})[st]+" — wyślij przyciskiem 📤"); }
-function pending(){ return Object.entries(DEC).filter(([u,v])=>{ const o=O.find(x=>x.u===u); return o && (({new:"",seen:"rej",short:"short",rej:"rej"})[o.st]||"")!==v.st; }); }
-function upBtn(){ const b=document.getElementById("sendBtn"); if(!b)return; const n=pending().length; b.textContent="📤 Wyślij decyzje ("+n+")"; b.style.display="inline-block"; b.style.opacity=n?"1":".45"; }
-function sendAll(){
- const pend=pending(); if(!pend.length) return toast("Brak nowych decyzji");
- const lines=pend.map(([u,v])=>v.st+" "+u).join("\n");
- const title=encodeURIComponent("decyzje: "+pend.length+" ("+new Date().toISOString().slice(0,10)+")");
- const body=encodeURIComponent(lines+"\n\n(z przeglądarki ofert — nocny sweep zastosuje i zamknie)");
- window.open("https://github.com/"+REPO+"/issues/new?labels=decyzja&title="+title+"&body="+body,"_blank");
- toast("Kliknij Create w otwartej karcie"); }
+const norm = s => (s==="seen"?"rej":(s||"new"));          // legacy 'seen' -> 'rej'
+const decit = o => { const s=norm(o.st); return s==="short"?"short":s==="rej"?"rej":""; };
+
+function setDot(state){ // 'live' | 'off' | ''
+ const d=document.getElementById("dot"); d.className="dot"+(state?" "+state:"");
+}
+function setMeta(extra){
+ const rows = O.filter(o=>o.c===tab);
+ const shown = rows.filter(o=>{const s=decit(o); return flt==="todo"?!s:flt==="all"?true:s===flt;}).length;
+ document.getElementById("metaTxt").textContent = shown+" / "+rows.length+" ofert"+(extra?" · "+extra:"");
+}
+
+async function setSt(o, st){
+ const target = (norm(o.st)===st) ? "new" : st;   // ponowny klik = cofnięcie
+ const prev = o.st;
+ o.st = target; render(); if(cur && cur.id===o.id) drawD();      // optymistycznie
+ toast(target==="new"?"Cofnięto":({short:"⭐ shortlist",rej:"✕ odrzucone"})[target]);
+ const { error } = await sb.from("offers").update({status:target}).eq("id", o.id);
+ if(error){ o.st=prev; render(); if(cur&&cur.id===o.id) drawD(); toast("Błąd zapisu — spróbuj ponownie"); }
+}
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.style.display="block"; clearTimeout(t._x); t._x=setTimeout(()=>t.style.display="none",1600); }
+
 function render(){
  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.c===tab));
  document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on", c.dataset.f===flt));
  const g=document.getElementById("grid"); g.innerHTML="";
  let rows = O.filter(o=>o.c===tab);
- const tot = rows.length;
- rows = rows.filter(o=>{ const s=stOf(o);
+ rows = rows.filter(o=>{ const s=decit(o);
    if(flt==="todo") return !s;
    if(flt==="short") return s==="short";
    if(flt==="rej") return s==="rej";
    return true; });
- document.getElementById("meta").textContent = rows.length+" / "+tot+" ofert · wygenerowano "+GEN;
+ rows.sort((a,b)=>(b.s??-1)-(a.s??-1));
+ setMeta();
  if(!rows.length){ g.innerHTML='<div class="none">Pusto — zmień filtr lub kategorię</div>'; return; }
  rows.forEach(o=>{
   const i = O.indexOf(o);
   const d=document.createElement("div");
-  const s=stOf(o);
+  const s=decit(o);
   d.className="c"+(s?" st-"+s:"");
   const img = o.ph && o.ph.length ? `<img class="main" loading="lazy" src="${o.ph[0]}">` : `<div class="noimg">🏞️</div>`;
   const np = o.ph && o.ph.length>1 ? `<span class="np">📷 ${o.ph.length}</span>` : "";
-  const sb = s ? `<span class="stbadge">${({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]}</span>` : "";
-  d.innerHTML = `<div class="top" onclick="openO(${i})">${img}<span class="s">${o.s??""}</span>${np}${sb}
+  const sb2 = s ? `<span class="stbadge">${({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]}</span>` : "";
+  d.innerHTML = `<div class="top" onclick="openO(${i})">${img}<span class="s">${o.s??""}</span>${np}${sb2}
    <div class="b"><b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b><span class="a">${o.a?fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</span>
    <p>${o.t}</p><small>${o.loc} · ${o.po||""} · ogł.: ${o.li||"?"} · w bazie: ${o.d||"?"}</small></div></div>
    <div class="ft"><button onclick="setSt(O[${i}],'short')">⭐ Shortlist</button><button onclick="setSt(O[${i}],'rej')">✕ Odrzuć</button></div>`;
@@ -108,19 +118,40 @@ function draw(){ if(!cur)return; const g=document.getElementById("gg"); const ph
  if(ph.length>1) g.innerHTML += `<button class="nv pv" onclick="nav(-1)">←</button><button class="nv nx" onclick="nav(1)">→</button><span class="cnt">${ci+1} / ${ph.length}</span>`;
  [...document.getElementById("ss").children].forEach((im,j)=>im.classList.toggle("on", j===ci)); }
 function drawS(){ const s=document.getElementById("ss"); s.innerHTML=""; (cur.ph||[]).forEach((u,j)=>{ const im=document.createElement("img"); im.src=u; im.onclick=()=>{ci=j;draw();}; s.appendChild(im); }); }
-function drawD(){ const d=document.getElementById("dd"); const s=stOf(cur);
+function drawD(){ const d=document.getElementById("dd"); const s=decit(cur);
  d.innerHTML = `<h3>${cur.t}</h3><b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b> <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${cur.loc} · ${cur.po||""} · Score ${cur.s??"-"}${s?" · <b>"+({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span><div class="nn">${cur.n||""}</div>
  <div class="acts"><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${cur.u}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
+
 document.getElementById("tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; tab=b.dataset.c; localStorage.vTab=tab; render(); });
 document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ flt=c.dataset.f; render(); });
 document.addEventListener("keydown",e=>{ if(!cur)return; if(e.key==="Escape")clO(); if(e.key==="ArrowLeft")nav(-1); if(e.key==="ArrowRight")nav(1); });
 document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov")clO(); });
-fetch("data/offers.json?t="+Date.now()).then(r=>r.json()).then(d=>{
- O = d.offers.map(o=>({c:o.cat,t:o.title,u:o.url,pr:o.price,a:o.area,ph:o.photos||[],n:o.notes||"",loc:o.loc||"",s:o.score,d:o.added,po:o.portal,st:o.status||"new", li:(o.listed||"").slice(0,10)}));
+
+const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",s:r.score,d:r.added,po:r.portal,st:r.status||"new",li:(r.listed||"")});
+
+async function load(){
+ const { data, error } = await sb.from("offers").select("*");
+ if(error){ document.getElementById("grid").innerHTML='<div class="none">Błąd wczytywania bazy: '+error.message+'</div>'; setDot("off"); return; }
+ O = data.map(mapRow);
  document.title = "Oferty ("+O.length+")";
- for(const v of Object.values(DEC)){ if(v.st==="seen") v.st="rej"; } save();
- for(const [u,v] of Object.entries(DEC)){ const o=O.find(x=>x.u===u); if(o && (({new:"",seen:"seen",short:"short",rej:"rej"})[o.st]||"")===v.st) delete DEC[u]; }
- save(); render(); upBtn();
-}).catch(e=>{ document.getElementById("grid").innerHTML='<div class="none">Błąd wczytywania danych: '+e+'</div>'; });
+ render();
+}
+
+// sync na żywo: zmiana na jednym urządzeniu od razu widoczna na innych
+function subscribe(){
+ sb.channel("offers-rt")
+  .on("postgres_changes",{event:"*",schema:"public",table:"offers"}, payload=>{
+    const r = payload.new || payload.old; if(!r) return;
+    if(payload.eventType==="DELETE"){ O = O.filter(o=>o.id!==r.id); }
+    else { const o=O.find(x=>x.id===r.id); if(o){ Object.assign(o, mapRow(payload.new)); } else { O.push(mapRow(payload.new)); } }
+    render(); if(cur){ const c=O.find(x=>x.id===cur.id); if(c){cur=c;drawD();} }
+  })
+  .subscribe(s=>{ setDot(s==="SUBSCRIBED"?"live":"off"); setMeta(s==="SUBSCRIBED"?"na żywo":"odśwież ręcznie"); });
+}
+
+// awaryjnie: po powrocie do karty dociągnij świeże dane
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") load(); });
+
+load().then(subscribe);
 </script></body></html>
