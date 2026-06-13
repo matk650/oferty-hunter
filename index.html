@@ -53,7 +53,35 @@ table.params td:first-child{color:#888;width:42%}
 .acts button,.acts a{flex:1;min-width:110px;text-align:center;border:1px solid #d8d5cc;background:#fff;border-radius:9px;padding:9px 0;font-size:13px;font-weight:600;cursor:pointer;color:#3c3a35;text-decoration:none}
 .acts a.go{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
 #cl{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.94);border:0;width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;z-index:3}
-.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1f1e1b;color:#fff;padding:9px 18px;border-radius:99px;font-size:13px;display:none;z-index:99}</style></head><body>
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1f1e1b;color:#fff;padding:9px 18px;border-radius:99px;font-size:13px;display:none;z-index:99}
+#stats{display:none}
+.panel{background:#fff;border:1px solid #e5e2da;border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.panel h3{margin:0 0 10px;font-size:15px}.panel .sub{color:#999;font-size:12px;margin:-6px 0 10px}
+.stat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.stat-tabs button{border:1px solid #d8d5cc;background:#fff;border-radius:999px;padding:6px 13px;font-size:12.5px;cursor:pointer;color:#55534e}
+.stat-tabs button.on{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+table.tbl th,table.tbl td{text-align:left;padding:5px 8px;border-bottom:1px solid #f1efe9;white-space:nowrap}
+table.tbl th{color:#888;font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.02em}
+table.tbl td.num,table.tbl th.num{text-align:right}
+.bar-row{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:12.5px}
+.bar-row .lbl{width:130px;color:#444;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;background:#eee;border-radius:6px;height:15px;overflow:hidden;min-width:60px}
+.bar-fill{height:100%;background:#2e7d46;border-radius:6px}
+.bar-row .val{width:74px;text-align:right;color:#666}
+.kpi{display:flex;gap:10px;flex-wrap:wrap}
+.kpi .box{background:#f6f5f2;border-radius:10px;padding:10px 14px;min-width:96px;flex:1}
+.kpi .box b{font-size:21px;display:block;line-height:1.1}.kpi .box span{font-size:11px;color:#888}
+.cal{border-collapse:separate;border-spacing:3px}
+.cal th{font-size:10px;color:#999;font-weight:600;padding-bottom:2px}
+.cal td.wk{font-size:9.5px;color:#bbb;white-space:nowrap;padding-right:4px}
+.cal td.cell{width:42px;height:40px;text-align:center;border-radius:7px;background:#f0efea;vertical-align:middle;color:#555}
+.cal td.cell .d{font-size:9px;color:#b3b0a8;display:block;line-height:1}
+.cal td.cell .v{font-weight:700;font-size:11.5px;display:block;margin-top:2px}
+.cal td.h1{background:#d8ecdd}.cal td.h2{background:#aedcb9}.cal td.h3{background:#7cc491}.cal td.h4{background:#3f9159;color:#fff}
+.cal td.today{outline:2px solid #1f1e1b}
+.legend{display:flex;gap:5px;align-items:center;font-size:11px;color:#999;margin-top:8px}
+.legend i{width:16px;height:12px;border-radius:3px;display:inline-block}</style></head><body>
 <div class="bar">
  <div class="tabs" id="tabs">
   <button data-c="m_dz" class="on">🏠 Mieszk. — działki</button>
@@ -65,6 +93,7 @@ table.params td:first-child{color:#888;width:42%}
  <span class="chip" data-f="short">⭐ Shortlist</span>
  <span class="chip" data-f="rej">Odrzucone</span>
  <span class="chip" data-f="all">Wszystkie</span>
+ <button class="chip" id="statsToggle">📊 Statystyki</button>
  <span class="meta" id="meta"><span class="dot" id="dot"></span><span id="metaTxt">Łączę z bazą…</span></span>
 </div>
 <div class="bar2">
@@ -82,6 +111,7 @@ table.params td:first-child{color:#888;width:42%}
  <input class="ctrl" id="q" type="search" placeholder="szukaj: ulica, miejscowość, słowo…">
 </div>
 <div class="g" id="grid"></div>
+<div id="stats"></div>
 <div id="ov"><div class="sh"><button id="cl" onclick="clO()">✕</button><div class="gal" id="gg"></div><div class="st" id="ss"></div><div class="dt" id="dd"></div></div></div>
 <div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -94,6 +124,11 @@ const LIST_COLS = "id,cat,title,url,price,area,photos,loc,score,added,listed,por
 let O = [];
 let tab = localStorage.vTab || "m_dz", flt = "todo", sortBy="score", cur=null, ci=0;
 let q="", pmin=null, pmax=null;
+let DECS=[], view="list", statCat="all", ZM={};
+const median = arr => { if(!arr.length) return null; const s=[...arr].sort((a,b)=>a-b); const m=s.length>>1; return s.length%2?s[m]:(s[m-1]+s[m])/2; };
+const CATPL = {m_dz:"Mieszk. działki",m_dom:"Mieszk. domy",jez_dz:"Jeziora działki",jez_dom:"Jeziora domy"};
+const cap = s => s? s.charAt(0).toUpperCase()+s.slice(1) : s;
+function computeZoneMedians(){ ZM={}; const g={}; O.forEach(o=>{ const p=pm2(o); if(p==null||!o.loc) return; (g[o.c]=g[o.c]||{}); (g[o.c][o.loc]=g[o.c][o.loc]||[]).push(p); }); for(const c in g){ ZM[c]={}; for(const l in g[c]) ZM[c][l]=median(g[c][l]); } }
 const fmt = n => n==null?"":Number(n).toLocaleString("pl-PL");
 const esc = s => (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const norm = s => (s==="seen"?"rej":(s||"new"));
@@ -145,7 +180,10 @@ async function setSt(o, st){
  const prev=o.st; o.st=target; render(); if(cur&&cur.id===o.id) drawD();
  toast(target==="new"?"Cofnięto":({short:"⭐ shortlist",rej:"✕ odrzucone"})[target]);
  const { error } = await sb.from("offers").update({status:target}).eq("id", o.id);
- if(error){ o.st=prev; render(); if(cur&&cur.id===o.id) drawD(); toast("Błąd zapisu — spróbuj ponownie"); }
+ if(error){ o.st=prev; render(); if(cur&&cur.id===o.id) drawD(); toast("Błąd zapisu — spróbuj ponownie"); return; }
+ sb.from("decisions").insert({offer_id:o.id, status:target});            // dziennik aktywności
+ DECS.push({offer_id:o.id, status:target, decided_at:new Date().toISOString()});
+ if(view==="stats") renderStats();
 }
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.style.display="block"; clearTimeout(t._x); t._x=setTimeout(()=>t.style.display="none",1600); }
 
@@ -197,9 +235,12 @@ function drawD(){ const d=document.getElementById("dd"); const s=decit(cur); con
  const loc=q2?`<div class="loc">📍 <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q2)}" target="_blank" rel="noopener">${esc(cur.adr||"Otwórz w Mapach Google")} ↗</a></div>`:"";
  const tel=cur.tel?`<div><a class="call" href="tel:${esc(cur.tel)}">📞 Zadzwoń ${esc(cur.tel)}</a></div>`:"";
  const priceLine=`<b style="font-size:17px">${cur.pr?fmt(cur.pr)+" zł":"cena?"}</b>${pdl?` ${dropTag(pdl)} <span style="color:#888;font-size:12px">(pierwotnie ${fmt(pdl.op)} zł)</span>`:""}`;
+ let zctx="";
+ const zm=(ZM[cur.c]||{})[cur.loc], mine=pm2(cur);
+ if(zm&&mine){ const diff=Math.round((mine/zm-1)*100); const cls=diff>0?'up':(diff<0?'down':''); zctx=`<div class="loc">📊 ${fmt(Math.round(mine))} zł/m² vs mediana strefy <b>${fmt(Math.round(zm))} zł/m²</b>${cls?` <span class="drop ${cls}">${diff>0?'+':''}${diff}%</span> ${diff>0?'drożej':diff<0?'taniej':'='} niż w okolicy`:''}</div>`; }
  const descBlock = cur.de===undefined ? `<div class="desc" style="color:#aaa">wczytuję opis…</div>` : (cur.de?`<div class="desc">${esc(cur.de)}</div>`:"");
  d.innerHTML=`<h3>${esc(cur.t)}</h3>${priceLine} <span style="color:#888">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${esc(cur.loc)} · ${cur.po||""} · ogł.: ${cur.li||"?"} · Score ${cur.s??"-"}${s?" · <b>"+({short:"⭐ shortlist",rej:"✕ odrzucone"})[s]+"</b>":""}</span>
- ${loc}${tel}${paramsTable(cur.prm)}<div class="nn">${esc(cur.n||"")}</div>${descBlock}
+ ${loc}${zctx}${tel}${paramsTable(cur.prm)}<div class="nn">${esc(cur.n||"")}</div>${descBlock}
  <div class="acts"><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${cur.u}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
 
@@ -213,6 +254,100 @@ document.getElementById("pmax").addEventListener("input",deb(e=>{ pmax=e.target.
 document.addEventListener("keydown",e=>{ if(!cur)return; if(e.key==="Escape")clO(); if(e.key==="ArrowLeft")nav(-1); if(e.key==="ArrowRight")nav(1); });
 document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov")clO(); });
 
+// ---------- STATYSTYKI ----------
+function setView(v){ view=v;
+ document.getElementById("grid").style.display=v==="list"?"":"none";
+ document.querySelector(".bar2").style.display=v==="list"?"":"none";
+ document.getElementById("stats").style.display=v==="stats"?"":"none";
+ const b=document.getElementById("statsToggle"); b.classList.toggle("on",v==="stats"); b.textContent=v==="stats"?"← Oferty":"📊 Statystyki";
+ if(v==="stats") renderStats();
+}
+const isoWeek = d => { const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const day=(t.getUTCDay()+6)%7; t.setUTCDate(t.getUTCDate()-day+3); const f=new Date(Date.UTC(t.getUTCFullYear(),0,4)); const w=1+Math.round(((t-f)/864e5-3+((f.getUTCDay()+6)%7))/7); return t.getUTCFullYear()+"-W"+String(w).padStart(2,"0"); };
+const daysBetween = (a,b)=> Math.round((b-a)/864e5);
+const statSet = () => statCat==="all"?O:O.filter(o=>o.c===statCat);
+const panel = (title,sub,html)=>`<div class="panel"><h3>${title}</h3>${sub?`<div class="sub">${sub}</div>`:""}${html}</div>`;
+const bar = (label,val,max,valTxt)=>{ const w=max?Math.round(val/max*100):0; return `<div class="bar-row"><span class="lbl">${esc(label)}</span><span class="bar-track"><span class="bar-fill" style="width:${w}%"></span></span><span class="val">${valTxt??val}</span></div>`; };
+
+function panelBenchmark(rows){
+ const g={}; rows.forEach(o=>{ const p=pm2(o); if(p==null||!o.loc)return; (g[o.loc]=g[o.loc]||[]).push(o); });
+ const arr=Object.entries(g).map(([loc,os])=>{ const ps=os.map(pm2).filter(x=>x!=null), prc=os.map(o=>o.pr).filter(x=>x!=null);
+   return {loc,n:os.length,mp:median(ps),mpr:median(prc),mn:Math.min(...ps),mx:Math.max(...ps)}; }).filter(x=>x.mp!=null).sort((a,b)=>b.n-a.n);
+ if(!arr.length) return panel("Benchmark zł/m² wg strefy","Brak ofert z ceną i metrażem w tej kategorii.","");
+ const body=arr.map(r=>`<tr><td>${esc(cap(r.loc))}</td><td class="num">${r.n}</td><td class="num"><b>${fmt(Math.round(r.mp))}</b></td><td class="num">${fmt(Math.round(r.mn))}–${fmt(Math.round(r.mx))}</td><td class="num">${fmt(Math.round(r.mpr))} zł</td></tr>`).join("");
+ return panel("Benchmark zł/m² wg strefy","Mediana zł/m² i widełki w każdej strefie — podstawa oceny tanio/drogo.",
+  `<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Strefa</th><th class="num">Ofert</th><th class="num">Med. zł/m²</th><th class="num">Widełki zł/m²</th><th class="num">Med. ceny</th></tr></thead><tbody>${body}</tbody></table></div>`);
+}
+function panelLejek(rows){
+ const c={new:0,short:0,rej:0}; rows.forEach(o=>{ const k=norm(o.st); c[k]=(c[k]||0)+1; });
+ const decided=c.short+c.rej, rejPct=decided?Math.round(c.rej/decided*100):0;
+ const wk={}; rows.forEach(o=>{ if(o.d){ const w=isoWeek(new Date(o.d)); wk[w]=(wk[w]||0)+1; } });
+ const weeks=Object.keys(wk).length, perWeek=weeks?Math.round(rows.length/weeks):rows.length;
+ return panel("Twój lejek decyzyjny","Postęp przeglądu i tempo napływu ofert.",
+  `<div class="kpi"><div class="box"><b>${c.new}</b><span>do przejrzenia</span></div><div class="box"><b class="grow">${c.short}</b><span>⭐ shortlist</span></div><div class="box"><b class="gred">${c.rej}</b><span>✕ odrzucone</span></div><div class="box"><b>${rejPct}%</b><span>odrzuceń</span></div><div class="box"><b>${perWeek}</b><span>napływ / tydz.</span></div></div>`);
+}
+function panelOkazje(rows){
+ const drops=rows.map(o=>({o,d:priceDelta(o)})).filter(x=>x.d&&!x.d.up).sort((a,b)=>a.d.pct-b.d.pct).slice(0,8);
+ const today=new Date();
+ const hang=rows.filter(o=>norm(o.st)==="new"&&o.li&&/^\d{4}-\d{2}-\d{2}/.test(o.li)).map(o=>({o,days:daysBetween(new Date(o.li),today)})).filter(x=>x.days>=0).sort((a,b)=>b.days-a.days).slice(0,8);
+ const dHtml=drops.length?`<table class="tbl"><thead><tr><th>Oferta</th><th class="num">Teraz</th><th class="num">Spadek</th></tr></thead><tbody>`+drops.map(x=>`<tr><td>${esc((x.o.t||"").slice(0,38))}</td><td class="num">${fmt(x.o.pr)} zł</td><td class="num gred">${x.d.pct}% · ${fmt(x.d.amt)} zł</td></tr>`).join("")+`</tbody></table>`:`<div class="sub">Brak spadków (pojawią się, gdy ceny ofert spadną).</div>`;
+ const hHtml=hang.length?`<table class="tbl"><thead><tr><th>Oferta</th><th class="num">Cena</th><th class="num">Wisi</th></tr></thead><tbody>`+hang.map(x=>`<tr><td>${esc((x.o.t||"").slice(0,38))}</td><td class="num">${x.o.pr?fmt(x.o.pr)+" zł":"—"}</td><td class="num">${x.days} dni</td></tr>`).join("")+`</tbody></table>`:`<div class="sub">Brak dat ogłoszeń.</div>`;
+ return panel("Okazje negocjacyjne","Największe spadki cen i oferty wiszące najdłużej (potencjał negocjacji).",
+  `<b style="font-size:13px">🔻 Największe spadki</b>${dHtml}<div style="height:12px"></div><b style="font-size:13px">⏳ Najdłużej wiszące</b>${hHtml}`);
+}
+function panelPodaz(rows){
+ const bz={},bp={}; rows.forEach(o=>{ if(o.loc)bz[o.loc]=(bz[o.loc]||0)+1; if(o.po)bp[o.po]=(bp[o.po]||0)+1; });
+ const za=Object.entries(bz).sort((a,b)=>b[1]-a[1]).slice(0,12), zmax=Math.max(1,...za.map(x=>x[1]));
+ const pa=Object.entries(bp).sort((a,b)=>b[1]-a[1]), pmax=Math.max(1,...pa.map(x=>x[1]));
+ const priced=rows.map(o=>o.pr).filter(x=>x);
+ const bk=[[0,250000,"<250k"],[250000,500000,"250–500k"],[500000,750000,"500–750k"],[750000,1000000,"750k–1M"],[1000000,1e12,">1M"]];
+ const hp=bk.map(([a,b,l])=>[l,priced.filter(p=>p>=a&&p<b).length]), hpmax=Math.max(1,...hp.map(x=>x[1]));
+ return panel("Rozkład podaży","Gdzie i ile jest ofert — strefa, portal, przedział cenowy.",
+  `<b style="font-size:13px">Wg strefy</b>${za.map(([l,n])=>bar(cap(l),n,zmax,n)).join("")}<div style="height:10px"></div><b style="font-size:13px">Wg portalu</b>${pa.map(([l,n])=>bar(l,n,pmax,n)).join("")}<div style="height:10px"></div><b style="font-size:13px">Przedział ceny</b>${hp.map(([l,n])=>bar(l,n,hpmax,n)).join("")}`);
+}
+function panelTrend(rows){
+ const wkN={},wkP={}; rows.forEach(o=>{ if(o.d){ const w=isoWeek(new Date(o.d)); wkN[w]=(wkN[w]||0)+1; (wkP[w]=wkP[w]||[]).push(o.pr); } });
+ const weeks=Object.keys(wkN).sort(), nmax=Math.max(1,...weeks.map(w=>wkN[w]));
+ const bars=weeks.map(w=>{ const mp=median((wkP[w]||[]).filter(x=>x)); return bar(w,wkN[w],nmax,`${wkN[w]} ofert${mp?" · med "+fmt(Math.round(mp))+" zł":""}`); }).join("");
+ const note=weeks.length<2?`<div class="sub">Trend nabiera sensu z czasem — mamy ${weeks.length} tydz. danych (rośnie z każdym sweepem).</div>`:"";
+ return panel("Trend tydzień-do-tygodnia","Napływ nowych ofert i mediana cen w czasie.",note+bars);
+}
+function panelShortlist(){
+ const sl=O.filter(o=>norm(o.st)==="short");
+ if(!sl.length) return panel("Porównywarka shortlisty","Tu pojawią się oferty oznaczone ⭐ — zestawione obok siebie.","");
+ const body=sl.map(o=>`<tr><td>${esc((o.t||"").slice(0,38))}</td><td>${CATPL[o.c]||""}</td><td class="num">${o.pr?fmt(o.pr)+" zł":"—"}</td><td class="num">${o.a?fmt(o.a)+" m²":"—"}</td><td class="num">${o.pr&&o.a?fmt(Math.round(o.pr/o.a)):"—"}</td><td>${esc(cap(o.loc))}</td><td>${o.tel?`<a href="tel:${esc(o.tel)}">📞</a> `:""}${(o.lat!=null&&o.lon!=null)?`<a href="https://www.google.com/maps/search/?api=1&query=${o.lat},${o.lon}" target="_blank" rel="noopener">📍</a>`:""}</td></tr>`).join("");
+ return panel("Porównywarka shortlisty (⭐ "+sl.length+")","Twoi faworyci obok siebie do finalnej decyzji.",
+  `<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Oferta</th><th>Kategoria</th><th class="num">Cena</th><th class="num">Metraż</th><th class="num">zł/m²</th><th>Strefa</th><th>Kontakt</th></tr></thead><tbody>${body}</tbody></table></div>`);
+}
+function panelKalendarz(){
+ const day={}; let first=null;
+ DECS.forEach(r=>{ if(r.status!=="short"&&r.status!=="rej")return; const d=new Date(r.decided_at); const key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); day[key]=day[key]||{s:0,r:0}; if(r.status==="short")day[key].s++; else day[key].r++; if(!first||d<first)first=d; });
+ const totS=Object.values(day).reduce((a,b)=>a+b.s,0), totR=Object.values(day).reduce((a,b)=>a+b.r,0), total=totS+totR;
+ const today=new Date(); today.setHours(0,0,0,0);
+ const spanDays=first?daysBetween(new Date(first.getFullYear(),first.getMonth(),first.getDate()),today)+1:0;
+ const avg=spanDays?total/spanDays:0, activeDays=Object.keys(day).length;
+ const dow=(today.getDay()+6)%7; const monday=new Date(today); monday.setDate(today.getDate()-dow);
+ const WK=8, start=new Date(monday); start.setDate(monday.getDate()-7*(WK-1));
+ const dn=["Pon","Wt","Śr","Czw","Pt","Sob","Nd"];
+ let body="";
+ for(let w=0;w<WK;w++){ const ws=new Date(start); ws.setDate(start.getDate()+7*w); let tds=`<td class="wk">${String(ws.getDate()).padStart(2,"0")}.${String(ws.getMonth()+1).padStart(2,"0")}</td>`;
+   for(let i=0;i<7;i++){ const cell=new Date(ws); cell.setDate(ws.getDate()+i); const key=cell.getFullYear()+"-"+String(cell.getMonth()+1).padStart(2,"0")+"-"+String(cell.getDate()).padStart(2,"0");
+     const v=day[key], tot=v?v.s+v.r:0, future=cell>today; const h=tot===0?"":tot<=2?"h1":tot<=5?"h2":tot<=9?"h3":"h4"; const isT=cell.getTime()===today.getTime();
+     tds+=`<td class="cell ${h} ${isT?"today":""}" style="${future?"opacity:.25":""}"><span class="d">${cell.getDate()}</span><span class="v">${tot?("⭐"+v.s+" ✕"+v.r):"·"}</span></td>`; }
+   body+=`<tr>${tds}</tr>`; }
+ const head=`<tr><th></th>${dn.map(n=>`<th>${n}</th>`).join("")}</tr>`;
+ const kpi=`<div class="kpi" style="margin-bottom:12px"><div class="box"><b>${total}</b><span>oznaczonych łącznie</span></div><div class="box"><b class="grow">${totS}</b><span>⭐ shortlist</span></div><div class="box"><b class="gred">${totR}</b><span>✕ odrzucone</span></div><div class="box"><b>${avg.toFixed(1)}</b><span>średnio / dzień</span></div><div class="box"><b>${activeDays}</b><span>dni aktywnych</span></div></div>`;
+ const legend=`<div class="legend">mniej <i style="background:#f0efea"></i><i style="background:#d8ecdd"></i><i style="background:#aedcb9"></i><i style="background:#7cc491"></i><i style="background:#3f9159"></i> więcej</div>`;
+ const empty=total===0?`<div class="sub">Jeszcze nic nie oznaczono — każde ⭐/✕ pojawi się tu jako aktywność dnia.</div>`:"";
+ return panel("Kalendarz aktywności","Ile ofert dziennie oznaczasz (⭐ shortlist / ✕ odrzucone) + średnia z całego okresu.",
+  kpi+`<div style="overflow-x:auto"><table class="cal">${head}${body}</table></div>${legend}${empty}`);
+}
+function renderStats(){
+ const rows=statSet();
+ const tabs=`<div class="stat-tabs">`+[["all","Wszystkie"],["m_dz","🏠 Działki"],["m_dom","🏠 Domy"],["jez_dz","🌊 Jez. działki"],["jez_dom","🌊 Jez. domy"]].map(([v,l])=>`<button class="${statCat===v?"on":""}" onclick="statCat='${v}';renderStats()">${l}</button>`).join("")+`</div>`;
+ document.getElementById("stats").innerHTML = tabs + panelKalendarz() + panelLejek(rows) + panelBenchmark(rows) + panelOkazje(rows) + panelShortlist() + panelPodaz(rows) + panelTrend(rows);
+}
+document.getElementById("statsToggle").onclick=()=>setView(view==="stats"?"list":"stats");
+
 const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",s:r.score,d:r.added,po:r.portal,st:r.status||"new",li:(r.listed||""),adr:r.address||"",lat:r.lat,lon:r.lon,tel:r.phone||"",pp:r.prev_price,op:r.orig_price});
 
 async function load(){
@@ -220,7 +355,9 @@ async function load(){
  if(error){ document.getElementById("grid").innerHTML='<div class="none">Błąd wczytywania bazy: '+error.message+'</div>'; setDot("off"); return; }
  const byId={}; O.forEach(o=>byId[o.id]=o);
  O = data.map(r=>{ const m=mapRow(r); const old=byId[r.id]; if(old){ m.de=old.de; m.prm=old.prm; } return m; });
- document.title="Oferty ("+O.length+")"; render();
+ computeZoneMedians();
+ const dr = await sb.from("decisions").select("offer_id,status,decided_at"); DECS = dr.data||[];
+ document.title="Oferty ("+O.length+")"; render(); if(view==="stats") renderStats();
 }
 function subscribe(){
  sb.channel("offers-rt").on("postgres_changes",{event:"*",schema:"public",table:"offers"}, payload=>{
