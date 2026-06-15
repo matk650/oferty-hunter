@@ -80,16 +80,6 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
 .slcard .t{font-weight:600;font-size:13px;margin-bottom:3px}
 .slcard .m{font-size:12px;color:#6f6d67}
 .slcard .lnk{margin-top:6px;display:flex;gap:10px}.slcard .lnk a{color:#27693c;text-decoration:none;font-weight:600;font-size:13px}
-.cal{border-collapse:separate;border-spacing:3px;margin-top:4px}
-.cal th{font-size:10px;color:#999;font-weight:600;padding:0 0 2px}
-.cal td.wk{font-size:9px;color:#b3b0a8;white-space:nowrap;padding-right:3px;text-align:right}
-.cal td.cell{min-width:34px;height:38px;text-align:center;border-radius:7px;background:#f0efea;color:#555;padding:2px}
-.cal td.cell .d{font-size:9px;color:#b3b0a8;display:block;line-height:1}
-.cal td.cell .v{font-size:10.5px;display:block;margin-top:2px}
-.cal td.h1{background:#d8ecdd}.cal td.h2{background:#aedcb9}.cal td.h3{background:#7cc491}.cal td.h4{background:#3f9159}
-.cal td.today{outline:2px solid #1f1e1b}
-.legend{display:flex;gap:5px;align-items:center;flex-wrap:wrap;font-size:11px;color:#999;margin-top:8px}
-.legend i{width:16px;height:12px;border-radius:3px;display:inline-block}
 @media(max-width:520px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}}</style></head><body>
 <h1 class="sr">Oferty nieruchomości — działki i domy</h1>
 <div class="bar">
@@ -318,7 +308,6 @@ function setView(v){ view=v;
  if(v==="stats") renderStats();
 }
 const daysBetween = (a,b)=> Math.round((b-a)/864e5);
-const isoWeek = d => { const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const day=(t.getUTCDay()+6)%7; t.setUTCDate(t.getUTCDate()-day+3); const f=new Date(Date.UTC(t.getUTCFullYear(),0,4)); const w=1+Math.round(((t-f)/864e5-3+((f.getUTCDay()+6)%7))/7); return t.getUTCFullYear()+"-W"+String(w).padStart(2,"0"); };
 const statSet = () => statCat==="all"?O:O.filter(o=>o.c===statCat);
 const panel = (title,sub,html)=>`<div class="panel"><h3>${title}</h3>${sub?`<div class="sub">${sub}</div>`:""}${html}</div>`;
 const bar = (label,val,max,valTxt)=>{ const w=max?Math.round(val/max*100):0; return `<div class="bar-row"><span class="lbl">${esc(label)}</span><span class="bar-track"><span class="bar-fill" style="width:${w}%"></span></span><span class="val">${valTxt??val}</span></div>`; };
@@ -364,39 +353,10 @@ function panelShortlist(){
    return `<div class="slcard"><div class="t">${txt(o.t)}</div><div class="m">${o.pr?fmt(o.pr)+" zł":"—"}${o.a?" · "+fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""} · ${txt(cap(o.loc))} · ${esc(CATPL[o.c]||"")}</div>${links.length?`<div class="lnk">${links.join("")}</div>`:""}</div>`; }).join("");
  return panel("⭐ Shortlist ("+sl.length+")","Twoi faworyci do finalnej decyzji.",body);
 }
-function panelKalendarz(){
- const day={}; let first=null;
- DECS.forEach(r=>{ if(r.status!=="short"&&r.status!=="rej")return; const dt=new Date(r.decided_at); const key=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0"); (day[key]=day[key]||{s:0,r:0}); if(r.status==="short")day[key].s++; else day[key].r++; if(!first||dt<first)first=dt; });
- const totS=Object.values(day).reduce((a,b)=>a+b.s,0), totR=Object.values(day).reduce((a,b)=>a+b.r,0), total=totS+totR;
- const today=new Date(); today.setHours(0,0,0,0);
- const spanDays=first?daysBetween(new Date(first.getFullYear(),first.getMonth(),first.getDate()),today)+1:0;
- const avg=spanDays?total/spanDays:0, activeDays=Object.keys(day).length;
- const dow=(today.getDay()+6)%7; const monday=new Date(today); monday.setDate(today.getDate()-dow);
- const WK=6, start=new Date(monday); start.setDate(monday.getDate()-7*(WK-1));
- const dn=["Pon","Wt","Śr","Czw","Pt","So","Nd"];
- let rowsHtml="";
- for(let w=0;w<WK;w++){ const ws=new Date(start); ws.setDate(start.getDate()+7*w); let tds=`<td class="wk">${String(ws.getDate()).padStart(2,"0")}.${String(ws.getMonth()+1).padStart(2,"0")}</td>`;
-   for(let i=0;i<7;i++){ const cell=new Date(ws); cell.setDate(ws.getDate()+i); const key=cell.getFullYear()+"-"+String(cell.getMonth()+1).padStart(2,"0")+"-"+String(cell.getDate()).padStart(2,"0"); const v=day[key]; const tot=v?v.s+v.r:0; const future=cell>today; const h=tot===0?"":tot<=2?"h1":tot<=5?"h2":tot<=9?"h3":"h4"; const isT=cell.getTime()===today.getTime();
-     const inner=v?`<span class="d">${cell.getDate()}</span><span class="v"><b class="grow">${v.s}</b>·<b class="gred">${v.r}</b></span>`:`<span class="d">${cell.getDate()}</span><span class="v" style="color:#cfccc4">·</span>`;
-     tds+=`<td class="cell ${h} ${isT?"today":""}" ${v?`title="⭐${v.s} ✕${v.r}"`:""} style="${future?"opacity:.25":""}">${inner}</td>`; }
-   rowsHtml+=`<tr>${tds}</tr>`; }
- const head=`<tr><th></th>${dn.map(n=>`<th>${n}</th>`).join("")}</tr>`;
- const kpi=`<div class="kpi" style="margin-bottom:12px"><div class="box"><b>${total}</b><span>oznaczonych łącznie</span></div><div class="box"><b class="grow">${totS}</b><span>⭐ shortlist</span></div><div class="box"><b class="gred">${totR}</b><span>✕ odrzucone</span></div><div class="box"><b>${avg.toFixed(1)}</b><span>średnio / dzień</span></div><div class="box"><b>${activeDays}</b><span>dni aktywnych</span></div></div>`;
- const legend=`<div class="legend">mniej <i style="background:#f0efea"></i><i style="background:#d8ecdd"></i><i style="background:#aedcb9"></i><i style="background:#7cc491"></i><i style="background:#3f9159"></i> więcej · w kratce <b class="grow">⭐</b>·<b class="gred">✕</b></div>`;
- const empty=total===0?`<div class="sub">Jeszcze nic nie oznaczono — każde ⭐/✕ pojawi się tu jako aktywność dnia.</div>`:"";
- return panel("Kalendarz aktywności","Ile ofert dziennie oznaczasz (⭐ shortlist / ✕ odrzucone) + średnia z całego okresu.", kpi+`<div style="overflow-x:auto"><table class="cal">${head}${rowsHtml}</table></div>${legend}${empty}`);
-}
-function panelTrend(rows){
- const wkN={},wkP={}; rows.forEach(o=>{ if(o.d){ const w=isoWeek(new Date(o.d)); wkN[w]=(wkN[w]||0)+1; (wkP[w]=wkP[w]||[]).push(o.pr); } });
- const weeks=Object.keys(wkN).sort(), nmax=Math.max(1,...weeks.map(w=>wkN[w]));
- const bars=weeks.map(w=>{ const mp=median((wkP[w]||[]).filter(x=>x)); return bar(w,wkN[w],nmax,`${wkN[w]} ofert${mp?" · med "+fmt(Math.round(mp))+" zł":""}`); }).join("");
- const note=weeks.length<2?`<div class="sub">Trend nabiera sensu z czasem — ${weeks.length} tydz. danych (rośnie z każdym sweepem).</div>`:"";
- return panel("Trend tydzień-do-tygodnia","Napływ nowych ofert i mediana cen w czasie.",note+bars);
-}
 function renderStats(){
  const rows=statSet();
  const tabs=`<div class="stat-tabs">`+[["all","Wszystkie"],["m_dz","🏠 Działki"],["m_dom","🏠 Domy"],["jez_dz","🌊 Jez. działki"],["jez_dom","🌊 Jez. domy"]].map(([v,l])=>`<button class="${statCat===v?"on":""}" onclick="statCat='${v}';renderStats()">${l}</button>`).join("")+`</div>`;
- document.getElementById("stats").innerHTML = tabs + panelKalendarz() + panelLejek(rows) + panelBenchmark(rows) + panelOkazje(rows) + panelShortlist() + panelPodaz(rows) + panelTrend(rows);
+ document.getElementById("stats").innerHTML = tabs + panelLejek(rows) + panelBenchmark(rows) + panelOkazje(rows) + panelShortlist() + panelPodaz(rows);
 }
 document.getElementById("statsToggle").onclick=()=>setView(view==="stats"?"list":"stats");
 
