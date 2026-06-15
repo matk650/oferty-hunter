@@ -37,6 +37,8 @@ input.ctrl{width:120px}#q{flex:1;min-width:150px}
 .stbadge{position:absolute;bottom:8px;right:8px;background:#1f1e1b;color:#fff;font-size:10.5px;padding:3px 9px;border-radius:99px;z-index:2}
 .none{color:#8a877f;padding:30px 0}
 .grow{color:#2e7d46}.gred{color:#c0392b}
+.daycount{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:#3c3a35;background:#fff;border:1px solid #e5e2da;border-radius:10px;padding:9px 13px;margin-bottom:12px}
+.daycount b{font-size:15px;color:#1f1e1b}.daycount .sep{color:#cfccc3}.daycount .lbl{color:#6b6a66}
 #ov{position:fixed;inset:0;background:rgba(15,14,12,.85);display:none;align-items:center;justify-content:center;z-index:9;padding:14px}
 #ov.on{display:flex}.sh{background:#fff;border-radius:16px;max-width:920px;width:100%;max-height:95vh;overflow:auto;position:relative}
 .gal{position:relative;background:#111;display:flex;align-items:center;justify-content:center;min-height:300px;max-height:62vh}
@@ -104,6 +106,7 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
  <button class="chip" id="statsToggle">📊 Statystyki</button>
  <span class="meta" id="meta"><span class="dot" id="dot"></span><span id="metaTxt">Łączę z bazą…</span></span>
 </div>
+<div id="counter" class="daycount" aria-live="polite"></div>
 <div class="bar2">
  <select class="ctrl" id="sort" aria-label="Sortowanie">
   <option value="score">Sortuj: Score ↓</option>
@@ -174,6 +177,18 @@ const keyPL = k => PL_KEY[k]||k.replace(/_/g," ");
 
 function setDot(state){ document.getElementById("dot").className="dot"+(state?" "+state:""); }
 
+// licznik dziennego przeglądu (decyzje ⭐/✕ z DECS); "dziś" wg lokalnej daty → reset o północy
+const dayKey = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+function updateCounter(){
+ const el=document.getElementById("counter"); if(!el) return;
+ const byDay={};
+ DECS.forEach(r=>{ if(r.status!=="short"&&r.status!=="rej") return; const d=new Date(r.decided_at); if(isNaN(d)) return; const k=dayKey(d); (byDay[k]=byDay[k]||new Set()).add(r.offer_id); });
+ const todayN=(byDay[dayKey(new Date())]||new Set()).size;
+ let sum=0; for(let i=0;i<7;i++){ const dt=new Date(); dt.setHours(0,0,0,0); dt.setDate(dt.getDate()-i); sum+=(byDay[dayKey(dt)]||new Set()).size; }
+ el.innerHTML=`📋 <span class="lbl">Dziś przejrzane:</span> <b>${todayN}</b> <span class="sep">·</span> <span class="lbl">śr. z 7 dni:</span> <b>${(sum/7).toFixed(1)}</b><span class="lbl">/dzień</span>`;
+}
+function scheduleMidnight(){ const n=new Date(); const next=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,0,0,5); setTimeout(()=>{ updateCounter(); scheduleMidnight(); }, next-n); }
+
 function passFilters(o){
  const s=decit(o);
  if(flt==="todo"&&s) return false;
@@ -217,6 +232,7 @@ function render(){
  const inTab=O.filter(o=>o.c===tab);
  let rows=visibleRows();
  document.getElementById("metaTxt").textContent = rows.length+" / "+inTab.length+" ofert"+(setDot._s==="live"?" · na żywo":setDot._s==="off"?" · offline":"");
+ updateCounter();
  if(!rows.length){ g.innerHTML='<div class="none">Pusto — zmień filtr, kategorię lub wyszukiwanie</div>'; return; }
  rows.forEach(o=>{
   const i=O.indexOf(o), s=decit(o);
@@ -296,6 +312,7 @@ document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov
 function setView(v){ view=v;
  document.getElementById("grid").style.display=v==="list"?"":"none";
  document.querySelector(".bar2").style.display=v==="list"?"":"none";
+ document.getElementById("counter").style.display=v==="list"?"":"none";
  document.getElementById("stats").style.display=v==="stats"?"block":"none";
  const b=document.getElementById("statsToggle"); b.classList.toggle("on",v==="stats"); b.textContent=v==="stats"?"← Oferty":"📊 Statystyki";
  if(v==="stats") renderStats();
@@ -407,5 +424,6 @@ function subscribe(){
 // odśwież po powrocie do karty, ale nie częściej niż co 60 s (realtime i tak trzyma dane świeże)
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && Date.now()-lastLoad>60000) load(); });
 load().then(subscribe);
+scheduleMidnight();
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{})); }
 </script></body></html>
