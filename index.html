@@ -53,6 +53,8 @@ table.params{border-collapse:collapse;margin:10px 0;font-size:12.5px;width:100%}
 table.params td{border-bottom:1px solid #f1efe9;padding:4px 8px;vertical-align:top}
 table.params td:first-child{color:#777;width:42%}
 .desc{white-space:pre-wrap;font-size:13px;line-height:1.5;color:#333;margin:10px 0 2px;max-height:340px;overflow:auto;border-top:1px solid #f1efe9;padding-top:10px}
+.actbar{padding:12px 18px;background:#fff;border-bottom:1px solid #f1efe9}
+.actbar .acts{margin-top:0}
 .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .acts button,.acts a{flex:1;min-width:110px;text-align:center;border:1px solid #d8d5cc;background:#fff;border-radius:9px;padding:12px 0;font-size:13px;font-weight:600;cursor:pointer;color:#3c3a35;text-decoration:none;min-height:46px;display:flex;align-items:center;justify-content:center}
 .acts a.go{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
@@ -112,7 +114,7 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
 </div>
 <main class="g" id="grid"><div class="none">Wczytuję oferty…</div></main>
 <div id="stats"></div>
-<div id="ov" role="dialog" aria-modal="true" aria-label="Szczegóły oferty"><div class="sh"><button id="cl" onclick="clO()" aria-label="Zamknij">✕</button><div class="gal" id="gg"></div><div class="st" id="ss"></div><div class="dt" id="dd"></div></div></div>
+<div id="ov" role="dialog" aria-modal="true" aria-label="Szczegóły oferty"><div class="sh"><button id="cl" onclick="clO()" aria-label="Zamknij">✕</button><div class="gal" id="gg"></div><div class="st" id="ss"></div><div class="actbar" id="ac"></div><div class="dt" id="dd"></div></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -277,8 +279,10 @@ function drawD(){ const d=document.getElementById("dd"); const s=decit(cur); con
  if(zm&&mine){ const diff=Math.round((mine/zm-1)*100); const cls=diff>0?'up':(diff<0?'down':''); zctx=`<div class="loc">📊 ${fmt(Math.round(mine))} zł/m² vs mediana strefy <b>${fmt(Math.round(zm))} zł/m²</b>${cls?` <span class="drop ${cls}">${diff>0?'+':''}${diff}%</span> ${diff>0?'drożej':diff<0?'taniej':'='} niż w okolicy`:''}</div>`; }
  const descBlock = cur.de===undefined ? `<div class="desc" style="color:#999">wczytuję opis…</div>` : (cur.de?`<div class="desc">${txt(cur.de)}</div>`:"");
  d.innerHTML=`<h3>${txt(cur.t)}</h3>${priceLine} <span style="color:#777">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${txt(cap(cur.loc))} · ${esc(cur.po||"")} · ogł.: ${esc(cur.li||"?")}${s?" · <b>"+statusLabel(s)+"</b>":""}</span>
- ${loc}${zctx}${tel}${paramsTable(cur.prm)}<div class="nn">${txt(cur.n||"")}</div>${descBlock}
- <div class="acts"><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${esc(safeUrl(cur.u))}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
+ ${loc}${zctx}${tel}${paramsTable(cur.prm)}<div class="nn">${txt(cur.n||"")}</div>${descBlock}`;
+ drawA(); }
+function drawA(){ const a=document.getElementById("ac"); if(!a)return; if(!cur){ a.innerHTML=""; return; }
+ a.innerHTML=`<div class="acts"><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${esc(safeUrl(cur.u))}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
 
 document.getElementById("tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; tab=b.dataset.c; localStorage.vTab=tab; render(); });
