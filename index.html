@@ -82,7 +82,55 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
 .slcard .t{font-weight:600;font-size:13px;margin-bottom:3px}
 .slcard .m{font-size:12px;color:#6f6d67}
 .slcard .lnk{margin-top:6px;display:flex;gap:10px}.slcard .lnk a{color:#27693c;text-decoration:none;font-weight:600;font-size:13px}
-@media(max-width:520px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}}</style></head><body>
+@media(max-width:520px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}}
+/* ── MAPA (v8, 2026-08-06) ───────────────────────────────────────────────── */
+#mapWrap{display:none;padding:8px 10px 20px}
+.mapbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
+.mchips{display:flex;gap:4px;flex-wrap:wrap}
+.mchip{font-size:12px;padding:5px 9px;border-radius:14px;border:1px solid #d5d5d8;background:#fff;cursor:pointer;user-select:none;white-space:nowrap}
+.mchip.on{background:#1a1a1c;color:#fff;border-color:#1a1a1c}
+.mtog{font-size:12px;color:#555;display:flex;align-items:center;gap:4px;cursor:pointer}
+/* Wysokosc z dvh: na telefonie pasek URL Safari zmienia viewport i przy 100vh mapa
+   wystawala pod krawedz ekranu, zabierajac przyciski oceny. */
+#map{height:62dvh;min-height:340px;border-radius:12px;border:1px solid #e3e3e6;background:#eef1f4;z-index:0}
+.mapfoot{font-size:12px;color:#666;margin-top:7px;line-height:1.5}
+.mapfoot b{color:#1a1a1c}
+.mapfoot .lnk{color:#0a58ca;text-decoration:underline;cursor:pointer}
+#mapMissing{margin-top:8px}
+#mapMissing table{width:100%;border-collapse:collapse;font-size:12px}
+#mapMissing td{padding:5px 6px;border-bottom:1px solid #eee;vertical-align:top}
+#mapMissing td:first-child{white-space:nowrap;color:#777}
+#mapMissing .mm-open{color:#0a58ca;cursor:pointer;text-decoration:underline}
+/* Pinezka: KOLOR = kategoria, OBWODKA = status. Shortlist ma grubą złotą obwódkę
+   i wieksza srednice, zeby bylo ja widac z pierwszego spojrzenia przy oddaleniu. */
+.pin{border-radius:50%;box-sizing:border-box;box-shadow:0 1px 3px rgba(0,0,0,.45)}
+.pin.st-short{border:3px solid #f0a500;width:20px;height:20px}
+.pin.st-rej{border:2px solid #fff;opacity:.45;width:11px;height:11px}
+.pin.st-new{border:2px solid #fff;width:14px;height:14px}
+.leaflet-popup-content{margin:9px 11px;font-size:13px;line-height:1.45}
+.pp img{width:100%;height:96px;object-fit:cover;border-radius:7px;margin-bottom:6px;background:#eee}
+.pp b{font-size:14px}
+.pp .pl{color:#666;font-size:12px;display:block;margin:2px 0 5px}
+.pp .pa{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.pp .pa button,.pp .pa a{font-size:12px;padding:6px 9px;border-radius:8px;border:1px solid #d5d5d8;background:#fff;cursor:pointer;text-decoration:none;color:#1a1a1c}
+.pp .pa .go{background:#1a1a1c;color:#fff;border-color:#1a1a1c}
+.leg{display:flex;gap:9px;flex-wrap:wrap;font-size:11px;color:#666;margin-top:6px}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:3px;vertical-align:-1px}
+/* ── NOTATKI (v8, 2026-08-06) ────────────────────────────────────────────── */
+.nbox{margin:12px 0 4px;border-top:1px solid #eee;padding-top:10px}
+.nbox h4{margin:0 0 6px;font-size:13px;color:#444;font-weight:600}
+.nbox textarea{width:100%;box-sizing:border-box;min-height:62px;font:inherit;font-size:14px;padding:8px 9px;border:1px solid #d5d5d8;border-radius:9px;resize:vertical;background:#fff}
+.nbox .nrow{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.nbox .nrow button{font-size:13px;padding:7px 13px;border-radius:9px;border:1px solid #1a1a1c;background:#1a1a1c;color:#fff;cursor:pointer}
+.nbox .nrow button[disabled]{opacity:.45;cursor:default}
+.nbox .nerr{color:#c0392b;font-size:12px}
+.nlist{margin-top:9px;display:flex;flex-direction:column;gap:7px}
+.nitem{background:#fafafa;border:1px solid #ececf0;border-radius:9px;padding:7px 9px;font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.nitem .nmeta{display:flex;justify-content:space-between;align-items:center;gap:8px;color:#888;font-size:11px;margin-bottom:3px}
+.nitem .ndel{color:#c0392b;cursor:pointer;border:0;background:0;font-size:11px;padding:2px 4px}
+/* Karta na liscie: znacznik, ze oferta ma notatke — zeby bylo widac bez otwierania */
+.c .nflag{position:absolute;left:6px;top:6px;background:rgba(26,26,28,.82);color:#fff;font-size:11px;padding:2px 6px;border-radius:9px}
+</style></head><body>
 <h1 class="sr">Oferty nieruchomości — działki i domy</h1>
 <div class="bar">
  <nav class="tabs" id="tabs" aria-label="Kategorie">
@@ -95,6 +143,7 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
  <span class="chip" data-f="short">⭐ Shortlist</span>
  <span class="chip" data-f="rej">Odrzucone</span>
  <span class="chip" data-f="all">Wszystkie</span>
+ <button class="chip" id="mapToggle">🗺 Mapa</button>
  <button class="chip" id="statsToggle">📊 Statystyki</button>
  <span class="meta" id="meta"><span class="dot" id="dot"></span><span id="metaTxt">Łączę z bazą…</span></span>
 </div>
@@ -113,10 +162,31 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
  <input class="ctrl" id="q" type="search" placeholder="szukaj: ulica, miejscowość…" aria-label="Szukaj">
 </div>
 <main class="g" id="grid"><div class="none">Wczytuję oferty…</div></main>
+<div id="mapWrap">
+ <div class="mapbar">
+  <span class="mchips" id="mapStatus" role="group" aria-label="Filtr statusu na mapie">
+   <span class="mchip on" data-s="new">nieocenione</span><span class="mchip on" data-s="short">⭐</span><span class="mchip" data-s="rej">✕</span>
+  </span>
+  <span class="mchips" id="mapCats" role="group" aria-label="Filtr kategorii na mapie">
+   <span class="mchip on" data-c="m_dz">M-dz</span><span class="mchip on" data-c="m_dom">M-dom</span><span class="mchip on" data-c="jez_dz">J-dz</span><span class="mchip on" data-c="jez_dom">J-dom</span>
+  </span>
+  <label class="mtog"><input type="checkbox" id="mapRings"> promień 15 km</label>
+ </div>
+ <div id="map"></div>
+ <div class="mapfoot" id="mapFoot"></div>
+ <div id="mapMissing"></div>
+</div>
 <div id="stats"></div>
 <div id="ov" role="dialog" aria-modal="true" aria-label="Szczegóły oferty"><div class="sh"><button id="cl" onclick="clO()" aria-label="Zamknij">✕</button><div class="gal" id="gg"></div><div class="st" id="ss"></div><div class="actbar" id="ac"></div><div class="dt" id="dd"></div></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- MAPA (v8, 2026-08-06). Leaflet + kafelki OpenStreetMap: bez klucza i bez billingu.
+     Google Maps wymaga karty (Mateusz nie ma tu budżetu), Apple MapKit JS wymaga tokena
+     JWT podpisywanego kluczem prywatnym, czyli backendu — a to statyczny plik na GitHub
+     Pages. MarkerCluster jest konieczny, nie kosmetyczny: 2141 pinezek naraz zabija
+     przeglądarkę na telefonie, a telefon jest głównym urządzeniem Mateusza.
+     Skrypty ładowane leniwie (dopiero przy pierwszym wejściu na mapę), żeby nie
+     opóźniać startu listy ofert. -->
 <script>
 const SB_URL = "https://gbmvooprdfqufptfggdb.supabase.co";
 const SB_KEY = "sb_publishable_-CNmiowgRI-WSnxnR42cOw_o0EFCRid";
@@ -231,8 +301,9 @@ function render(){
   const img=o.ph&&o.ph.length?`<img class="main" loading="lazy" decoding="async" alt="${esc(o.t||'oferta')}" src="${esc(o.ph[0])}">`:`<div class="noimg" aria-hidden="true">🏞️</div>`;
   const np=o.ph&&o.ph.length>1?`<span class="np">📷 ${o.ph.length}</span>`:"";
   const sb2=s?`<span class="stbadge">${statusLabel(s)}</span>`:"";
+  const nf=o.hasNotes?`<span class="nflag" title="Ma notatkę">📝</span>`:"";
   const drop=dropTag(priceDelta(o));
-  d.innerHTML=`<div class="top" onclick="openO(${i})">${img}<span class="s">${o.s??""}</span>${np}${sb2}
+  d.innerHTML=`<div class="top" onclick="openO(${i})">${img}<span class="s">${o.s??""}</span>${np}${sb2}${nf}
    <div class="b"><b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b>${drop}<span class="a">${o.a?fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</span>
    <p>${txt(o.t)}</p><small>${txt(cap(o.loc))} · ${esc(o.po||"")} · ogł.: ${esc(o.li||"?")}</small></div></div>
    <div class="ft"><button onclick="setSt(O[${i}],'short')">⭐ Shortlist</button><button onclick="setSt(O[${i}],'rej')">✕ Odrzuć</button></div>`;
@@ -250,6 +321,9 @@ async function openOffer(o){
    else if(cur===o){ cur.de=""; cur.prm={}; }
    if(cur===o) drawD();
  }
+ // Notatki dociągane ZA KAŻDYM otwarciem, nie tylko przy pierwszym: mogły dojść
+ // z drugiego urządzenia. To jedno lekkie zapytanie po indeksie (offer_id, ts desc).
+ if(!notesBroken){ await loadNotes(o); if(cur===o) drawD(); }
 }
 function openO(i){ lastFocus=document.activeElement; reviewQ=visibleRows(); reviewI=reviewQ.indexOf(O[i]); openOffer(O[i]); }
 function nextOffer(){
@@ -279,8 +353,102 @@ function drawD(){ const d=document.getElementById("dd"); const s=decit(cur); con
  if(zm&&mine){ const diff=Math.round((mine/zm-1)*100); const cls=diff>0?'up':(diff<0?'down':''); zctx=`<div class="loc">📊 ${fmt(Math.round(mine))} zł/m² vs mediana strefy <b>${fmt(Math.round(zm))} zł/m²</b>${cls?` <span class="drop ${cls}">${diff>0?'+':''}${diff}%</span> ${diff>0?'drożej':diff<0?'taniej':'='} niż w okolicy`:''}</div>`; }
  const descBlock = cur.de===undefined ? `<div class="desc" style="color:#999">wczytuję opis…</div>` : (cur.de?`<div class="desc">${txt(cur.de)}</div>`:"");
  d.innerHTML=`<h3>${txt(cur.t)}</h3>${priceLine} <span style="color:#777">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${txt(cap(cur.loc))} · ${esc(cur.po||"")} · ogł.: ${esc(cur.li||"?")}${s?" · <b>"+statusLabel(s)+"</b>":""}</span>
- ${loc}${zctx}${tel}${paramsTable(cur.prm)}<div class="nn">${txt(cur.n||"")}</div>${descBlock}`;
- drawA(); }
+ ${loc}${zctx}${tel}${paramsTable(cur.prm)}<div class="nn">${txt(cur.n||"")}</div>${notesHtml(cur)}${descBlock}`;
+ drawA(); bindNoteDraft(); }
+// ================= NOTATKI MATEUSZA (v8, 2026-08-06) =====================
+// Tabela offer_notes(offer_id, ts, text) — NIE kolumna offers.notes! Tam pisze scraper
+// (flagi ze scrape'u) i shortlist_prices (znaczniki cen); na 06.08 miało tam treść 1730
+// z 2141 wierszy, więc notatka użytkownika przepadłaby po jednym nocnym tasku.
+// Historia zamiast nadpisywania: każdy wpis to osobny wiersz, najnowszy u góry.
+// Dla KAŻDEJ oferty, nie tylko shortlisty — powód odrzucenia też warto zapisać.
+const NOTES_TBL = "offer_notes";
+let notesBroken = false;    // migracja SQL nie wykonana → nie zaśmiecamy modala błędem
+
+const dt = iso => { const d=new Date(iso); if(isNaN(d)) return ""; 
+ return d.toLocaleDateString("pl-PL",{day:"2-digit",month:"2-digit",year:"numeric"})+" "+d.toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"}); };
+
+async function loadNotes(o){
+ if(notesBroken){ o.notesList=[]; return; }
+ const { data, error } = await sb.from(NOTES_TBL).select("id,ts,text")
+   .eq("offer_id", o.id).order("ts",{ascending:false});
+ if(error){
+   // Brak tabeli (migracja niewklejona) — wyłączamy sekcję raz i nie próbujemy dalej.
+   if(/relation|does not exist|schema/i.test(error.message||"")) notesBroken=true;
+   o.notesList=[]; o.notesErr=error.message; return;
+ }
+ o.notesList=data||[]; o.notesErr=null;
+}
+
+function notesHtml(o){
+ if(notesBroken) return "";
+ const list=o.notesList;
+ const body = list===undefined
+   ? `<div style="color:#999;font-size:12px">wczytuję notatki…</div>`
+   : (list.length ? `<div class="nlist">`+list.map(n=>
+        `<div class="nitem"><div class="nmeta"><span>${esc(dt(n.ts))}</span><button class="ndel" onclick="delNote(${n.id})" aria-label="Usuń wpis">usuń</button></div>${txt(n.text)}</div>`
+      ).join("")+`</div>` : "");
+ // Wartość textarea NIE jest czyszczona przy przerysowaniu (patrz saveNote): jeśli zapis
+ // padnie, treść musi zostać w polu. Dlatego trzymamy ją w noteDraft[id].
+ const draft = esc(noteDraft[o.id]||"");
+ return `<div class="nbox"><h4>📝 Moje notatki</h4>
+  <textarea id="noteTxt" placeholder="Co sprawdzić, ustalenia z agentem, wynik wizyty…" aria-label="Nowa notatka">${draft}</textarea>
+  <div class="nrow"><button id="noteSave" onclick="saveNote()">Dodaj wpis</button>
+   <span class="nerr" id="noteErr">${esc(o.notesErr||"")}</span></div>
+  ${body}</div>`;
+}
+const noteDraft = {};
+// Znacznik 📝 na karcie listy wymaga wiedzy, KTÓRE oferty mają notatkę — bez otwierania
+// każdej z nich. Jedno zapytanie o same offer_id (tabela jest mała: tyle wierszy, ile
+// wpisów Mateusza) zamiast N zapytań przy renderowaniu listy.
+async function loadNotesIndex(){
+ if(notesBroken) return;
+ const { data, error } = await sb.from(NOTES_TBL).select("offer_id");
+ if(error){
+   if(/relation|does not exist|schema/i.test(error.message||"")) notesBroken=true;
+   return;
+ }
+ const have=new Set((data||[]).map(r=>r.offer_id));
+ O.forEach(o=>{ o.hasNotes = have.has(o.id); });
+}
+function bindNoteDraft(){
+ const t=document.getElementById("noteTxt"); if(!t||!cur) return;
+ t.oninput=()=>{ noteDraft[cur.id]=t.value; };
+}
+async function saveNote(){
+ if(!cur) return;
+ const t=document.getElementById("noteTxt"), b=document.getElementById("noteSave"),
+       e=document.getElementById("noteErr");
+ const val=(t.value||"").trim();
+ if(!val){ e.textContent="Wpisz treść notatki."; return; }
+ b.disabled=true; e.textContent="";
+ const o=cur, { data, error } = await sb.from(NOTES_TBL)
+   .insert({offer_id:o.id, text:val}).select("id,ts,text").single();
+ b.disabled=false;
+ if(error){
+   // WYMÓG: pokaż błąd i ZACHOWAJ treść w polu. Cicha porażka przy notatce z wizyty
+   // („sąsiad mówi, że gruntu nie da się odwodnić") to strata informacji, której już
+   // nie da się odtworzyć — inaczej niż ocenę ⭐/✕, którą można kliknąć ponownie.
+   e.textContent="Nie zapisano: "+(error.message||"błąd sieci")+" — treść została w polu.";
+   noteDraft[o.id]=val;
+   return;
+ }
+ o.notesList=[data].concat(o.notesList||[]);
+ noteDraft[o.id]="";
+ o.hasNotes=true;
+ if(cur===o) drawD();
+ render();                     // znacznik 📝 na karcie listy
+ toast("Notatka zapisana");
+}
+async function delNote(id){
+ if(!cur) return;
+ const o=cur, prev=o.notesList||[];
+ o.notesList=prev.filter(n=>n.id!==id); drawD();
+ const { error } = await sb.from(NOTES_TBL).delete().eq("id", id);
+ if(error){ o.notesList=prev; drawD(); toast("Nie udało się usunąć wpisu"); return; }
+ o.hasNotes=(o.notesList||[]).length>0;
+ render(); toast("Wpis usunięty");
+}
+
 function drawA(){ const a=document.getElementById("ac"); if(!a)return; if(!cur){ a.innerHTML=""; return; }
  a.innerHTML=`<div class="acts"><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${esc(safeUrl(cur.u))}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
@@ -302,14 +470,208 @@ document.addEventListener("keydown",e=>{ if(!cur)return;
 });
 document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov")clO(); });
 
+// ================= MAPA (v8, 2026-08-06) =================================
+// Filtry mapy są NIEZALEŻNE od filtrów listy (inny tryb pracy: lista = kolejka do
+// przejrzenia, mapa = przegląd całego rynku), łączą się ze sobą (status ∩ kategoria)
+// i są zapamiętywane w localStorage razem z pozycją mapy.
+const HOME_LL = [51.8210, 19.4480];          // Radogoszcz
+const CAT_COLOR = {m_dz:"#2b7bba", m_dom:"#1f9d55", jez_dz:"#7b4bc9", jez_dom:"#d1671f"};
+const CAT_SHORT = {m_dz:"Mieszk. działki", m_dom:"Mieszk. domy", jez_dz:"Jeziora działki", jez_dom:"Jeziora domy"};
+let MAP=null, MCLUS=null, MRINGS=null, mapLoaded=false, mapDirty=true;
+let mapSt = readLS("vMapSt", ["new","short"]);
+let mapCat = readLS("vMapCat", ["m_dz","m_dom","jez_dz","jez_dom"]);
+
+function readLS(k, dflt){ try{ const v=JSON.parse(localStorage[k]); return Array.isArray(v)?v:dflt; }catch(e){ return dflt; } }
+function writeLS(k, v){ try{ localStorage[k]=JSON.stringify(v); }catch(e){} }
+
+// Leaflet + MarkerCluster ładowane LENIWIE — dopiero przy pierwszym wejściu na mapę.
+// Lista ofert to główny ekran i nie ma powodu, żeby czekała na 200 kB bibliotek mapy.
+function loadScript(src){ return new Promise((ok,no)=>{ const el=document.createElement("script"); el.src=src; el.onload=ok; el.onerror=()=>no(new Error(src)); document.head.appendChild(el); }); }
+function loadCss(href){ return new Promise(ok=>{ const el=document.createElement("link"); el.rel="stylesheet"; el.href=href; el.onload=ok; el.onerror=ok; document.head.appendChild(el); }); }
+async function ensureLeaflet(){
+ if(window.L && window.L.markerClusterGroup) return true;
+ try{
+  await loadCss("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
+  await loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js");
+  await loadCss("https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css");
+  await loadCss("https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css");
+  await loadScript("https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js");
+  if(!(window.L && window.L.markerClusterGroup)) return false;
+  patchClusterHasLayer();
+  return true;
+ }catch(e){ return false; }
+}
+// SHIM dla niezgodności markercluster 1.5.3 ↔ Leaflet 1.9.4 (2026-08-06).
+// Objaw: przy każdym zoomend/moveend na mapie leci „Uncaught TypeError: Cannot use 'in'
+// operator to search for '_leaflet_id' in undefined". Źródło: markercluster wywołuje
+// hasLayer() na obiekcie, którego `_layers` jeszcze (albo już) nie istnieje, a Leaflet
+// 1.9 robi tam `stamp(layer) in this._layers` bez sprawdzenia.
+// Dlaczego to naprawiamy, choć mapa „działa": nieprzechwycony wyjątek w handlerze
+// zdarzenia PRZERYWA łańcuch pozostałych handlerów tego samego zdarzenia. Zapisywanie
+// pozycji mapy (saveMapPos) też wisi na moveend — czyli błąd biblioteki mógł po cichu
+// zjadać zapamiętywanie widoku, a to jeden z wymogów tej funkcji.
+// Shim jest zawężony maksymalnie: gdy `_layers` istnieje, wołamy oryginał bez zmian.
+let _clusterPatched=false;
+function patchClusterHasLayer(){
+ if(_clusterPatched) return; _clusterPatched=true;
+ [L.Map, L.LayerGroup].forEach(K=>{
+  if(!K||!K.prototype||!K.prototype.hasLayer) return;
+  const orig=K.prototype.hasLayer;
+  K.prototype.hasLayer=function(layer){
+    if(!this._layers) return false;
+    return orig.call(this,layer);
+  };
+ });
+}
+
+const hasGeo = o => o.lat!=null && o.lon!=null && !(Math.abs(o.lat)<0.01 && Math.abs(o.lon)<0.01);
+function mapRows(){
+ return O.filter(o=>mapCat.includes(o.c))
+         .filter(o=>{ const s=norm(o.st); return mapSt.includes(s==="seen"?"rej":s); });
+}
+
+function pinIcon(o){
+ const s=norm(o.st), cls = s==="short"?"st-short":s==="rej"?"st-rej":"st-new";
+ const sz = s==="short"?20:s==="rej"?11:14;
+ return L.divIcon({className:"", iconSize:[sz,sz], iconAnchor:[sz/2,sz/2],
+   html:`<span class="pin ${cls}" style="background:${CAT_COLOR[o.c]||"#666"};display:block;width:${sz}px;height:${sz}px"></span>`});
+}
+
+function popupHtml(o){
+ const i=O.indexOf(o);
+ const img = o.ph&&o.ph.length ? `<img loading="lazy" alt="" src="${esc(o.ph[0])}">` : "";
+ const p2 = (o.pr&&o.a) ? " · "+fmt(Math.round(o.pr/o.a))+" zł/m²" : "";
+ const s=decit(o);
+ return `<div class="pp">${img}<b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b> <span style="color:#666">${o.a?fmt(o.a)+" m²":""}${p2}</span>
+  <span class="pl">${txt(cap(o.loc))} · ${esc(o.po||"")}${s?" · "+statusLabel(s):""}</span>
+  ${txt((o.t||"").slice(0,90))}
+  <div class="pa"><button onclick="mapSet(${i},'short')">⭐</button><button onclick="mapSet(${i},'rej')">✕</button>
+   <button onclick="mapOpen(${i})">Szczegóły</button>
+   <a class="go" href="${esc(safeUrl(o.u))}" target="_blank" rel="noopener">Ogłoszenie ↗</a></div></div>`;
+}
+// Ocena wprost z mapy — bez wychodzenia z niej. Po zmianie statusu odświeżamy pinezki,
+// bo obwódka pinezki KODUJE status i musi się zmienić od razu.
+function mapSet(i, st){ setSt(O[i], st).then(()=>{ mapDirty=true; if(view==="map") drawMap(); }); }
+function mapOpen(i){ if(MAP) MAP.closePopup(); openO(i); }
+
+function saveMapPos(){ try{ if(!MAP) return; const c=MAP.getCenter(); localStorage.vMapPos=JSON.stringify([c.lat,c.lng,MAP.getZoom()]); }catch(e){} }
+
+async function drawMap(){
+ const wrap=document.getElementById("mapWrap");
+ if(!mapLoaded){
+  wrap.querySelector("#map").innerHTML='<div style="padding:26px;text-align:center;color:#777;font-size:13px">Wczytuję mapę…</div>';
+  if(!await ensureLeaflet()){
+   wrap.querySelector("#map").innerHTML='<div style="padding:26px;text-align:center;color:#c0392b;font-size:13px">Nie udało się wczytać mapy (brak sieci?).<br>Lista ofert działa normalnie.</div>';
+   return;
+  }
+  wrap.querySelector("#map").innerHTML="";
+  const pos=readLS("vMapPos", null);
+  MAP=L.map("map",{zoomControl:true}).setView(pos?[pos[0],pos[1]]:HOME_LL, pos?pos[2]:10);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {maxZoom:19, attribution:"© OpenStreetMap"}).addTo(MAP);
+  // disableClusteringAtZoom: od zoomu 16 pokazujemy POJEDYNCZE pinezki, nie bąbelki.
+  // Dwa powody. (1) UX: przy zoomie ulicy chcemy widzieć, KTÓRA działka to która, a nie
+  // „2". (2) Obejście błędu markercluster 1.5.3 + Leaflet 1.9: rozwijanie klastra
+  // (spiderfy) wywala TypeError „Cannot use 'in' operator to search for '_leaflet_id'
+  // in undefined" w jego własnym handlerze moveend, i wtedy popup się nie otwiera.
+  // Bez klastrowania na dużym zoomie ta ścieżka w ogóle nie jest używana.
+  MCLUS=L.markerClusterGroup({chunkedLoading:true, spiderfyOnMaxZoom:false,
+    disableClusteringAtZoom:16, maxClusterRadius:52});
+  MAP.addLayer(MCLUS);
+  MAP.on("moveend zoomend", saveMapPos);
+  mapLoaded=true; mapDirty=true;
+  document.getElementById("mapRings").checked = localStorage.vMapRings==="1";
+ }
+ // invalidateSize() PRZED przebudową warstw, nie po. Kontener dopiero co dostał
+ // display:block, więc Leaflet zna jeszcze stary (zerowy) rozmiar. Gdy invalidateSize
+ // leciało w setTimeout PO addLayers(), jego moveend trafiał w markercluster w trakcie
+ // chunkedLoading i biblioteka rzucała „Cannot use 'in' operator … in undefined".
+ if(MAP) MAP.invalidateSize();
+ if(mapDirty){
+  MCLUS.clearLayers();
+  const rows=mapRows(), zGeo=rows.filter(hasGeo);
+  const ms=zGeo.map(o=>L.marker([o.lat,o.lon],{icon:pinIcon(o)})
+                        .bindPopup(()=>popupHtml(o),{maxWidth:250,minWidth:190}));
+  MCLUS.addLayers(ms);
+  drawRings();
+  const brak=rows.length-zGeo.length;
+  const leg=Object.keys(CAT_COLOR).map(c=>`<span><i style="background:${CAT_COLOR[c]}"></i>${esc(CAT_SHORT[c])}</span>`).join("");
+  // Licznik „na mapie X z Y" jest OBOWIĄZKOWY, nie ozdobny: brak pinezki wygląda
+  // dokładnie tak samo jak brak oferty, więc bez tej liczby mapa kłamie w milczeniu.
+  document.getElementById("mapFoot").innerHTML =
+    `Na mapie <b>${zGeo.length}</b> z <b>${rows.length}</b> ofert (wg filtrów mapy)`
+    + (brak?` — <span class="lnk" onclick="toggleMissing()">${brak} bez współrzędnych ▾</span>`:"")
+    + `<div class="leg">${leg}<span>⭐ gruba złota obwódka = shortlist · przygaszone = odrzucone</span></div>`;
+  renderMissing(rows.filter(o=>!hasGeo(o)));
+  mapDirty=false;
+ }
+}
+function drawRings(){
+ if(!MAP) return;
+ if(MRINGS){ MAP.removeLayer(MRINGS); MRINGS=null; }
+ if(!document.getElementById("mapRings").checked) return;
+ // 15 km = geofence dla nieznanej miejscowości, 8 km = geofence dla samego „Łódź"/„Zgierz".
+ // Widok obu granic naraz pokazuje od razu, co jest na skraju kryteriów.
+ MRINGS=L.layerGroup([
+   L.circle(HOME_LL,{radius:15000,color:"#2b7bba",weight:1.4,fill:false,dashArray:"5,5"}),
+   L.circle(HOME_LL,{radius:8000,color:"#c0392b",weight:1.4,fill:false,dashArray:"3,4"}),
+   L.circleMarker(HOME_LL,{radius:4,color:"#c0392b",fillColor:"#c0392b",fillOpacity:1})
+     .bindTooltip("Radogoszcz — punkt odniesienia")
+ ]).addTo(MAP);
+}
+let missingOpen=false;
+function toggleMissing(){ missingOpen=!missingOpen; renderMissing(mapRows().filter(o=>!hasGeo(o))); }
+function renderMissing(rows){
+ const el=document.getElementById("mapMissing");
+ if(!missingOpen||!rows.length){ el.innerHTML=""; return; }
+ const r=rows.slice(0,300).map(o=>{ const i=O.indexOf(o);
+   return `<tr><td>${esc(CAT_SHORT[o.c]||o.c)}</td><td><span class="mm-open" onclick="mapOpen(${i})">${txt((o.t||"bez tytułu").slice(0,72))}</span><br><span style="color:#888">${o.pr?fmt(o.pr)+" zł":"cena?"} · ${txt(cap(o.loc))} · ${esc(o.po||"")}</span></td></tr>`; }).join("");
+ el.innerHTML=`<table><tbody>${r}</tbody></table>`
+   + (rows.length>300?`<div style="font-size:12px;color:#888;padding:6px 0">…i ${rows.length-300} więcej</div>`:"");
+}
+document.getElementById("mapStatus").addEventListener("click",e=>{
+ const c=e.target.closest(".mchip"); if(!c) return;
+ const v=c.dataset.s; mapSt = mapSt.includes(v) ? mapSt.filter(x=>x!==v) : mapSt.concat(v);
+ c.classList.toggle("on", mapSt.includes(v)); writeLS("vMapSt", mapSt); mapDirty=true; drawMap();
+});
+document.getElementById("mapCats").addEventListener("click",e=>{
+ const c=e.target.closest(".mchip"); if(!c) return;
+ const v=c.dataset.c; mapCat = mapCat.includes(v) ? mapCat.filter(x=>x!==v) : mapCat.concat(v);
+ c.classList.toggle("on", mapCat.includes(v)); writeLS("vMapCat", mapCat); mapDirty=true; drawMap();
+});
+document.getElementById("mapRings").addEventListener("change",e=>{
+ try{ localStorage.vMapRings = e.target.checked?"1":"0"; }catch(err){}
+ drawRings();
+});
+function restoreMapChips(){
+ document.querySelectorAll("#mapStatus .mchip").forEach(c=>c.classList.toggle("on", mapSt.includes(c.dataset.s)));
+ document.querySelectorAll("#mapCats .mchip").forEach(c=>c.classList.toggle("on", mapCat.includes(c.dataset.c)));
+}
+restoreMapChips();
+
 // ---------- STATYSTYKI (uproszczone, mobile-first: tylko panele wpływające na decyzję) ----------
 function setView(v){ view=v;
  document.getElementById("grid").style.display=v==="list"?"":"none";
  document.querySelector(".bar2").style.display=v==="list"?"":"none";
  document.getElementById("counter").style.display=v==="list"?"":"none";
  document.getElementById("stats").style.display=v==="stats"?"block":"none";
+ document.getElementById("mapWrap").style.display=v==="map"?"block":"none";
+ // W widoku mapy chowamy filtry LISTY (Do przejrzenia / Shortlist / Odrzucone /
+ // Wszystkie): mapa ma własny, wielokrotnego wyboru filtr statusu, a dwa różne
+ // filtry statusu na jednym ekranie to pewne nieporozumienie („dlaczego shortlist
+ // nie znika?"). Przy okazji odzyskujemy cały wiersz wysokości — na telefonie 375 px
+ // pasek nagłówka zajmował ~590 px, czyli mapa startowała pod krawędzią ekranu.
+ document.querySelectorAll(".bar .chip[data-f]").forEach(c=>{ c.style.display = v==="map"?"none":""; });
  const b=document.getElementById("statsToggle"); b.classList.toggle("on",v==="stats"); b.textContent=v==="stats"?"← Oferty":"📊 Statystyki";
+ const m=document.getElementById("mapToggle"); m.classList.toggle("on",v==="map"); m.textContent=v==="map"?"← Oferty":"🗺 Mapa";
  if(v==="stats") renderStats();
+ if(v==="map"){ drawMap();
+   // Przewiń mapę na ekran — inaczej na telefonie po kliknięciu „🗺 Mapa" widać
+   // dalej sam pasek nagłówka i wygląda to, jakby nic się nie stało.
+   setTimeout(()=>{ const el=document.getElementById("mapWrap");
+     if(el&&el.scrollIntoView) el.scrollIntoView({block:"start",behavior:"smooth"}); }, 60);
+ }
+ try{ localStorage.vView = v; }catch(e){}
 }
 const daysBetween = (a,b)=> Math.round((b-a)/864e5);
 const statSet = () => statCat==="all"?O:O.filter(o=>o.c===statCat);
@@ -363,31 +725,70 @@ function renderStats(){
  document.getElementById("stats").innerHTML = tabs + panelLejek(rows) + panelBenchmark(rows) + panelOkazje(rows) + panelShortlist() + panelPodaz(rows);
 }
 document.getElementById("statsToggle").onclick=()=>setView(view==="stats"?"list":"stats");
+document.getElementById("mapToggle").onclick=()=>setView(view==="map"?"list":"map");
+// Mapa i statystyki nie mogą być otwarte razem, a odświeżenie danych z bazy musi
+// przerysować pinezki — inaczej po nocnym publishu mapa pokazywałaby wczorajszy stan.
 
 const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",d:r.added,po:r.portal,st:r.status||"new",li:(r.listed||""),adr:r.address||"",lat:r.lat,lon:r.lon,tel:r.phone||"",op:r.orig_price});
 
+// FIX 2026-08-06: PostgREST ma serwerowy limit db-max-rows=1000. Dotad load() robil
+// goly .select() bez .range(), wiec przy 2059 wierszach aplikacja pokazywala 1000 —
+// 1059 ofert (w tym 143 nieocenione) bylo NIEWIDOCZNYCH. Brak .order() dodatkowo
+// znaczyl, ze te 1000 przychodzilo w kolejnosci fizycznej tabeli, czyli zestaw
+// ukrytych zmienial sie po kazdym DELETE/VACUUM. Teraz stronicujemy po 1000.
+// Tie-break .order("id") jest KONIECZNY: bez niego wiersze o identycznym "added"
+// moga sie powtarzac albo gubic miedzy kolejnymi .range().
+const PAGE_SIZE = 1000;
+// sortKey = kolumna glowna (malejaco), tieKey = tie-break (rosnaco). Tie-break jest
+// KONIECZNY: bez niego wiersze o identycznej wartosci sortKey moga sie powtarzac albo
+// gubic miedzy kolejnymi .range() — PostgreSQL nie gwarantuje stabilnej kolejnosci.
+async function fetchAllRows(table, cols, sortKey, tieKey){
+ let from = 0, out = [];
+ for(;;){
+   let q = sb.from(table).select(cols).order(sortKey, { ascending: false });
+   if(tieKey) q = q.order(tieKey, { ascending: true });
+   const { data, error } = await q.range(from, from + PAGE_SIZE - 1);
+   if(error) return { data: null, error };
+   out = out.concat(data);
+   if(data.length < PAGE_SIZE) break;
+   from += PAGE_SIZE;
+   if(from > 100000) break;   // bezpiecznik
+ }
+ return { data: out, error: null };
+}
+const fetchAllOffers = () => fetchAllRows("offers", LIST_COLS, "added", "id");
+
 async function load(){
- const { data, error } = await sb.from("offers").select(LIST_COLS);
+ const { data, error } = await fetchAllOffers();
  if(error){ if(!O.length) document.getElementById("grid").innerHTML='<div class="none">Błąd wczytywania bazy: '+esc(error.message)+'</div>'; setDot("off"); setDot._s="off"; return; }
  const byId={}; O.forEach(o=>byId[o.id]=o);
  O = data.map(r=>{ const m=mapRow(r); const old=byId[r.id]; if(old){ m.de=old.de; m.prm=old.prm; if(old.n)m.n=old.n; if(old.adr)m.adr=old.adr; } return m; });
  computeZoneMedians();
  if(cur){ const c=O.find(x=>x.id===cur.id); if(c){ cur=c; drawD(); } }   // re-link otwartej oferty po przeładowaniu
- const dr = await sb.from("decisions").select("offer_id,status,decided_at"); DECS = dr.data||[];
+ // ten sam limit 1000 dotyczy decisions (613 wierszy na 06.08, rosnie z kazda decyzja
+ // ⭐/✕ — po przekroczeniu 1000 licznik dziennego przegladu zaczalby zanizac po cichu)
+ const dr = await fetchAllRows("decisions", "offer_id,status,decided_at", "decided_at", "offer_id");
+ DECS = dr.data||[];
+ await loadNotesIndex();
  lastLoad=Date.now();
  document.title="Oferty ("+O.length+")"; render(); if(view==="stats") renderStats();
+ mapDirty=true; if(view==="map") drawMap();
 }
 function subscribe(){
  sb.channel("offers-rt").on("postgres_changes",{event:"*",schema:"public",table:"offers"}, payload=>{
    const r=payload.new||payload.old; if(!r) return;
    if(payload.eventType==="DELETE"){ O=O.filter(o=>o.id!==r.id); }
    else { const o=O.find(x=>x.id===r.id); const m=mapRow(payload.new); if(o){ Object.assign(o,m); } else { O.push(m); } }
-   render(); if(cur){ const c=O.find(x=>x.id===cur.id); if(c){ const de=cur.de,prm=cur.prm; cur=c; cur.de=de; cur.prm=prm; drawD(); } }
+   render(); mapDirty=true; if(view==="map") drawMap();
+   if(cur){ const c=O.find(x=>x.id===cur.id); if(c){ const de=cur.de,prm=cur.prm,ns=cur.notesList; cur=c; cur.de=de; cur.prm=prm; cur.notesList=ns; drawD(); } }
  }).subscribe(s=>{ setDot._s=(s==="SUBSCRIBED"?"live":"off"); setDot(setDot._s); render(); });
 }
 // odśwież po powrocie do karty, ale nie częściej niż co 60 s (realtime i tak trzyma dane świeże)
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && Date.now()-lastLoad>60000) load(); });
 load().then(subscribe);
+// Widoku „map" NIE przywracamy na starcie celowo: pierwszy ekran ma być listą ofert,
+// a mapa dociąga 200 kB bibliotek. Zapamiętany jest natomiast stan filtrów i pozycja.
+if(localStorage.vView==="stats") setView("stats");
 scheduleMidnight();
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{})); }
 </script></body></html>

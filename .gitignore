@@ -1,0 +1,8 @@
+# Klucze i sekrety — NIGDY w repo (2026-08-06)
+.supabase
+.github_token
+*.key
+*.pem
+# Kopie zapasowe robocze
+*.bak-*
+*.bak_*
