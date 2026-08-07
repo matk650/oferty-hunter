@@ -5,7 +5,17 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Oferty">
-<link rel="apple-touch-icon" href="icon-192.png">
+<!-- IKONY iOS (2026-08-07). apple-touch-icon MUSI być BEZ kanału alfa: iOS nie
+     obsługuje przezroczystości na ekranie głównym — składa ją na CZARNO, a potem
+     nakłada własną maskę squircle. icon-192.png ma przezroczyste rogi zaokrąglonego
+     kwadratu (4% pikseli), więc na telefonie dawał czarne narożniki. Nowe pliki są
+     pełnoklatkowe (tło #2e7d46 wypełnia rogi) i płaskie — zaokrągla samo iOS.
+     180 px to rozmiar dla iPhone'ów, 167/152 dla iPadów. Ikony w manifeście
+     zostają z alfą: Android i przeglądarki radzą sobie z nią poprawnie. -->
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="167x167" href="apple-touch-icon-167.png">
+<link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>body{font-family:system-ui;background:#f6f5f2;margin:0;padding:16px;color:#222}
 h1.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;position:sticky;top:0;background:#f6f5f2;padding:8px 0;z-index:5}
@@ -84,7 +94,13 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
 .slcard .lnk{margin-top:6px;display:flex;gap:10px}.slcard .lnk a{color:#27693c;text-decoration:none;font-weight:600;font-size:13px}
 @media(max-width:520px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}}
 /* ── MAPA (v8, 2026-08-06) ───────────────────────────────────────────────── */
+/* Widoczność sterowana KLASĄ, nie stylem inline. Powód (2026-08-07): setView()
+   ustawiał element.style.display="block", a styl inline bije regułę z arkusza —
+   więc `#mapWrap.fs{display:flex}` nigdy nie wchodziło i mapa na pełnym ekranie
+   dostawała wysokość 0 px (kontener był blokiem, a #map miał flex:1 bez flexa). */
 #mapWrap{display:none;padding:8px 10px 20px}
+#mapWrap.on{display:block}
+#mapWrap.on.fs{display:flex}
 .mapbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
 .mchips{display:flex;gap:4px;flex-wrap:wrap}
 .mchip{font-size:12px;padding:5px 9px;border-radius:14px;border:1px solid #d5d5d8;background:#fff;cursor:pointer;user-select:none;white-space:nowrap}
@@ -93,6 +109,51 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
 /* Wysokosc z dvh: na telefonie pasek URL Safari zmienia viewport i przy 100vh mapa
    wystawala pod krawedz ekranu, zabierajac przyciski oceny. */
 #map{height:62dvh;min-height:340px;border-radius:12px;border:1px solid #e3e3e6;background:#eef1f4;z-index:0}
+/* ── PEŁNY EKRAN MAPY (2026-08-07) ────────────────────────────────────────────
+   NA CSS, NIE PRZEZ Fullscreen API. Powód jest twardy: WebKit na iPhonie nie
+   udostępnia Element.requestFullscreen() — działa on wyłącznie dla <video>. Czyli
+   na GŁÓWNYM urządzeniu Mateusza natywny fullscreen po prostu by nie zadziałał,
+   a musielibyśmy i tak mieć ścieżkę zapasową. Jedna droga, która działa wszędzie,
+   jest lepsza niż dwie, z których jedna milczy akurat na telefonie.
+   W trybie standalone (ikona z ekranu głównego) nie ma paska przeglądarki, więc
+   position:fixed to jest już prawdziwy pełny ekran. */
+#mapWrap.fs{position:fixed;inset:0;z-index:9000;background:#f6f5f2;padding:0;margin:0;
+  flex-direction:column;overflow:hidden}
+/* Pasek filtrów zjeżdża pod notch/Dynamic Island. env(safe-area-inset-*) dziala,
+   bo <meta viewport> ma viewport-fit=cover. */
+#mapWrap.fs .mapbar{margin:0;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 8px;
+  background:#f6f5f2;border-bottom:1px solid #e6e4df;flex:0 0 auto}
+/* 100% zamiast 100dvh: kontener jest flexem, wiec mapa bierze CALA reszte wysokosci
+   po pasku filtrow i stopce — bez zgadywania, ile te paski zajmuja. */
+#mapWrap.fs #map{height:auto;flex:1 1 auto;min-height:0;border-radius:0;border:0}
+#mapWrap.fs .mapfoot{flex:0 0 auto;margin:0;padding:7px 10px calc(env(safe-area-inset-bottom,0px) + 7px);
+  background:#f6f5f2;border-top:1px solid #e6e4df;font-size:12px}
+#mapWrap.fs #mapMissing{display:none}   /* lista braków nie ma sensu na pełnym ekranie */
+body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
+.fsbtn{font-size:12px;padding:5px 9px;border-radius:14px;border:1px solid #d5d5d8;
+  background:#fff;cursor:pointer;white-space:nowrap;margin-left:auto}
+#mapWrap.fs .fsbtn{background:#1a1a1c;color:#fff;border-color:#1a1a1c}
+/* Zamykanie: ✕ jako zwykły element PASKA, nie pływający absolutnie. Pierwsza wersja
+   wisiała na position:absolute z odsunięciem 56 px od góry i nachodziła na przycisk
+   „Zwykły widok". Jako element flexa z margin-left:auto zawijał się z kolei do
+   OSOBNEGO, trzeciego wiersza i zjadał 55 px wysokości mapy. Wersja trzecia i dobra:
+   absolutnie, ale względem PASKA (position:relative), nie względem całego kontenera —
+   wtedy jedyna stała liczba to własny padding paska, który znam. Miejsce rezerwuje
+   padding-right, więc chipy nigdy pod niego nie wejdą, niezależnie od zawijania.
+   44×44 px to minimum dotykowe z wytycznych Apple. */
+#mapClose{display:none}
+#mapWrap.fs .mapbar{position:relative;padding-right:62px}   /* miejsce na ✕ */
+#mapWrap.fs #mapClose{display:flex;position:absolute;right:10px;
+  top:calc(env(safe-area-inset-top,0px) + 6px);
+  width:44px;height:44px;align-items:center;justify-content:center;
+  border-radius:50%;border:0;background:#1a1a1c;color:#fff;font-size:19px;
+  cursor:pointer}
+/* Na pełnym ekranie ✕ JEST wyjściem — tekstowy przełącznik byłby drugim przyciskiem
+   robiącym to samo, a miejsca w pasku na telefonie nie ma. */
+#mapWrap.fs .fsbtn{display:none}
+/* Legenda kolorów zjadała 125 px z 812 (15% ekranu). Na pełnym ekranie liczy się
+   mapa — zostaje sam licznik „na mapie X z Y", bo on mówi, czy mapa nie kłamie. */
+#mapWrap.fs .mapfoot .leg{display:none}
 .mapfoot{font-size:12px;color:#666;margin-top:7px;line-height:1.5}
 .mapfoot b{color:#1a1a1c}
 .mapfoot .lnk{color:#0a58ca;text-decoration:underline;cursor:pointer}
@@ -171,6 +232,8 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
    <span class="mchip on" data-c="m_dz">M-dz</span><span class="mchip on" data-c="m_dom">M-dom</span><span class="mchip on" data-c="jez_dz">J-dz</span><span class="mchip on" data-c="jez_dom">J-dom</span>
   </span>
   <label class="mtog"><input type="checkbox" id="mapRings"> promień 15 km</label>
+  <button class="fsbtn" id="mapFs" aria-label="Pełny ekran mapy">⛶ Pełny ekran</button>
+  <button id="mapClose" aria-label="Zamknij pełny ekran" title="Zamknij (Esc)">✕</button>
  </div>
  <div id="map"></div>
  <div class="mapfoot" id="mapFoot"></div>
@@ -619,6 +682,31 @@ function drawRings(){
      .bindTooltip("Radogoszcz — punkt odniesienia")
  ]).addTo(MAP);
 }
+// ── PEŁNY EKRAN MAPY ────────────────────────────────────────────────────────
+let mapFsOn=false;
+function setMapFs(on){
+ mapFsOn=!!on;
+ const w=document.getElementById("mapWrap");
+ w.classList.toggle("fs", mapFsOn);
+ document.body.classList.toggle("fs-lock", mapFsOn);
+ const b=document.getElementById("mapFs");
+ b.textContent = mapFsOn ? "⤢ Zwykły widok" : "⛶ Pełny ekran";
+ b.setAttribute("aria-label", mapFsOn ? "Wyjdź z pełnego ekranu" : "Pełny ekran mapy");
+ // Leaflet trzyma rozmiar kontenera w pamięci — bez invalidateSize() po zmianie
+ // wysokości kafelki zostają narysowane na starym obszarze i pół mapy jest szare.
+ // Dwa wywołania: od razu (żeby nie było mrugnięcia) i po klatce (gdy layout flexa
+ // jest już policzony).
+ if(MAP){ MAP.invalidateSize(); requestAnimationFrame(()=>MAP.invalidateSize()); }
+ try{ localStorage.vMapFs = mapFsOn ? "1" : "0"; }catch(e){}
+}
+document.getElementById("mapFs").onclick=()=>setMapFs(!mapFsOn);
+document.getElementById("mapClose").onclick=()=>setMapFs(false);
+// Esc zamyka pełny ekran. Sprawdzamy PRZED obsługą modala oferty (ten sam klawisz),
+// bo gdy mapa jest na pełnym ekranie, to ona jest wierzchnią warstwą.
+document.addEventListener("keydown", e=>{
+ if(e.key==="Escape" && mapFsOn && !cur){ setMapFs(false); e.stopPropagation(); }
+}, true);
+
 let missingOpen=false;
 function toggleMissing(){ missingOpen=!missingOpen; renderMissing(mapRows().filter(o=>!hasGeo(o))); }
 function renderMissing(rows){
@@ -655,7 +743,11 @@ function setView(v){ view=v;
  document.querySelector(".bar2").style.display=v==="list"?"":"none";
  document.getElementById("counter").style.display=v==="list"?"":"none";
  document.getElementById("stats").style.display=v==="stats"?"block":"none";
- document.getElementById("mapWrap").style.display=v==="map"?"block":"none";
+ document.getElementById("mapWrap").classList.toggle("on", v==="map");
+ // Wyjście z widoku mapy MUSI zdjąć pełny ekran: klasa .fs to position:fixed, więc
+ // gdyby została, przykryłaby listę ofert niewidzialnym kontenerem (display:none
+ // zdejmuje ją z widoku, ale blokada przewijania body zostałaby na zawsze).
+ if(v!=="map" && mapFsOn) setMapFs(false);
  // W widoku mapy chowamy filtry LISTY (Do przejrzenia / Shortlist / Odrzucone /
  // Wszystkie): mapa ma własny, wielokrotnego wyboru filtr statusu, a dwa różne
  // filtry statusu na jednym ekranie to pewne nieporozumienie („dlaczego shortlist
@@ -666,6 +758,9 @@ function setView(v){ view=v;
  const m=document.getElementById("mapToggle"); m.classList.toggle("on",v==="map"); m.textContent=v==="map"?"← Oferty":"🗺 Mapa";
  if(v==="stats") renderStats();
  if(v==="map"){ drawMap();
+   // Pełny ekran jest zapamiętywany: jeśli Mateusz ostatnio oglądał mapę na pełnym
+   // ekranie, to znaczy, że tak jej używa — niech nie klika drugi raz przy każdym wejściu.
+   if(localStorage.vMapFs==="1") setTimeout(()=>setMapFs(true), 80);
    // Przewiń mapę na ekran — inaczej na telefonie po kliknięciu „🗺 Mapa" widać
    // dalej sam pasek nagłówka i wygląda to, jakby nic się nie stało.
    setTimeout(()=>{ const el=document.getElementById("mapWrap");
