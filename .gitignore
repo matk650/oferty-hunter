@@ -6,3 +6,10 @@
 # Kopie zapasowe robocze
 *.bak-*
 *.bak_*
+
+# 2026-08-07: migracje NADAJACE UPRAWNIENIA zostaja lokalnie.
+# Repo jest publiczne (GitHub Pages), a taki plik opisuje wprost, co da sie
+# zrobic kluczem publikowalnym z index.html — czyli jest instrukcja naduzycia.
+# Sam klucz jawny bylby OK; mapa jego uprawnien juz nie. Migracje schematu
+# (np. offer_notes) zostaja w repo, bo nie opisuja powierzchni ataku na `offers`.
+migrations/*grants*.sql
