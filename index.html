@@ -162,12 +162,65 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
 #mapMissing td{padding:5px 6px;border-bottom:1px solid #eee;vertical-align:top}
 #mapMissing td:first-child{white-space:nowrap;color:#777}
 #mapMissing .mm-open{color:#0a58ca;cursor:pointer;text-decoration:underline}
-/* Pinezka: KOLOR = kategoria, OBWODKA = status. Shortlist ma grubą złotą obwódkę
-   i wieksza srednice, zeby bylo ja widac z pierwszego spojrzenia przy oddaleniu. */
-.pin{border-radius:50%;box-sizing:border-box;box-shadow:0 1px 3px rgba(0,0,0,.45)}
-.pin.st-short{border:3px solid #f0a500;width:20px;height:20px}
-.pin.st-rej{border:2px solid #fff;opacity:.45;width:11px;height:11px}
-.pin.st-new{border:2px solid #fff;width:14px;height:14px}
+/* ── PINEZKI (przebudowa 2026-08-07) ──────────────────────────────────────────
+   KODOWANIE ODWZOROWUJE STRUKTURE DANYCH, a nie listę czterech kategorii:
+     KOLOR   = region  (niebieski = Łódź/okolice, pomarańczowy = jeziora)
+     KSZTAŁT = rodzaj  (kwadrat = działka, koło = dom)
+     OBWÓDKA = status  (złota gruba = shortlist, przygaszona = odrzucone)
+   Kategorie są przecież 2×2 (miasto/jezioro × działka/dom), więc dwa niezależne
+   kanały opisują je bez reszty — i to jest cała różnica jakościowa wobec wersji
+   z 06.08, gdzie o wszystkim decydował sam kolor.
+
+   DLACZEGO NIE CZTERY KOLORY. Sprawdzone walidatorem palet (nie na oko): stara
+   czwórka #2b7bba/#1f9d55/#7b4bc9/#d1671f przy sprawdzeniu WSZYSTKICH par oblewała
+   nawet próg dla NORMALNEGO widzenia — niebieski↔fiolet ΔE 14,8 (próg 15), a przy
+   deuteranopii 6,3. Na mapie każde dwie kategorie mogą leżeć obok siebie, więc liczy
+   się każda para, nie tylko sąsiednie w legendzie. Do tego zieleń #1f9d55 siedziała
+   na zielonych polach i lasach OSM, czyli w najgorszym możliwym tle.
+   Para #1976d2 / #e8590c to kanoniczna para bezpieczna dla daltonizmu: ΔE 26,2
+   przy protanopii i 35,1 przy normalnym widzeniu, na jasnym i ciemnym tle.
+   Rodzaj nieruchomości niesie KSZTAŁT, więc identyczność nigdy nie zależy od
+   samego koloru — a jeziora i Łódź leżą 100 km od siebie i tak nigdy nie sąsiadują.
+
+   ROZMIARY. Poprzednio 14 px (nieocenione) i 11 px (odrzucone) — za mało, żeby
+   trafić palcem i żeby odróżnić kształt. Teraz 26/34/18 px. */
+.pin{box-sizing:border-box;box-shadow:0 1px 4px rgba(0,0,0,.5);
+  border:2px solid #fff;background-clip:padding-box}
+.pin.k-dz{border-radius:3px}      /* działka — kwadrat (parcela) */
+.pin.k-dom{border-radius:50%}     /* dom — koło */
+.pin.st-new{width:26px;height:26px}
+.pin.st-short{width:34px;height:34px;border:3px solid #f5a300;
+  box-shadow:0 0 0 2px rgba(245,163,0,.35),0 2px 6px rgba(0,0,0,.5)}
+.pin.st-rej{width:18px;height:18px;opacity:.5}
+/* Etykieta ceny na pinezce — pokazywana WYŁĄCZNIE przy dużym zoomie (klasa .zoom-lg
+   na kontenerze mapy). Przy oddaleniu 400 etykiet byłoby nieczytelną kaszą, a przy
+   zbliżeniu to najszybszy sposób porównania ofert w okolicy bez klikania każdej.
+   Przełączamy JEDNĄ KLASĄ na kontenerze, nie przebudową 400 ikon — przebudowa przy
+   każdym zoomie zauważalnie zamula telefon. */
+.pinlab{display:none;position:absolute;left:50%;transform:translateX(-50%);
+  top:100%;margin-top:2px;white-space:nowrap;font-size:11px;font-weight:700;
+  line-height:1.35;padding:1px 5px;border-radius:6px;background:rgba(255,255,255,.94);
+  color:#1a1a1c;box-shadow:0 1px 3px rgba(0,0,0,.3);pointer-events:none}
+#map.zoom-lg .pinlab{display:block}
+#map.zoom-lg .st-rej .pinlab{display:none}   /* odrzucone bez etykiet — to tylko tło */
+/* Klaster: NEUTRALNA grafit, nie kolor kategorii. Domyślne zielono-żółto-pomarańczowe
+   bąbelki markerclustera czytały się jak jeszcze jedna kategoria. */
+.mclus{background:rgba(38,38,42,.88);color:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-weight:700;
+  border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45)}
+/* Moja lokalizacja — celowo INNY język wizualny niż oferty (nie kwadrat, nie koło
+   z obwódką): pulsujący punkt z aureolą dokładności, jak w mapach systemowych. */
+.mepin{width:16px;height:16px;border-radius:50%;background:#1a73e8;
+  border:3px solid #fff;box-shadow:0 0 0 2px rgba(26,115,232,.35),0 1px 4px rgba(0,0,0,.4)}
+/* Przycisk lokalizacji jest KONTROLKĄ LEAFLETA, nie elementem wstawionym do #map:
+   drawMap() czyści innerHTML kontenera przed inicjalizacją mapy, więc zwykły <button>
+   w markupie znikał bez śladu. Leaflet sam trzyma kontrolki we własnej warstwie
+   i pozycjonuje je przy narożniku — także po wejściu na pełny ekran. */
+.mebtn{width:40px;height:40px;border-radius:50%;border:0;background:#fff;color:#1a1a1c;
+  font-size:18px;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.35);
+  display:flex;align-items:center;justify-content:center;margin:0 12px 12px 0}
+.mebtn.on{background:#1a73e8;color:#fff}
+.mebtn[disabled]{opacity:.5}
 .leaflet-popup-content{margin:9px 11px;font-size:13px;line-height:1.45}
 .pp img{width:100%;height:96px;object-fit:cover;border-radius:7px;margin-bottom:6px;background:#eee}
 .pp b{font-size:14px}
@@ -175,8 +228,11 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
 .pp .pa{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
 .pp .pa button,.pp .pa a{font-size:12px;padding:6px 9px;border-radius:8px;border:1px solid #d5d5d8;background:#fff;cursor:pointer;text-decoration:none;color:#1a1a1c}
 .pp .pa .go{background:#1a1a1c;color:#fff;border-color:#1a1a1c}
-.leg{display:flex;gap:9px;flex-wrap:wrap;font-size:11px;color:#666;margin-top:6px}
-.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:3px;vertical-align:-1px}
+.leg{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:#666;margin-top:6px;align-items:center}
+.leg i{display:inline-block;width:11px;height:11px;margin-right:4px;vertical-align:-1px;
+  border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.leg i.kdz{border-radius:2px}
+.leg i.kdom{border-radius:50%}
 /* ── NOTATKI (v8, 2026-08-06) ────────────────────────────────────────────── */
 .nbox{margin:12px 0 4px;border-top:1px solid #eee;padding-top:10px}
 .nbox h4{margin:0 0 6px;font-size:13px;color:#444;font-weight:600}
@@ -538,8 +594,25 @@ document.getElementById("ov").addEventListener("click",e=>{ if(e.target.id==="ov
 // przejrzenia, mapa = przegląd całego rynku), łączą się ze sobą (status ∩ kategoria)
 // i są zapamiętywane w localStorage razem z pozycją mapy.
 const HOME_LL = [51.8210, 19.4480];          // Radogoszcz
-const CAT_COLOR = {m_dz:"#2b7bba", m_dom:"#1f9d55", jez_dz:"#7b4bc9", jez_dom:"#d1671f"};
+// KOLOR = region, KSZTAŁT = rodzaj. Para bezpieczna dla daltonizmu (walidator palet:
+// ΔE 26,2 protanopia / 35,1 normalne widzenie) — patrz komentarz przy .pin w CSS.
+const REG_COLOR = {m:"#1976d2", j:"#e8590c"};
+const CAT_COLOR = {m_dz:REG_COLOR.m, m_dom:REG_COLOR.m, jez_dz:REG_COLOR.j, jez_dom:REG_COLOR.j};
+const CAT_KSZT  = {m_dz:"k-dz", m_dom:"k-dom", jez_dz:"k-dz", jez_dom:"k-dom"};
 const CAT_SHORT = {m_dz:"Mieszk. działki", m_dom:"Mieszk. domy", jez_dz:"Jeziora działki", jez_dom:"Jeziora domy"};
+// Odległość od Radogoszcza pokazywana w popupie. Bezpośrednia odpowiedź na pytanie
+// „czy ta pinezka jest tam, gdzie myślę" — liczba mówi to, czego oko na mapie nie oceni.
+function kmOd(o){
+  if(!hasGeo(o)) return null;
+  const R=6371, d2r=Math.PI/180;
+  const dla=(o.lat-HOME_LL[0])*d2r, dlo=(o.lon-HOME_LL[1])*d2r;
+  const a2=Math.sin(dla/2)**2+Math.cos(HOME_LL[0]*d2r)*Math.cos(o.lat*d2r)*Math.sin(dlo/2)**2;
+  return R*2*Math.asin(Math.min(1,Math.sqrt(a2)));
+}
+// Cena skrócona na etykietę pinezki: 449 000 → „449k", 1 250 000 → „1,25M".
+const cenaKrotko = p => p==null ? "" :
+  (p>=1e6 ? (p/1e6).toFixed(2).replace(/\.?0+$/,"").replace(".",",")+"M"
+          : Math.round(p/1000)+"k");
 let MAP=null, MCLUS=null, MRINGS=null, mapLoaded=false, mapDirty=true;
 let mapSt = readLS("vMapSt", ["new","short"]);
 let mapCat = readLS("vMapCat", ["m_dz","m_dom","jez_dz","jez_dom"]);
@@ -595,18 +668,32 @@ function mapRows(){
 
 function pinIcon(o){
  const s=norm(o.st), cls = s==="short"?"st-short":s==="rej"?"st-rej":"st-new";
- const sz = s==="short"?20:s==="rej"?11:14;
+ const sz = s==="short"?34:s==="rej"?18:26;
+ const lab = o.pr ? `<span class="pinlab">${esc(cenaKrotko(o.pr))}</span>` : "";
+ // Rozmiar i kształt są w CSS (klasy .st-* i .k-*), nie w stylu inline — inaczej
+ // każda zmiana rozmiaru wymagałaby przebudowy wszystkich ikon w JS.
  return L.divIcon({className:"", iconSize:[sz,sz], iconAnchor:[sz/2,sz/2],
-   html:`<span class="pin ${cls}" style="background:${CAT_COLOR[o.c]||"#666"};display:block;width:${sz}px;height:${sz}px"></span>`});
+   html:`<span class="pin ${cls} ${CAT_KSZT[o.c]||"k-dom"}" `
+       +`style="background:${CAT_COLOR[o.c]||"#666"};display:block">${lab}</span>`});
 }
 
 function popupHtml(o){
  const i=O.indexOf(o);
- const img = o.ph&&o.ph.length ? `<img loading="lazy" alt="" src="${esc(o.ph[0])}">` : "";
+ // onerror: CDN portali gubi zdjęcia (najczęściej OLX po zdjęciu oferty). Bez tego
+ // w popupie zostawała szara ramka udająca, że zdjęcie się jeszcze wczytuje.
+ const img = o.ph&&o.ph.length
+   ? `<img loading="lazy" alt="" src="${esc(o.ph[0])}" onerror="this.remove()">` : "";
  const p2 = (o.pr&&o.a) ? " · "+fmt(Math.round(o.pr/o.a))+" zł/m²" : "";
  const s=decit(o);
+ const d=kmOd(o);
+ // Dystans od Radogoszcza: 15 km to granica geofence dla nieznanej miejscowości,
+ // 8 km dla samego „Łódź". Liczba w popupie mówi od razu, czy oferta jest na skraju
+ // kryteriów — i pozwala wychwycić pinezkę, która trafiła nie tam, gdzie powinna.
+ // Przecinek dziesiętny, nie kropka — polska konwencja („1,6 km", nie „1.6 km").
+ const dyst = d==null ? "" :
+   ` · <b>${(d<10?d.toFixed(1).replace(".",","):String(Math.round(d)))} km</b> od Radogoszcza`;
  return `<div class="pp">${img}<b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b> <span style="color:#666">${o.a?fmt(o.a)+" m²":""}${p2}</span>
-  <span class="pl">${txt(cap(o.loc))} · ${esc(o.po||"")}${s?" · "+statusLabel(s):""}</span>
+  <span class="pl">${txt(cap(o.loc))} · ${esc(o.po||"")}${s?" · "+statusLabel(s):""}${dyst}</span>
   ${txt((o.t||"").slice(0,90))}
   <div class="pa"><button onclick="mapSet(${i},'short')">⭐</button><button onclick="mapSet(${i},'rej')">✕</button>
    <button onclick="mapOpen(${i})">Szczegóły</button>
@@ -639,9 +726,25 @@ async function drawMap(){
   // in undefined" w jego własnym handlerze moveend, i wtedy popup się nie otwiera.
   // Bez klastrowania na dużym zoomie ta ścieżka w ogóle nie jest używana.
   MCLUS=L.markerClusterGroup({chunkedLoading:true, spiderfyOnMaxZoom:false,
-    disableClusteringAtZoom:16, maxClusterRadius:52});
+    disableClusteringAtZoom:16, maxClusterRadius:52,
+    // Własna ikona klastra: NEUTRALNA grafit i rozmiar rosnący z liczbą ofert.
+    // Domyślne zielono-żółto-pomarańczowe bąbelki markerclustera czytały się jak
+    // jeszcze jedna kategoria obok niebieskiego i pomarańczowego.
+    iconCreateFunction: c => {
+      const n=c.getChildCount();
+      const sz = n<10?34 : n<50?42 : n<200?50 : 58;
+      return L.divIcon({className:"", iconSize:[sz,sz], iconAnchor:[sz/2,sz/2],
+        html:`<span class="mclus" style="width:${sz}px;height:${sz}px;`
+            +`font-size:${n<100?13:12}px">${n}</span>`});
+    }});
   MAP.addLayer(MCLUS);
   MAP.on("moveend zoomend", saveMapPos);
+  // Etykiety cen pojawiają się od zoomu 15 — jedna klasa na kontenerze, bez
+  // przebudowy 400 ikon (przebudowa przy każdym zoomie zamula telefon).
+  const zoomKlasa=()=>document.getElementById("map")
+    .classList.toggle("zoom-lg", MAP.getZoom()>=15);
+  MAP.on("zoomend", zoomKlasa); zoomKlasa();
+  dodajPrzyciskMnie();
   mapLoaded=true; mapDirty=true;
   document.getElementById("mapRings").checked = localStorage.vMapRings==="1";
  }
@@ -658,13 +761,19 @@ async function drawMap(){
   MCLUS.addLayers(ms);
   drawRings();
   const brak=rows.length-zGeo.length;
-  const leg=Object.keys(CAT_COLOR).map(c=>`<span><i style="background:${CAT_COLOR[c]}"></i>${esc(CAT_SHORT[c])}</span>`).join("");
+  // Legenda pokazuje OBA kanały osobno (kolor = region, kształt = rodzaj), bo tak
+  // je czyta oko — czterech wpisów „kolor+kształt razem" nikt nie zapamięta.
+  const leg=`<span><i class="kdom" style="background:${REG_COLOR.m}"></i>Łódź i okolice</span>`
+    +`<span><i class="kdom" style="background:${REG_COLOR.j}"></i>jeziora</span>`
+    +`<span><i class="kdz" style="background:#7a7a7f"></i>działka</span>`
+    +`<span><i class="kdom" style="background:#7a7a7f"></i>dom</span>`
+    +`<span>⭐ złota obwódka = shortlist · przygaszone = odrzucone</span>`;
   // Licznik „na mapie X z Y" jest OBOWIĄZKOWY, nie ozdobny: brak pinezki wygląda
   // dokładnie tak samo jak brak oferty, więc bez tej liczby mapa kłamie w milczeniu.
   document.getElementById("mapFoot").innerHTML =
     `Na mapie <b>${zGeo.length}</b> z <b>${rows.length}</b> ofert (wg filtrów mapy)`
     + (brak?` — <span class="lnk" onclick="toggleMissing()">${brak} bez współrzędnych ▾</span>`:"")
-    + `<div class="leg">${leg}<span>⭐ gruba złota obwódka = shortlist · przygaszone = odrzucone</span></div>`;
+    + `<div class="leg">${leg}</div>`;
   renderMissing(rows.filter(o=>!hasGeo(o)));
   mapDirty=false;
  }
@@ -682,6 +791,61 @@ function drawRings(){
      .bindTooltip("Radogoszcz — punkt odniesienia")
  ]).addTo(MAP);
 }
+// ── MOJA LOKALIZACJA ────────────────────────────────────────────────────────
+// Geolokalizacja wymaga HTTPS — GitHub Pages je daje, więc działa i w przeglądarce,
+// i w aplikacji z ekranu głównego. Świadomie NIE pytamy o zgodę przy wejściu na mapę:
+// przeglądarka pokazałaby monit systemowy bez kontekstu. Pytamy dopiero po kliknięciu
+// przycisku ◎, czyli gdy Mateusz sam o to poprosił.
+let ME=null, MEACC=null, meWatch=null;
+function meIcon(){ return L.divIcon({className:"", iconSize:[16,16], iconAnchor:[8,8],
+  html:'<span class="mepin"></span>'}); }
+function pokazMnie(pos){
+ const ll=[pos.coords.latitude, pos.coords.longitude], acc=pos.coords.accuracy||0;
+ if(!MAP) return;
+ if(!ME){ ME=L.marker(ll,{icon:meIcon(),zIndexOffset:1000,
+            interactive:true}).addTo(MAP).bindPopup("Tu jesteś"); }
+ else ME.setLatLng(ll);
+ // Aureola dokładności: bez niej pojedynczy punkt sugeruje precyzję, której GPS
+ // w telefonie nie ma (w budynku bywa 50–500 m).
+ if(MEACC) MAP.removeLayer(MEACC);
+ MEACC = acc>25 ? L.circle(ll,{radius:acc,color:"#1a73e8",weight:1,
+           fillColor:"#1a73e8",fillOpacity:.08}).addTo(MAP) : null;
+ const b=document.getElementById("meBtn"); if(b){ b.classList.add("on"); b.disabled=false; }
+}
+function bladLokalizacji(err){
+ const b=document.getElementById("meBtn"); if(b){ b.classList.remove("on"); b.disabled=false; }
+ toast(err && err.code===1 ? "Brak zgody na lokalizację (włącz w ustawieniach)"
+       : "Nie udało się ustalić lokalizacji");
+}
+function mojaLokalizacja(){
+ if(!navigator.geolocation){ toast("Ta przeglądarka nie umie geolokalizacji"); return; }
+ const b=document.getElementById("meBtn");
+ // Drugie kliknięcie = wyśrodkuj na mnie (a nie „włącz jeszcze raz").
+ if(ME){ MAP.setView(ME.getLatLng(), Math.max(MAP.getZoom(),14)); return; }
+ if(b) b.disabled=true;
+ toast("Ustalam lokalizację…");
+ navigator.geolocation.getCurrentPosition(p=>{
+   pokazMnie(p);
+   MAP.setView([p.coords.latitude,p.coords.longitude], Math.max(MAP.getZoom(),13));
+   // watchPosition dopiero PO pierwszym trafieniu: w ruchu pinezka nadąża, a przy
+   // nieudanej pierwszej próbie nie zostawiamy wiszącego nasłuchu na baterii.
+   if(meWatch===null) meWatch=navigator.geolocation.watchPosition(
+     pokazMnie, ()=>{}, {enableHighAccuracy:true, maximumAge:30000, timeout:20000});
+ }, bladLokalizacji, {enableHighAccuracy:true, timeout:15000, maximumAge:60000});
+}
+function dodajPrzyciskMnie(){
+ const C=L.Control.extend({options:{position:"bottomright"},
+   onAdd(){ const b=L.DomUtil.create("button","mebtn");
+     b.id="meBtn"; b.type="button"; b.textContent="◎";
+     b.setAttribute("aria-label","Pokaż moją lokalizację");
+     b.title="Moja lokalizacja";
+     // stopPropagation: bez tego klik w przycisk przesuwa mapę pod spodem
+     L.DomEvent.disableClickPropagation(b);
+     L.DomEvent.on(b,"click",e=>{ L.DomEvent.stop(e); mojaLokalizacja(); });
+     return b; }});
+ new C().addTo(MAP);
+}
+
 // ── PEŁNY EKRAN MAPY ────────────────────────────────────────────────────────
 let mapFsOn=false;
 function setMapFs(on){

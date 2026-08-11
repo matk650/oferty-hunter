@@ -2,10 +2,11 @@
 // Nazwa cache = WERSJA. Bump przy kazdym deployu, ktory zmienia index.html: handler
 // `activate` usuwa wszystkie cache o innej nazwie, wiec bez bumpu stary app-shell
 // (w tym stary index.html jako fallback offline) zostaje na telefonie na zawsze.
+// v10 (2026-08-07): czytelność mapy — kolor/kształt/rozmiar pinezek, moja lokalizacja.
 // v9 (2026-08-07): pełny ekran mapy + płaskie ikony iOS.
 // v8 (2026-08-06): mapa + notatki. Poprzednia nazwa "oferty-v1" trzymala jeszcze
 // wersje BEZ stronicowania fetchAllRows, czyli te, ktora pokazywala 1000 z 2300 ofert.
-const C = "oferty-v9";
+const C = "oferty-v10";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",
