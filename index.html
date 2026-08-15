@@ -228,6 +228,7 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
 .pp .pa{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
 .pp .pa button,.pp .pa a{font-size:12px;padding:6px 9px;border-radius:8px;border:1px solid #d5d5d8;background:#fff;cursor:pointer;text-decoration:none;color:#1a1a1c}
 .pp .pa .go{background:#1a1a1c;color:#fff;border-color:#1a1a1c}
+.pp .pa .hid{border-color:#e0b4b4}
 .leg{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:#666;margin-top:6px;align-items:center}
 .leg i{display:inline-block;width:11px;height:11px;margin-right:4px;vertical-align:-1px;
   border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
@@ -260,6 +261,7 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
  <span class="chip" data-f="short">⭐ Shortlist</span>
  <span class="chip" data-f="rej">Odrzucone</span>
  <span class="chip" data-f="all">Wszystkie</span>
+ <span class="chip" data-f="hidden">🚫 Ukryte</span>
  <button class="chip" id="mapToggle">🗺 Mapa</button>
  <button class="chip" id="statsToggle">📊 Statystyki</button>
  <span class="meta" id="meta"><span class="dot" id="dot"></span><span id="metaTxt">Łączę z bazą…</span></span>
@@ -329,11 +331,25 @@ const ENT={amp:"&",lt:"<",gt:">",quot:'"',apos:"'",nbsp:" ",sup2:"²",sup3:"³",
 const dec = s => s==null?"":String(s).replace(/&(#\d+|#x[0-9a-f]+|[a-z][a-z0-9]*);/gi,(m,e)=>{ if(e[0]==="#"){ const code=(e[1]==="x"||e[1]==="X")?parseInt(e.slice(2),16):parseInt(e.slice(1),10); return isNaN(code)?m:String.fromCodePoint(code);} const k=e.toLowerCase(); return ENT[k]!=null?ENT[k]:m; });
 const txt = s => esc(dec(s));                                   // pole tekstowe ze scrapingu: dekoduj encje, potem escapuj
 const safeUrl = u => /^https?:\/\//i.test(u||"") ? u : "";      // tylko http(s) w href
-const SL = {short:"⭐ shortlist",rej:"✕ odrzucone"};
+const SL = {short:"⭐ shortlist",rej:"✕ odrzucone",hidden:"🚫 ukryte"};
 const statusLabel = s => SL[s] || "";
 const mapsUrl = q2 => "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q2);
 const norm = s => (s==="seen"?"rej":(s||"new"));
-const decit = o => { const s=norm(o.st); return s==="short"?"short":s==="rej"?"rej":""; };
+const decit = o => { const s=norm(o.st); return (s==="short"||s==="rej"||s==="hidden")?s:""; };
+// UKRYWANIE (2026-08-07, prośba Mateusza: „chcę móc wyrzucać z mapy oferty ze źle
+// podpiętą lokalizacją"). Realizowane jako status='hidden', NIE jako DELETE z bazy.
+//
+// Dlaczego nie kasujemy wiersza — trzy powody, z czego pierwszy jest rozstrzygający:
+//   • baza jest PAMIĘCIĄ RYNKU i to ona blokuje powroty. publish_supabase pomija
+//     wyłącznie to, co JUŻ w bazie jest, więc skasowany wiersz WRÓCIŁBY przy
+//     najbliższym sweepie jako nowa oferta. Czyli akurat kasowanie nie dałoby
+//     efektu „kompletnie zniknęło" — dałoby efekt „wraca co tydzień";
+//   • pomyłka byłaby nieodwracalna, a „ukryj" to jeden klik na telefonie;
+//   • `status` to jedyna kolumna, którą klucz z index.html może zapisywać. DELETE
+//     nie jest nadany i celowo nie chcemy go nadawać — klucz jest jawny.
+// Efekt dla Mateusza jest ten sam: oferta znika z mapy i ze WSZYSTKICH list.
+// Wraca wyłącznie w zakładce „🚫 Ukryte", gdzie da się ją przywrócić.
+const ukryta = o => norm(o.st)==="hidden";
 const pm2 = o => (o.pr&&o.a)? o.pr/o.a : null;
 // różnica vs cena pierwotna (orig_price): up=wzrost, pct ujemny = spadek
 const priceDelta = o => { if(o.op==null||o.pr==null||o.op<=0||o.op==o.pr) return null; const d=o.pr-o.op; return {pct:Math.round(d/o.op*100), amt:d, up:d>0, op:o.op}; };
@@ -371,6 +387,11 @@ function scheduleMidnight(){ const n=new Date(); const next=new Date(n.getFullYe
 
 function passFilters(o){
  const s=decit(o);
+ // Ukryte wypadają ze WSZYSTKICH widoków — także z „Wszystkie" — poza własną zakładką.
+ // „Wszystkie" znaczy „wszystkie, które mnie obchodzą", a ukrycie to właśnie
+ // powiedzenie „ta mnie nie obchodzi".
+ if(flt!=="hidden" && s==="hidden") return false;
+ if(flt==="hidden") return s==="hidden";
  if(flt==="todo"&&s) return false;
  if((flt==="short"||flt==="rej")&&s!==flt) return false;
  if(pmin!=null&&(o.pr==null||o.pr<pmin)) return false;
@@ -391,7 +412,9 @@ function sortRows(rows){
 async function setSt(o, st){
  const target = (norm(o.st)===st) ? "new" : st;
  const prev=o.st; o.st=target; render(); if(cur&&cur.id===o.id) drawD();
- toast(target==="new"?"Cofnięto":statusLabel(target));
+ toast(target==="new" ? "Cofnięto"
+       : target==="hidden" ? "Ukryte — zobaczysz je w zakładce 🚫 Ukryte"
+       : statusLabel(target));
  const { error } = await sb.from("offers").update({status:target}).eq("id", o.id);
  if(error){ o.st=prev; render(); if(cur&&cur.id===o.id) drawD(); toast("Błąd zapisu — spróbuj ponownie"); return; }
  // dziennik aktywności — z obsługą błędu (cicha porażka psuła kalendarz)
@@ -400,7 +423,7 @@ async function setSt(o, st){
  else { DECS.push({offer_id:o.id, status:target, decided_at:new Date().toISOString()}); }
  if(view==="stats") renderStats();
  // auto-przeskok do następnej oferty po ocenie z poziomu modala (nie przy cofnięciu / nie z poziomu listy)
- if(cur && cur.id===o.id && (target==="short"||target==="rej")) nextOffer();
+ if(cur && cur.id===o.id && (target==="short"||target==="rej"||target==="hidden")) nextOffer();
 }
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.style.display="block"; clearTimeout(t._x); t._x=setTimeout(()=>t.style.display="none",1600); }
 
@@ -425,7 +448,9 @@ function render(){
   d.innerHTML=`<div class="top" onclick="openO(${i})">${img}<span class="s">${o.s??""}</span>${np}${sb2}${nf}
    <div class="b"><b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b>${drop}<span class="a">${o.a?fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</span>
    <p>${txt(o.t)}</p><small>${txt(cap(o.loc))} · ${esc(o.po||"")} · ogł.: ${esc(o.li||"?")}</small></div></div>
-   <div class="ft"><button onclick="setSt(O[${i}],'short')">⭐ Shortlist</button><button onclick="setSt(O[${i}],'rej')">✕ Odrzuć</button></div>`;
+   <div class="ft">${s==="hidden"
+     ? `<button onclick="setSt(O[${i}],'hidden')">↩︎ Przywróć</button>`
+     : `<button onclick="setSt(O[${i}],'short')">⭐ Shortlist</button><button onclick="setSt(O[${i}],'rej')">✕ Odrzuć</button><button onclick="setSt(O[${i}],'hidden')" title="Ukryj — zniknie z mapy i list">🚫</button>`}</div>`;
   g.appendChild(d);
  });
 }
@@ -569,7 +594,10 @@ async function delNote(id){
 }
 
 function drawA(){ const a=document.getElementById("ac"); if(!a)return; if(!cur){ a.innerHTML=""; return; }
- a.innerHTML=`<div class="acts"><button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><a class="go" href="${esc(safeUrl(cur.u))}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
+ const uk=decit(cur)==="hidden";
+ a.innerHTML=`<div class="acts">${uk
+   ? `<button onclick="setSt(cur,'hidden')">↩︎ Przywróć</button>`
+   : `<button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><button onclick="setSt(cur,'hidden')" title="Ukryj">🚫 Ukryj</button>`}<a class="go" href="${esc(safeUrl(cur.u))}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
 
 document.getElementById("tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; tab=b.dataset.c; localStorage.vTab=tab; render(); });
@@ -662,7 +690,11 @@ function patchClusterHasLayer(){
 
 const hasGeo = o => o.lat!=null && o.lon!=null && !(Math.abs(o.lat)<0.01 && Math.abs(o.lon)<0.01);
 function mapRows(){
- return O.filter(o=>mapCat.includes(o.c))
+ // Ukryte NIE mają własnego chipa na mapie i nie da się ich tu włączyć — mapa jest
+ // dokładnie tym miejscem, z którego Mateusz chciał je wyrzucić. Przywracanie robi się
+ // w zakładce „🚫 Ukryte" na liście.
+ return O.filter(o=>!ukryta(o))
+         .filter(o=>mapCat.includes(o.c))
          .filter(o=>{ const s=norm(o.st); return mapSt.includes(s==="seen"?"rej":s); });
 }
 
@@ -696,12 +728,17 @@ function popupHtml(o){
   <span class="pl">${txt(cap(o.loc))} · ${esc(o.po||"")}${s?" · "+statusLabel(s):""}${dyst}</span>
   ${txt((o.t||"").slice(0,90))}
   <div class="pa"><button onclick="mapSet(${i},'short')">⭐</button><button onclick="mapSet(${i},'rej')">✕</button>
+   <button class="hid" onclick="mapSet(${i},'hidden')" title="Ukryj — zniknie z mapy i list">🚫</button>
    <button onclick="mapOpen(${i})">Szczegóły</button>
    <a class="go" href="${esc(safeUrl(o.u))}" target="_blank" rel="noopener">Ogłoszenie ↗</a></div></div>`;
 }
 // Ocena wprost z mapy — bez wychodzenia z niej. Po zmianie statusu odświeżamy pinezki,
 // bo obwódka pinezki KODUJE status i musi się zmienić od razu.
-function mapSet(i, st){ setSt(O[i], st).then(()=>{ mapDirty=true; if(view==="map") drawMap(); }); }
+function mapSet(i, st){ setSt(O[i], st).then(()=>{
+  // Po ukryciu pinezka znika z mapy — popup zostałby wiszący w próżni nad pustym
+  // miejscem, więc zamykamy go jawnie.
+  if(MAP) MAP.closePopup();
+  mapDirty=true; if(view==="map") drawMap(); }); }
 function mapOpen(i){ if(MAP) MAP.closePopup(); openO(i); }
 
 function saveMapPos(){ try{ if(!MAP) return; const c=MAP.getCenter(); localStorage.vMapPos=JSON.stringify([c.lat,c.lng,MAP.getZoom()]); }catch(e){} }
