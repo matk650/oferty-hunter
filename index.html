@@ -34,15 +34,32 @@ input.ctrl{width:120px}#q{flex:1;min-width:150px}
 .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
 .c{position:relative;background:#fff;border:1px solid #e5e2da;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
 .c .top{cursor:pointer}
+/* POPRAWKA 21.08 — plakietki kotwiczą się do ZDJĘCIA, nie do całej karty.
+   Co było źle: .s, .np, .stbadge i .nflag mają position:absolute, a jedynym
+   position:relative w karcie było .c — czyli KARTA. Te kotwiczone od góry
+   (.s, .np) trafiały na zdjęcie przez przypadek, ale .stbadge z bottom:8px
+   siadała na stopce i ZAKRYWAŁA przycisk 🚫 (Mateusz przysłał zrzut 21.08).
+   Ten sam błąd co z przyciskiem ✕ w modalu: element pozycjonowany bezwzględnie
+   trafia tam, gdzie stoi najbliższy przodek z position, a nie tam, gdzie go
+   widzimy w kodzie. Plakietki należą do zdjęcia, więc dostaje ono swój kontener. */
+.med{position:relative}
 .c:hover{box-shadow:0 4px 14px rgba(0,0,0,.1)}.c img.main,.noimg{width:100%;aspect-ratio:4/3;object-fit:cover;background:#eceae4;display:flex;align-items:center;justify-content:center;font-size:40px}
 .s{position:absolute;top:8px;left:8px;background:#2e7d46;color:#fff;font-weight:700;font-size:12px;padding:3px 8px;border-radius:99px;z-index:2}
 .np{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:3px 8px;border-radius:99px;z-index:2}
 .drop{display:inline-block;color:#fff;font-size:11px;font-weight:700;padding:1px 7px;border-radius:99px;margin-left:6px}
 .drop.down{background:#2e7d46}.drop.up{background:#c0392b}
 .b{padding:10px 12px}.b b{font-size:16px}.a{color:#777;font-size:12px;margin-left:6px}.b p{margin:4px 0;font-size:13px;line-height:1.3}small{color:#6f6d67}
-.ft{display:flex;gap:6px;padding:8px 10px 10px;border-top:1px solid #f1efe9}
+.ft{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px 10px;border-top:1px solid #f1efe9}
 .ft button{flex:1;border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:11px 0;font-size:13px;font-weight:600;cursor:pointer;color:#4a4945;min-height:44px}
 .ft button:hover{background:#f6f5f2}.ft button:active{background:#eceae4}
+/* Link do ogłoszenia w stopce karty (21.08). Osobny wiersz, bo trzy przyciski
+   decyzji + link nie mieszczą się w karcie 270 px bez zgniecenia ich do nieczytelnych
+   słupków — flex:1 0 100% wymusza zawinięcie pod nie. min-height 44 px jak przyciski,
+   żeby dało się trafić kciukiem na telefonie. */
+.ft a.go{flex:1 0 100%;display:flex;align-items:center;justify-content:center;min-height:44px;
+ border:1px solid #1f1e1b;background:#1f1e1b;color:#fff;border-radius:8px;font-size:13px;
+ font-weight:600;text-decoration:none}
+.ft a.go:hover{background:#343330}
 .c.st-short{outline:3px solid #2e7d46}.c.st-rej{opacity:.4}
 .stbadge{position:absolute;bottom:8px;right:8px;background:#1f1e1b;color:#fff;font-size:10.5px;padding:3px 9px;border-radius:99px;z-index:2}
 .none{color:#8a877f;padding:30px 0}
@@ -331,6 +348,12 @@ const ENT={amp:"&",lt:"<",gt:">",quot:'"',apos:"'",nbsp:" ",sup2:"²",sup3:"³",
 const dec = s => s==null?"":String(s).replace(/&(#\d+|#x[0-9a-f]+|[a-z][a-z0-9]*);/gi,(m,e)=>{ if(e[0]==="#"){ const code=(e[1]==="x"||e[1]==="X")?parseInt(e.slice(2),16):parseInt(e.slice(1),10); return isNaN(code)?m:String.fromCodePoint(code);} const k=e.toLowerCase(); return ENT[k]!=null?ENT[k]:m; });
 const txt = s => esc(dec(s));                                   // pole tekstowe ze scrapingu: dekoduj encje, potem escapuj
 const safeUrl = u => /^https?:\/\//i.test(u||"") ? u : "";      // tylko http(s) w href
+// Link do ogłoszenia renderujemy TYLKO gdy URL jest http(s). Puste href="" nie jest
+// martwym linkiem — przeładowuje makietę i gubi widok, filtry oraz otwartą ofertę.
+// Oferty bez URL-a w bazie są (część rekordów z Facebooka i Adresowo), więc to nie
+// przypadek teoretyczny.
+const linkOglosz = (u, tekst) => { const h = safeUrl(u); return h
+  ? `<a class="go" href="${esc(h)}" target="_blank" rel="noopener">${tekst} ↗</a>` : ""; };
 const SL = {short:"⭐ shortlist",rej:"✕ odrzucone",hidden:"🚫 ukryte"};
 const statusLabel = s => SL[s] || "";
 const mapsUrl = q2 => "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q2);
@@ -438,19 +461,19 @@ function render(){
  updateCounter();
  if(!rows.length){ g.innerHTML='<div class="none">Pusto — zmień filtr, kategorię lub wyszukiwanie</div>'; return; }
  rows.forEach(o=>{
-  const i=O.indexOf(o), s=decit(o);
+  const s=decit(o);
   const d=document.createElement("div"); d.className="c"+(s?" st-"+s:"");
   const img=o.ph&&o.ph.length?`<img class="main" loading="lazy" decoding="async" alt="${esc(o.t||'oferta')}" src="${esc(o.ph[0])}">`:`<div class="noimg" aria-hidden="true">🏞️</div>`;
   const np=o.ph&&o.ph.length>1?`<span class="np">📷 ${o.ph.length}</span>`:"";
   const sb2=s?`<span class="stbadge">${statusLabel(s)}</span>`:"";
   const nf=o.hasNotes?`<span class="nflag" title="Ma notatkę">📝</span>`:"";
   const drop=dropTag(priceDelta(o));
-  d.innerHTML=`<div class="top" onclick="openById(${jsq(o.id)})">${img}<span class="s">${o.s??""}</span>${np}${sb2}${nf}
+  d.innerHTML=`<div class="top" onclick="openById(${jsq(o.id)})"><div class="med">${img}<span class="s">${o.s??""}</span>${np}${sb2}${nf}</div>
    <div class="b"><b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b>${drop}<span class="a">${o.a?fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</span>
    <p>${txt(o.t)}</p><small>${txt(cap(o.loc))} · ${esc(o.po||"")} · ogł.: ${esc(o.li||"?")}</small></div></div>
    <div class="ft">${s==="hidden"
      ? `<button onclick="setStId(${jsq(o.id)},'hidden')">↩︎ Przywróć</button>`
-     : `<button onclick="setStId(${jsq(o.id)},'short')">⭐ Shortlist</button><button onclick="setStId(${jsq(o.id)},'rej')">✕ Odrzuć</button><button onclick="setStId(${jsq(o.id)},'hidden')" title="Ukryj — zniknie z mapy i list">🚫</button>`}</div>`;
+     : `<button onclick="setStId(${jsq(o.id)},'short')">⭐ Shortlist</button><button onclick="setStId(${jsq(o.id)},'rej')">✕ Odrzuć</button><button onclick="setStId(${jsq(o.id)},'hidden')" title="Ukryj — zniknie z mapy i list">🚫</button>`}${linkOglosz(o.u,"Otwórz ogłoszenie")}</div>`;
   g.appendChild(d);
  });
 }
@@ -617,7 +640,7 @@ function drawA(){ const a=document.getElementById("ac"); if(!a)return; if(!cur){
  const uk=decit(cur)==="hidden";
  a.innerHTML=`<div class="acts">${uk
    ? `<button onclick="setSt(cur,'hidden')">↩︎ Przywróć</button>`
-   : `<button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><button onclick="setSt(cur,'hidden')" title="Ukryj">🚫 Ukryj</button>`}<a class="go" href="${esc(safeUrl(cur.u))}" target="_blank" rel="noopener">Otwórz ogłoszenie ↗</a></div>`; }
+   : `<button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><button onclick="setSt(cur,'hidden')" title="Ukryj">🚫 Ukryj</button>`}${linkOglosz(cur.u,"Otwórz ogłoszenie")}</div>`; }
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
 
 document.getElementById("tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; tab=b.dataset.c; localStorage.vTab=tab; render(); });
@@ -750,7 +773,7 @@ function popupHtml(o){
   <div class="pa"><button onclick="mapSet(${oid},'short')">⭐</button><button onclick="mapSet(${oid},'rej')">✕</button>
    <button class="hid" onclick="mapSet(${oid},'hidden')" title="Ukryj — zniknie z mapy i list">🚫</button>
    <button onclick="mapOpen(${oid})">Szczegóły</button>
-   <a class="go" href="${esc(safeUrl(o.u))}" target="_blank" rel="noopener">Ogłoszenie ↗</a></div></div>`;
+   ${linkOglosz(o.u,"Ogłoszenie")}</div></div>`;
 }
 // Ocena wprost z mapy — bez wychodzenia z niej. Po zmianie statusu odświeżamy pinezki,
 // bo obwódka pinezki KODUJE status i musi się zmienić od razu.

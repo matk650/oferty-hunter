@@ -11,7 +11,9 @@
 // kod ukrywal INNA oferte niz klikniena (indeks w O przesuwal sie po odswiezeniu
 // danych). Bump nazwy cache jest tu KONIECZNY, nie kosmetyczny: bez niego telefon
 // serwuje z cache stara strone i dalej niszczy decyzje przy kazdym kliknieciu.
-const C = "oferty-v12";
+// v13 (2026-08-21): plakietka statusu wrocila na zdjecie (kotwiczyla sie do calej
+// karty i zakrywala przycisk 🚫) + przycisk „Otworz ogloszenie" w stopce karty.
+const C = "oferty-v13";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",
