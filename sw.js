@@ -7,7 +7,11 @@
 // v9 (2026-08-07): pełny ekran mapy + płaskie ikony iOS.
 // v8 (2026-08-06): mapa + notatki. Poprzednia nazwa "oferty-v1" trzymala jeszcze
 // wersje BEZ stronicowania fetchAllRows, czyli te, ktora pokazywala 1000 z 2300 ofert.
-const C = "oferty-v11";
+// v12 (2026-08-21): poprawka adresowania ofert po ID w popupach mapy — stary
+// kod ukrywal INNA oferte niz klikniena (indeks w O przesuwal sie po odswiezeniu
+// danych). Bump nazwy cache jest tu KONIECZNY, nie kosmetyczny: bez niego telefon
+// serwuje z cache stara strone i dalej niszczy decyzje przy kazdym kliknieciu.
+const C = "oferty-v12";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",
