@@ -50,7 +50,20 @@ input.ctrl{width:120px}#q{flex:1;min-width:150px}
 .drop.down{background:#2e7d46}.drop.up{background:#c0392b}
 .b{padding:10px 12px}.b b{font-size:16px}.a{color:#777;font-size:12px;margin-left:6px}.b p{margin:4px 0;font-size:13px;line-height:1.3}small{color:#6f6d67}
 .ft{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px 10px;border-top:1px solid #f1efe9}
-.ft button{flex:1;border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:11px 0;font-size:13px;font-weight:600;cursor:pointer;color:#4a4945;min-height:44px}
+/* min-width 76px (2026-08-25): po dołożeniu 🔝 Top rząd ma cztery przyciski. Bez
+   dolnej granicy flex:1 ściskał je w kolumnowym układzie desktopu do ~38 px i etykiety
+   łamały się w środku, gwiazdka lądowała nad słowem Shortlist. Próg 72 px jest ZMIERZONY,
+   nie przyjęty na oko: na iPhonie (karta 343 px) rząd ma 321 px użytecznej szerokości,
+   czyli 75,75 px na przycisk przy trzech odstępach po 6 px — pierwsza wersja z 76 px
+   przekraczała to o ćwierć piksela i wypychała 🚫 do osobnego rzędu na całą szerokość.
+   Przy 72 px telefon mieści czwórkę w JEDNYM rzędzie, a węższe ekrany i kolumnowy
+   desktop zawijają się czysto 2+2. Telefon jest głównym urządzeniem Mateusza, więc to
+   jego układ wyznacza próg. */
+/* 🚫 jest ikoną bez etykiety, więc nie ma powodu, żeby rósł jak pozostałe. Bez tego
+   przy zawijaniu zostawał sam w drugim rzędzie i flex:1 rozciągał go na CAŁĄ szerokość
+   karty — wielkie czerwone kółko wyglądające jak główna akcja, a nie jak schowaj. */
+.ft button.ukryj{flex:0 0 46px;min-width:46px;padding-left:0;padding-right:0}
+.ft button{flex:1;min-width:72px;border:1px solid #d8d5cc;background:#fff;border-radius:8px;padding:11px 0;font-size:13px;font-weight:600;cursor:pointer;color:#4a4945;min-height:44px}
 .ft button:hover{background:#f6f5f2}.ft button:active{background:#eceae4}
 /* Link do ogłoszenia w stopce karty (21.08). Osobny wiersz, bo trzy przyciski
    decyzji + link nie mieszczą się w karcie 270 px bez zgniecenia ich do nieczytelnych
@@ -61,6 +74,9 @@ input.ctrl{width:120px}#q{flex:1;min-width:150px}
  font-weight:600;text-decoration:none}
 .ft a.go:hover{background:#343330}
 .c.st-short{outline:3px solid #2e7d46}.c.st-rej{opacity:.4}
+/* 🔝 Top (2026-08-25) — ostatni szczebel lejka. Obwódka GRUBSZA i złota, żeby
+   czytała się jako „shortlist, tylko wyżej", a nie jako inna kategoria. */
+.c.st-visited{outline:4px solid #f5a300}
 .stbadge{position:absolute;bottom:8px;right:8px;background:#1f1e1b;color:#fff;font-size:10.5px;padding:3px 9px;border-radius:99px;z-index:2}
 .none{color:#8a877f;padding:30px 0}
 .grow{color:#2e7d46}.gred{color:#c0392b}
@@ -183,7 +199,8 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
    KODOWANIE ODWZOROWUJE STRUKTURE DANYCH, a nie listę czterech kategorii:
      KOLOR   = region  (niebieski = Łódź/okolice, pomarańczowy = jeziora)
      KSZTAŁT = rodzaj  (kwadrat = działka, koło = dom)
-     OBWÓDKA = status  (złota gruba = shortlist, przygaszona = odrzucone)
+     OBWÓDKA = status  (złota gruba = shortlist, +czarny pierścień = Top,
+                      przygaszona = odrzucone)
    Kategorie są przecież 2×2 (miasto/jezioro × działka/dom), więc dwa niezależne
    kanały opisują je bez reszty — i to jest cała różnica jakościowa wobec wersji
    z 06.08, gdzie o wszystkim decydował sam kolor.
@@ -208,6 +225,12 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
 .pin.st-new{width:26px;height:26px}
 .pin.st-short{width:34px;height:34px;border:3px solid #f5a300;
   box-shadow:0 0 0 2px rgba(245,163,0,.35),0 2px 6px rgba(0,0,0,.5)}
+/* Top = pinezka shortlisty plus czarny pierścień. Celowo TA SAMA złota obwódka:
+   Top nie jest osobnym bytem, tylko awansem w tym samym lejku, więc ma wyglądać
+   jak shortlist o szczebel wyżej. Czerń odróżnia go od obu kolorów regionu
+   (#1976d2 / #e8590c) i od samego złota, na jasnym i ciemnym tle mapy. */
+.pin.st-visited{width:40px;height:40px;border:3px solid #f5a300;
+  box-shadow:0 0 0 3px #1f1e1b,0 2px 8px rgba(0,0,0,.55)}
 .pin.st-rej{width:18px;height:18px;opacity:.5}
 /* Etykieta ceny na pinezce — pokazywana WYŁĄCZNIE przy dużym zoomie (klasa .zoom-lg
    na kontenerze mapy). Przy oddaleniu 400 etykiet byłoby nieczytelną kaszą, a przy
@@ -276,6 +299,7 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
  </nav>
  <span class="chip on" data-f="todo">Do przejrzenia</span>
  <span class="chip" data-f="short">⭐ Shortlist</span>
+ <span class="chip" data-f="visited">🔝 Top</span>
  <span class="chip" data-f="rej">Odrzucone</span>
  <span class="chip" data-f="all">Wszystkie</span>
  <span class="chip" data-f="hidden">🚫 Ukryte</span>
@@ -301,7 +325,7 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
 <div id="mapWrap">
  <div class="mapbar">
   <span class="mchips" id="mapStatus" role="group" aria-label="Filtr statusu na mapie">
-   <span class="mchip on" data-s="new">nieocenione</span><span class="mchip on" data-s="short">⭐</span><span class="mchip" data-s="rej">✕</span>
+   <span class="mchip on" data-s="new">nieocenione</span><span class="mchip on" data-s="short">⭐</span><span class="mchip on" data-s="visited">🔝</span><span class="mchip" data-s="rej">✕</span>
   </span>
   <span class="mchips" id="mapCats" role="group" aria-label="Filtr kategorii na mapie">
    <span class="mchip on" data-c="m_dz">M-dz</span><span class="mchip on" data-c="m_dom">M-dom</span><span class="mchip on" data-c="jez_dz">J-dz</span><span class="mchip on" data-c="jez_dom">J-dom</span>
@@ -354,11 +378,26 @@ const safeUrl = u => /^https?:\/\//i.test(u||"") ? u : "";      // tylko http(s)
 // przypadek teoretyczny.
 const linkOglosz = (u, tekst) => { const h = safeUrl(u); return h
   ? `<a class="go" href="${esc(h)}" target="_blank" rel="noopener">${tekst} ↗</a>` : ""; };
-const SL = {short:"⭐ shortlist",rej:"✕ odrzucone",hidden:"🚫 ukryte"};
+const SL = {short:"⭐ shortlist",visited:"🔝 top",rej:"✕ odrzucone",hidden:"🚫 ukryte"};
 const statusLabel = s => SL[s] || "";
+// Przycisk „🔝 Top" pokazuje się WYŁĄCZNIE na ofertach, które są już na shortliście
+// (albo już w Topie — żeby dało się cofnąć). Powód: Top to awans z shortlisty, więc na
+// 2600 nieprzejrzanych ofertach byłby zaproszeniem do przeskoczenia całego lejka,
+// a na telefonie zabierałby miejsce czwartemu przyciskowi w rzędzie.
+function btnTop(o, akcja, etykieta){
+  const s = norm(o.st);
+  if(s!=="short" && s!=="visited") return "";
+  const on = s==="visited";
+  return `<button onclick="${akcja}" title="${on?"Cofnij do ⭐ Shortlisty":"Awansuj do 🔝 Top"}"`
+       + `${on?' style="background:#f5a300;border-color:#f5a300;color:#1f1e1b"':''}>`
+       + `${etykieta||"🔝 Top"}</button>`;
+}
 const mapsUrl = q2 => "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q2);
 const norm = s => (s==="seen"?"rej":(s||"new"));
-const decit = o => { const s=norm(o.st); return (s==="short"||s==="rej"||s==="hidden")?s:""; };
+// LEJEK (2026-08-25, prośba Mateusza): do przejrzenia → ⭐ Shortlist → 🔝 Top.
+// „visited" = byłem tam / to jest ścisła czołówka. Osobny status, a nie flaga na
+// shortliście, bo ma własną zakładkę, własną pinezkę i własny wpis w dzienniku decyzji.
+const decit = o => { const s=norm(o.st); return (s==="short"||s==="visited"||s==="rej"||s==="hidden")?s:""; };
 // UKRYWANIE (2026-08-07, prośba Mateusza: „chcę móc wyrzucać z mapy oferty ze źle
 // podpiętą lokalizacją"). Realizowane jako status='hidden', NIE jako DELETE z bazy.
 //
@@ -401,7 +440,9 @@ const dayKey = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"
 function updateCounter(){
  const el=document.getElementById("counter"); if(!el) return;
  const byDay={};
- DECS.forEach(r=>{ if(r.status!=="short"&&r.status!=="rej") return; const d=new Date(r.decided_at); if(isNaN(d)) return; const k=dayKey(d); (byDay[k]=byDay[k]||new Set()).add(r.offer_id); });
+ // Awans na Top to też decyzja — bez tego licznik „dziś przejrzane" milczałby
+ // akurat o najważniejszych ruchach dnia.
+ DECS.forEach(r=>{ if(r.status!=="short"&&r.status!=="visited"&&r.status!=="rej") return; const d=new Date(r.decided_at); if(isNaN(d)) return; const k=dayKey(d); (byDay[k]=byDay[k]||new Set()).add(r.offer_id); });
  const todayN=(byDay[dayKey(new Date())]||new Set()).size;
  let sum=0; for(let i=0;i<7;i++){ const dt=new Date(); dt.setHours(0,0,0,0); dt.setDate(dt.getDate()-i); sum+=(byDay[dayKey(dt)]||new Set()).size; }
  el.innerHTML=`📋 <span class="lbl">Dziś przejrzane:</span> <b>${todayN}</b> <span class="sep">·</span> <span class="lbl">śr. z 7 dni:</span> <b>${(sum/7).toFixed(1)}</b><span class="lbl">/dzień</span>`;
@@ -416,7 +457,7 @@ function passFilters(o){
  if(flt!=="hidden" && s==="hidden") return false;
  if(flt==="hidden") return s==="hidden";
  if(flt==="todo"&&s) return false;
- if((flt==="short"||flt==="rej")&&s!==flt) return false;
+ if((flt==="short"||flt==="visited"||flt==="rej")&&s!==flt) return false;
  if(pmin!=null&&(o.pr==null||o.pr<pmin)) return false;
  if(pmax!=null&&(o.pr==null||o.pr>pmax)) return false;
  if(q){ const hay=((o.t||"")+" "+(o.loc||"")+" "+(o.adr||"")+" "+(o.n||"")).toLowerCase(); if(!hay.includes(q)) return false; }
@@ -433,7 +474,11 @@ function sortRows(rows){
 }
 
 async function setSt(o, st){
- const target = (norm(o.st)===st) ? "new" : st;
+ // Cofnięcie 🔝 Top wraca na ⭐ Shortlistę, a NIE do „do przejrzenia". Top jest
+ // kolejnym szczeblem tego samego lejka, więc krok w tył to jeden szczebel — inaczej
+ // jedno omyłkowe tapnięcie kasowałoby też wcześniejszą decyzję o shortliście
+ // i oferta wracałaby na stos 2600 nieprzejrzanych.
+ const target = (norm(o.st)===st) ? (st==="visited" ? "short" : "new") : st;
  const prev=o.st; o.st=target; render(); if(cur&&cur.id===o.id) drawD();
  toast(target==="new" ? "Cofnięto"
        : target==="hidden" ? "Ukryte — zobaczysz je w zakładce 🚫 Ukryte"
@@ -446,7 +491,7 @@ async function setSt(o, st){
  else { DECS.push({offer_id:o.id, status:target, decided_at:new Date().toISOString()}); }
  if(view==="stats") renderStats();
  // auto-przeskok do następnej oferty po ocenie z poziomu modala (nie przy cofnięciu / nie z poziomu listy)
- if(cur && cur.id===o.id && (target==="short"||target==="rej"||target==="hidden")) nextOffer();
+ if(cur && cur.id===o.id && (target==="short"||target==="visited"||target==="rej"||target==="hidden")) nextOffer();
 }
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.style.display="block"; clearTimeout(t._x); t._x=setTimeout(()=>t.style.display="none",1600); }
 
@@ -473,7 +518,7 @@ function render(){
    <p>${txt(o.t)}</p><small>${txt(cap(o.loc))} · ${esc(o.po||"")} · ogł.: ${esc(o.li||"?")}</small></div></div>
    <div class="ft">${s==="hidden"
      ? `<button onclick="setStId(${jsq(o.id)},'hidden')">↩︎ Przywróć</button>`
-     : `<button onclick="setStId(${jsq(o.id)},'short')">⭐ Shortlist</button><button onclick="setStId(${jsq(o.id)},'rej')">✕ Odrzuć</button><button onclick="setStId(${jsq(o.id)},'hidden')" title="Ukryj — zniknie z mapy i list">🚫</button>`}${linkOglosz(o.u,"Otwórz ogłoszenie")}</div>`;
+     : `<button onclick="setStId(${jsq(o.id)},'short')">⭐ Shortlist</button>${btnTop(o,`setStId(${jsq(o.id)},'visited')`)}<button onclick="setStId(${jsq(o.id)},'rej')">✕ Odrzuć</button><button class="ukryj" onclick="setStId(${jsq(o.id)},'hidden')" title="Ukryj — zniknie z mapy i list">🚫</button>`}${linkOglosz(o.u,"Otwórz ogłoszenie")}</div>`;
   g.appendChild(d);
  });
 }
@@ -640,7 +685,7 @@ function drawA(){ const a=document.getElementById("ac"); if(!a)return; if(!cur){
  const uk=decit(cur)==="hidden";
  a.innerHTML=`<div class="acts">${uk
    ? `<button onclick="setSt(cur,'hidden')">↩︎ Przywróć</button>`
-   : `<button onclick="setSt(cur,'short')">⭐ Shortlist</button><button onclick="setSt(cur,'rej')">✕ Odrzuć</button><button onclick="setSt(cur,'hidden')" title="Ukryj">🚫 Ukryj</button>`}${linkOglosz(cur.u,"Otwórz ogłoszenie")}</div>`; }
+   : `<button onclick="setSt(cur,'short')">⭐ Shortlist</button>${btnTop(cur,"setSt(cur,'visited')")}<button onclick="setSt(cur,'rej')">✕ Odrzuć</button><button onclick="setSt(cur,'hidden')" title="Ukryj">🚫 Ukryj</button>`}${linkOglosz(cur.u,"Otwórz ogłoszenie")}</div>`; }
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
 
 document.getElementById("tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; tab=b.dataset.c; localStorage.vTab=tab; render(); });
@@ -685,7 +730,16 @@ const cenaKrotko = p => p==null ? "" :
   (p>=1e6 ? (p/1e6).toFixed(2).replace(/\.?0+$/,"").replace(".",",")+"M"
           : Math.round(p/1000)+"k");
 let MAP=null, MCLUS=null, MRINGS=null, mapLoaded=false, mapDirty=true;
-let mapSt = readLS("vMapSt", ["new","short"]);
+let mapSt = readLS("vMapSt", ["new","short","visited"]);
+// MIGRACJA 2026-08-25. Filtr statusu na mapie siedzi w localStorage, więc telefon
+// Mateusza ma tam zapisane ["new","short"] sprzed lejka — a to znaczy, że pierwsza
+// oferta awansowana na 🔝 Top ZNIKNĘŁABY z mapy bez żadnego komunikatu i wyglądało
+// by to jak zgubiony rekord. Dokładamy „visited" raz, pod własnym kluczem, żeby nie
+// nadpisywać tego przy każdym wejściu (Mateusz ma prawo Top z mapy zdjąć).
+if(!localStorage.vMapStTop){
+  if(!mapSt.includes("visited")){ mapSt = mapSt.concat("visited"); writeLS("vMapSt", mapSt); }
+  try{ localStorage.vMapStTop="1"; }catch(e){}
+}
 let mapCat = readLS("vMapCat", ["m_dz","m_dom","jez_dz","jez_dom"]);
 
 function readLS(k, dflt){ try{ const v=JSON.parse(localStorage[k]); return Array.isArray(v)?v:dflt; }catch(e){ return dflt; } }
@@ -742,8 +796,8 @@ function mapRows(){
 }
 
 function pinIcon(o){
- const s=norm(o.st), cls = s==="short"?"st-short":s==="rej"?"st-rej":"st-new";
- const sz = s==="short"?34:s==="rej"?18:26;
+ const s=norm(o.st), cls = s==="visited"?"st-visited":s==="short"?"st-short":s==="rej"?"st-rej":"st-new";
+ const sz = s==="visited"?40:s==="short"?34:s==="rej"?18:26;
  const lab = o.pr ? `<span class="pinlab">${esc(cenaKrotko(o.pr))}</span>` : "";
  // Rozmiar i kształt są w CSS (klasy .st-* i .k-*), nie w stylu inline — inaczej
  // każda zmiana rozmiaru wymagałaby przebudowy wszystkich ikon w JS.
@@ -770,7 +824,7 @@ function popupHtml(o){
  return `<div class="pp">${img}<b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b> <span style="color:#666">${o.a?fmt(o.a)+" m²":""}${p2}</span>
   <span class="pl">${txt(cap(o.loc))} · ${esc(o.po||"")}${s?" · "+statusLabel(s):""}${dyst}</span>
   ${txt((o.t||"").slice(0,90))}
-  <div class="pa"><button onclick="mapSet(${oid},'short')">⭐</button><button onclick="mapSet(${oid},'rej')">✕</button>
+  <div class="pa"><button onclick="mapSet(${oid},'short')">⭐</button>${btnTop(o,`mapSet(${oid},'visited')`,"🔝")}<button onclick="mapSet(${oid},'rej')">✕</button>
    <button class="hid" onclick="mapSet(${oid},'hidden')" title="Ukryj — zniknie z mapy i list">🚫</button>
    <button onclick="mapOpen(${oid})">Szczegóły</button>
    ${linkOglosz(o.u,"Ogłoszenie")}</div></div>`;
@@ -848,7 +902,7 @@ async function drawMap(){
     +`<span><i class="kdom" style="background:${REG_COLOR.j}"></i>jeziora</span>`
     +`<span><i class="kdz" style="background:#7a7a7f"></i>działka</span>`
     +`<span><i class="kdom" style="background:#7a7a7f"></i>dom</span>`
-    +`<span>⭐ złota obwódka = shortlist · przygaszone = odrzucone</span>`;
+    +`<span>⭐ złota obwódka = shortlist · 🔝 + czarny pierścień = Top · przygaszone = odrzucone</span>`;
   // Licznik „na mapie X z Y" jest OBOWIĄZKOWY, nie ozdobny: brak pinezki wygląda
   // dokładnie tak samo jak brak oferty, więc bez tej liczby mapa kłamie w milczeniu.
   document.getElementById("mapFoot").innerHTML =
@@ -1019,10 +1073,12 @@ const panel = (title,sub,html)=>`<div class="panel"><h3>${title}</h3>${sub?`<div
 const bar = (label,val,max,valTxt)=>{ const w=max?Math.round(val/max*100):0; return `<div class="bar-row"><span class="lbl">${esc(label)}</span><span class="bar-track"><span class="bar-fill" style="width:${w}%"></span></span><span class="val">${valTxt??val}</span></div>`; };
 
 function panelLejek(rows){
- const c={new:0,short:0,rej:0}; rows.forEach(o=>{ const k=norm(o.st); c[k]=(c[k]||0)+1; });
- const decided=c.short+c.rej, rejPct=decided?Math.round(c.rej/decided*100):0;
- return panel("Przegląd","Ile ofert do zrobienia i jak rozkładają się decyzje.",
-  `<div class="kpi"><div class="box"><b>${c.new}</b><span>do przejrzenia</span></div><div class="box"><b class="grow">${c.short}</b><span>⭐ shortlist</span></div><div class="box"><b class="gred">${c.rej}</b><span>✕ odrzucone</span></div><div class="box"><b>${rejPct}%</b><span>odrzuceń z ocenionych</span></div></div>`);
+ const c={new:0,short:0,visited:0,rej:0}; rows.forEach(o=>{ const k=norm(o.st); c[k]=(c[k]||0)+1; });
+ // Top liczy się do „ocenionych" tak samo jak shortlist — to decyzja na TAK, tylko
+ // mocniejsza. Gdyby wypadał z mianownika, procent odrzuceń rósłby przy każdym awansie.
+ const decided=c.short+c.visited+c.rej, rejPct=decided?Math.round(c.rej/decided*100):0;
+ return panel("Przegląd","Lejek: do przejrzenia → ⭐ shortlist → 🔝 Top.",
+  `<div class="kpi"><div class="box"><b>${c.new}</b><span>do przejrzenia</span></div><div class="box"><b class="grow">${c.short}</b><span>⭐ shortlist</span></div><div class="box"><b class="grow">${c.visited}</b><span>🔝 Top</span></div><div class="box"><b class="gred">${c.rej}</b><span>✕ odrzucone</span></div><div class="box"><b>${rejPct}%</b><span>odrzuceń z ocenionych</span></div></div>`);
 }
 function panelBenchmark(rows){
  const g={}; rows.forEach(o=>{ const p=pm2(o); if(p==null||!o.loc)return; (g[o.loc]=g[o.loc]||[]).push(o); });
@@ -1052,17 +1108,20 @@ function panelPodaz(rows){
  return panel("Gdzie jest podaż","Ile ofert w strefie, na portalu i w przedziale ceny.",
   `<b style="font-size:13px">Wg strefy (top 8)</b>${za.map(([l,n])=>bar(cap(l),n,zmax,n)).join("")}<div style="height:10px"></div><b style="font-size:13px">Wg portalu</b>${pa.map(([l,n])=>bar(l,n,pmax,n)).join("")}<div style="height:10px"></div><b style="font-size:13px">Przedział ceny</b>${hp.map(([l,n])=>bar(l,n,hpmax,n)).join("")}`);
 }
-function panelShortlist(){
- const sl=O.filter(o=>norm(o.st)==="short");
- if(!sl.length) return panel("⭐ Shortlist","Tu pojawią się oferty oznaczone ⭐ — zestawione do finalnej decyzji.","");
+function panelShortlist(st, tytul, pusty, opis){
+ const sl=O.filter(o=>norm(o.st)===st);
+ if(!sl.length) return panel(tytul, pusty, "");
  const body=sl.map(o=>{ const links=[]; if(o.tel)links.push(`<a href="tel:${esc(o.tel)}">📞 ${esc(o.tel)}</a>`); if(o.lat!=null&&o.lon!=null)links.push(`<a href="${esc(mapsUrl(o.lat+','+o.lon))}" target="_blank" rel="noopener">📍 Mapa</a>`);
    return `<div class="slcard"><div class="t">${txt(o.t)}</div><div class="m">${o.pr?fmt(o.pr)+" zł":"—"}${o.a?" · "+fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""} · ${txt(cap(o.loc))} · ${esc(CATPL[o.c]||"")}</div>${links.length?`<div class="lnk">${links.join("")}</div>`:""}</div>`; }).join("");
- return panel("⭐ Shortlist ("+sl.length+")","Twoi faworyci do finalnej decyzji.",body);
+ return panel(tytul+" ("+sl.length+")", opis, body);
 }
 function renderStats(){
  const rows=statSet();
  const tabs=`<div class="stat-tabs">`+[["all","Wszystkie"],["m_dz","🏠 Działki"],["m_dom","🏠 Domy"],["jez_dz","🌊 Jez. działki"],["jez_dom","🌊 Jez. domy"]].map(([v,l])=>`<button class="${statCat===v?"on":""}" onclick="statCat='${v}';renderStats()">${l}</button>`).join("")+`</div>`;
- document.getElementById("stats").innerHTML = tabs + panelLejek(rows) + panelBenchmark(rows) + panelOkazje(rows) + panelShortlist() + panelPodaz(rows);
+ document.getElementById("stats").innerHTML = tabs + panelLejek(rows) + panelBenchmark(rows) + panelOkazje(rows)
+   + panelShortlist("visited","🔝 Top","Tu trafią oferty awansowane z shortlisty.","Ścisła czołówka — to, po co ten system istnieje.")
+   + panelShortlist("short","⭐ Shortlist","Tu pojawią się oferty oznaczone ⭐ — zestawione do finalnej decyzji.","Faworyci czekający na awans do 🔝 Top.")
+   + panelPodaz(rows);
 }
 document.getElementById("statsToggle").onclick=()=>setView(view==="stats"?"list":"stats");
 document.getElementById("mapToggle").onclick=()=>setView(view==="map"?"list":"map");

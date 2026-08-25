@@ -11,9 +11,12 @@
 // kod ukrywal INNA oferte niz klikniena (indeks w O przesuwal sie po odswiezeniu
 // danych). Bump nazwy cache jest tu KONIECZNY, nie kosmetyczny: bez niego telefon
 // serwuje z cache stara strone i dalej niszczy decyzje przy kazdym kliknieciu.
+// v14 (2026-08-25): LEJEK — nowy status „visited" i zakladka „Top" pod Shortlista.
+//   Bump obowiazkowy: bez niego telefon serwuje stary index.html z cache i lejka
+//   po prostu nie ma, a wyglada to jak niedzialajacy przycisk.
 // v13 (2026-08-21): plakietka statusu wrocila na zdjecie (kotwiczyla sie do calej
 // karty i zakrywala przycisk 🚫) + przycisk „Otworz ogloszenie" w stopce karty.
-const C = "oferty-v13";
+const C = "oferty-v14";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",
