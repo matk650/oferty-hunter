@@ -125,7 +125,32 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
 .slcard .t{font-weight:600;font-size:13px;margin-bottom:3px}
 .slcard .m{font-size:12px;color:#6f6d67}
 .slcard .lnk{margin-top:6px;display:flex;gap:10px}.slcard .lnk a{color:#27693c;text-decoration:none;font-weight:600;font-size:13px}
-@media(max-width:520px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}}
+/* ── PORÓWNANIE TOP (2026-08-26) ───────────────────────────────────────────
+   Apple Notes miało działki w kolumnach i kryteria w wierszach. Ten sam model
+   trafia do aplikacji: pierwsza kolumna jest przyklejona, a na telefonie tabela
+   przewija się poziomo bez ściskania komentarzy do nieczytelnych pasków. */
+.g.compare{display:block}
+.topcmp-intro{margin:0 0 10px;color:#5f5d57;font-size:12.5px;line-height:1.45}
+.topcmp-scroll{width:100%;overflow-x:auto;overscroll-behavior-x:contain;border:1px solid #ddd9d0;border-radius:12px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.topcmp{border-collapse:separate;border-spacing:0;min-width:max-content;width:100%;font-size:13px}
+.topcmp th,.topcmp td{border-right:1px solid #e7e3da;border-bottom:1px solid #e7e3da;padding:9px;vertical-align:top;background:#fff}
+.topcmp tr:last-child th,.topcmp tr:last-child td{border-bottom:0}.topcmp th:last-child,.topcmp td:last-child{border-right:0}
+.topcmp .criterion{position:sticky;left:0;z-index:2;width:148px;min-width:148px;max-width:148px;background:#f4f1ea;color:#45423c;font-weight:700;line-height:1.25}
+.topcmp thead .criterion{z-index:4;background:#e9e4d9}
+.topcmp .offer-col{width:270px;min-width:270px;max-width:270px;padding:0;background:#fff}
+.topcmp-head{display:flex;flex-direction:column;min-height:100%}
+.topcmp-head img,.topcmp-noimg{width:100%;height:132px;object-fit:cover;background:#eceae4;display:flex;align-items:center;justify-content:center;font-size:34px}
+.topcmp-head-body{padding:10px}.topcmp-head-title{font-size:14px;line-height:1.25;margin-bottom:5px;color:#222}
+.topcmp-head-meta{font-size:12px;color:#6d6a64;line-height:1.35}
+.topcmp-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.topcmp-actions button,.topcmp-actions a{border:1px solid #d7d3ca;background:#fff;color:#34312c;border-radius:7px;padding:7px 8px;min-height:36px;font-size:11.5px;font-weight:650;text-decoration:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:1}
+.topcmp-actions a{background:#1f1e1b;border-color:#1f1e1b;color:#fff}
+.topcmp textarea{box-sizing:border-box;width:100%;min-height:74px;resize:vertical;border:1px solid transparent;border-radius:7px;background:#faf9f6;color:#2f2d29;font:inherit;line-height:1.4;padding:8px;transition:border-color .15s,background .15s}
+.topcmp textarea:hover{border-color:#d8d4ca}.topcmp textarea:focus{outline:0;border-color:#2e7d46;background:#fff;box-shadow:0 0 0 2px rgba(46,125,70,.14)}
+.topcmp textarea.saving{background:#fff8df;border-color:#d9b84b}.topcmp textarea.saved{background:#eef7f0;border-color:#7cb58a}.topcmp textarea.saveerr{background:#fff0ee;border-color:#c95b4f}
+.topcmp .review-links{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}.topcmp .review-links a{font-size:11px;color:#27693c;text-decoration:none;font-weight:650}
+.topcmp tr.sum-row .criterion{background:#e9e4d9}.topcmp tr.sum-row textarea{min-height:58px;font-weight:700;background:#fff8db}
+@media(max-width:520px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}.topcmp .criterion{width:118px;min-width:118px;max-width:118px;font-size:12px;padding:8px}.topcmp .offer-col{width:238px;min-width:238px;max-width:238px}.topcmp-head img,.topcmp-noimg{height:116px}.topcmp textarea{min-height:82px}}
 /* ── MAPA (v8, 2026-08-06) ───────────────────────────────────────────────── */
 /* Widoczność sterowana KLASĄ, nie stylem inline. Powód (2026-08-07): setView()
    ustawiał element.style.display="block", a styl inline bije regułę z arkusza —
@@ -359,7 +384,26 @@ const LIST_COLS = "id,cat,title,url,price,area,photos,loc,added,listed,portal,st
 let O = [];
 let tab = localStorage.vTab || "m_dz", flt = "todo", sortBy="added_desc", cur=null, ci=0;
 let q="", pmin=null, pmax=null, lastLoad=0, lastFocus=null, reviewQ=[], reviewI=-1;
-let DECS=[], view="list", statCat="all", ZM={};
+let DECS=[], view="list", statCat="all", ZM={}, TOP_REV={};
+// Pola porównawcze 1:1 z tabelą „Zbiorcza ocena" w Apple Notes. Dane są
+// zapisywane jako zdarzenia w istniejącej tabeli decisions — dzięki temu nie ma
+// read-modify-write ani „ostatni zapis wygrywa" między telefonem i laptopem.
+const TOP_REVIEW_PREFIX="top_review_v1:";
+const NOTE_PREFIX="note_v1:", NOTE_DEL_PREFIX="note_del_v1:";
+const TOP_FIELDS=[
+ ["quiet","Cisza"],["area","Powierzchnia"],["total_price","Cena łączna"],
+ ["price_per_m2","Cena za metr"],["urban_infra","Infrastruktura miejska"],
+ ["work_distance","Odległość do pracy (czas wieczorem)"],["walk","Spacer"],
+ ["north_zgierz","Północ/Zgierz"],["utilities","Media"],["other","Inne"],
+ ["link","Link"],["sum","SUMA"]
+];
+const TOP_IDS={
+ barowa:"www-domiporta-pl-nieruchomosci-sprzedam-dzialke-lodz-baluty-barowa-2001m2-156132312",
+ lodzianka:"www-morizon-pl-oferta-sprzedaz-dzialka-lodz-baluty-lodzianka-2187m2-mzn2047709518",
+ prosta:"www-otodom-pl-pl-oferta-dwie-dzialki-na-granicy-lagiewnik-i-zgierza-id4cfv4"
+};
+const TOP_ORDER={[TOP_IDS.barowa]:0,[TOP_IDS.lodzianka]:1,[TOP_IDS.prosta]:2};
+const TOP_NAMES={[TOP_IDS.barowa]:"Skotniki, Barowa",[TOP_IDS.lodzianka]:"Łódź, ul. Łodzianka",[TOP_IDS.prosta]:"Łagiewniki Nowe, Prosta"};
 const median = arr => { if(!arr.length) return null; const s=[...arr].sort((a,b)=>a-b); const m=s.length>>1; return s.length%2?s[m]:(s[m-1]+s[m])/2; };
 const CATPL = {m_dz:"Mieszk. działki",m_dom:"Mieszk. domy",jez_dz:"Jeziora działki",jez_dom:"Jeziora domy"};
 const cap = s => s? s.charAt(0).toUpperCase()+s.slice(1) : s;
@@ -473,6 +517,47 @@ function sortRows(rows){
  return rows.sort(f);
 }
 
+function eventJson(status,prefix){
+ if(typeof status!=="string"||!status.startsWith(prefix)) return null;
+ try{ return JSON.parse(status.slice(prefix.length)); }catch(e){ return null; }
+}
+function loadTopReviewsFromDecisions(){
+ TOP_REV={}; const allowed=new Set(TOP_FIELDS.map(x=>x[0]));
+ // DECS przychodzi najnowsze u góry. Pierwszy wpis danego pola jest więc jego
+ // aktualną wartością, a starsze zostają bezpieczną historią zmian.
+ DECS.forEach(r=>{ const x=eventJson(r.status,TOP_REVIEW_PREFIX);
+   if(!x||!allowed.has(x.field)||typeof x.value!=="string"||!r.offer_id) return;
+   const by=TOP_REV[r.offer_id]||(TOP_REV[r.offer_id]={});
+   if(by[x.field]===undefined) by[x.field]=x.value;
+ });
+}
+const topReviewValue=(id,field)=>((TOP_REV[id]||{})[field]||"");
+const topCmpName=o=>TOP_NAMES[o.id]||o.t||"Oferta";
+function topCmpRows(rows){ return [...rows].sort((a,b)=>{
+ const ao=TOP_ORDER[a.id]??999,bo=TOP_ORDER[b.id]??999;
+ return ao-bo||topCmpName(a).localeCompare(topCmpName(b),"pl"); }); }
+function reviewLinks(value){
+ const urls=String(value||"").match(/https?:\/\/[^\s]+/g)||[];
+ return urls.map((u,i)=>{ const h=safeUrl(u.replace(/[),.;]+$/,"")); return h
+   ? `<a href="${esc(h)}" target="_blank" rel="noopener">Link ${i+1} ↗</a>`:""; }).join("");
+}
+async function saveTopReview(offerId,field,value,el){
+ const previous=topReviewValue(offerId,field), val=String(value||"").trim();
+ if(val===previous) return;
+ el.classList.remove("saved","saveerr"); el.classList.add("saving");
+ const status=TOP_REVIEW_PREFIX+JSON.stringify({field,value:val});
+ const {data,error}=await sb.from("decisions").insert({offer_id:offerId,status})
+   .select("id,offer_id,status,decided_at").single();
+ el.classList.remove("saving");
+ if(error){ el.value=previous; el.classList.add("saveerr"); toast("Nie zapisano oceny — przywrócono poprzednią wartość");
+   setTimeout(()=>el.isConnected&&el.classList.remove("saveerr"),2200); return; }
+ (TOP_REV[offerId]||(TOP_REV[offerId]={}))[field]=val; DECS.unshift(data);
+ el.classList.add("saved"); toast("Ocena zapisana");
+ setTimeout(()=>el.isConnected&&el.classList.remove("saved"),1100);
+ const links=el.parentElement&&el.parentElement.querySelector(".review-links");
+ if(links) links.innerHTML=reviewLinks(val);
+}
+
 async function setSt(o, st){
  // Cofnięcie 🔝 Top wraca na ⭐ Shortlistę, a NIE do „do przejrzenia". Top jest
  // kolejnym szczeblem tego samego lejka, więc krok w tył to jeden szczebel — inaczej
@@ -496,6 +581,25 @@ async function setSt(o, st){
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.style.display="block"; clearTimeout(t._x); t._x=setTimeout(()=>t.style.display="none",1600); }
 
 function visibleRows(){ return sortRows(O.filter(o=>o.c===tab).filter(passFilters)); }
+function renderTopComparison(rows,g){
+ const sl=topCmpRows(rows);
+ const heads=sl.map(o=>{
+   const img=o.ph&&o.ph.length?`<img loading="lazy" decoding="async" src="${esc(o.ph[0])}" alt="${esc(topCmpName(o))}">`:`<div class="topcmp-noimg" aria-hidden="true">🏞️</div>`;
+   const listing=safeUrl(o.u)?`<a href="${esc(o.u)}" target="_blank" rel="noopener">Ogłoszenie ↗</a>`:"";
+   const map=(o.lat!=null&&o.lon!=null)?`<a href="${esc(mapsUrl(o.lat+','+o.lon))}" target="_blank" rel="noopener">Mapa ↗</a>`:"";
+   return `<th class="offer-col" scope="col"><div class="topcmp-head">${img}<div class="topcmp-head-body">
+    <div class="topcmp-head-title">${txt(topCmpName(o))}</div>
+    <div class="topcmp-head-meta">${o.pr?fmt(o.pr)+" zł":"cena?"}${o.a?" · "+fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</div>
+    <div class="topcmp-actions"><button onclick="openById(${jsq(o.id)})">Szczegóły</button>${map}${listing}<button onclick="setStId(${jsq(o.id)},'visited')">↓ Shortlist</button></div>
+   </div></div></th>`;
+ }).join("");
+ const body=TOP_FIELDS.map(([field,label])=>{
+   const cells=sl.map(o=>{ const value=topReviewValue(o.id,field), links=field==="link"?reviewLinks(value):"";
+     return `<td><textarea aria-label="${esc(label+" — "+topCmpName(o))}" spellcheck="true" placeholder="Dodaj ocenę lub komentarz…" onchange="saveTopReview(${jsq(o.id)},${jsq(field)},this.value,this)">${esc(value)}</textarea>${field==="link"?`<div class="review-links">${links}</div>`:""}</td>`; }).join("");
+   return `<tr class="${field==="sum"?"sum-row":""}"><th class="criterion" scope="row">${txt(label)}</th>${cells}</tr>`;
+ }).join("");
+ g.innerHTML=`<p class="topcmp-intro"><b>Porównanie Top.</b> Każde pole jest edytowalne; zapis następuje po wyjściu z pola. Przesuń tabelę poziomo, aby zobaczyć kolejne działki.</p><div class="topcmp-scroll"><table class="topcmp"><thead><tr><th class="criterion" scope="col">Kategoria i ocena (1–5)</th>${heads}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
 function render(){
  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.c===tab));
  document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on", c.dataset.f===flt));
@@ -504,7 +608,10 @@ function render(){
  let rows=visibleRows();
  document.getElementById("metaTxt").textContent = rows.length+" / "+inTab.length+" ofert"+(setDot._s==="live"?" · na żywo":setDot._s==="off"?" · offline":"");
  updateCounter();
+ const compareTop=flt==="visited"&&tab==="m_dz";
+ g.classList.toggle("compare",compareTop);
  if(!rows.length){ g.innerHTML='<div class="none">Pusto — zmień filtr, kategorię lub wyszukiwanie</div>'; return; }
+ if(compareTop){ renderTopComparison(rows,g); return; }
  rows.forEach(o=>{
   const s=decit(o);
   const d=document.createElement("div"); d.className="c"+(s?" st-"+s:"");
@@ -533,9 +640,9 @@ async function openOffer(o){
    else if(cur===o){ cur.de=""; cur.prm={}; }
    if(cur===o) drawD();
  }
- // Notatki dociągane ZA KAŻDYM otwarciem, nie tylko przy pierwszym: mogły dojść
- // z drugiego urządzenia. To jedno lekkie zapytanie po indeksie (offer_id, ts desc).
- if(!notesBroken){ await loadNotes(o); if(cur===o) drawD(); }
+ // Komentarze dociągane ZA KAŻDYM otwarciem, nie tylko przy pierwszym: mogły dojść
+ // z drugiego urządzenia. Są append-only w dzienniku decisions.
+ await loadNotes(o); if(cur===o) drawD();
 }
 // ── Adresowanie ofert po ID, nie po indeksie w O (POPRAWKA 21.08) ────────────
 // Co było źle: popupy mapy i tabela „bez pinezki" wstawiały do onclick INDEKS
@@ -587,32 +694,33 @@ function drawD(){ const d=document.getElementById("dd"); const s=decit(cur); con
  d.innerHTML=`<h3>${txt(cur.t)}</h3>${priceLine} <span style="color:#777">${cur.a?fmt(cur.a)+" m²":""}${cur.pr&&cur.a?" · "+fmt(Math.round(cur.pr/cur.a))+" zł/m²":""} · ${txt(cap(cur.loc))} · ${esc(cur.po||"")} · ogł.: ${esc(cur.li||"?")}${s?" · <b>"+statusLabel(s)+"</b>":""}</span>
  ${loc}${zctx}${tel}${paramsTable(cur.prm)}<div class="nn">${txt(cur.n||"")}</div>${notesHtml(cur)}${descBlock}`;
  drawA(); bindNoteDraft(); }
-// ================= NOTATKI MATEUSZA (v8, 2026-08-06) =====================
-// Tabela offer_notes(offer_id, ts, text) — NIE kolumna offers.notes! Tam pisze scraper
-// (flagi ze scrape'u) i shortlist_prices (znaczniki cen); na 06.08 miało tam treść 1730
-// z 2141 wierszy, więc notatka użytkownika przepadłaby po jednym nocnym tasku.
-// Historia zamiast nadpisywania: każdy wpis to osobny wiersz, najnowszy u góry.
-// Dla KAŻDEJ oferty, nie tylko shortlisty — powód odrzucenia też warto zapisać.
-const NOTES_TBL = "offer_notes";
-let notesBroken = false;    // migracja SQL nie wykonana → nie zaśmiecamy modala błędem
+// ================= KOMENTARZE MATEUSZA (v15, 2026-08-26) ===================
+// Pierwotny v8 zakładał tabelę offer_notes, ale migracja nigdy nie została wykonana,
+// więc funkcja była martwa. Używamy istniejącego, stronicowanego dziennika decisions:
+// wpis i jego ewentualne usunięcie są osobnymi zdarzeniami. Nie ruszamy offers.notes,
+// bo to pole należy do scrapera i nocnego procesu aktualizacji cen.
 
 const dt = iso => { const d=new Date(iso); if(isNaN(d)) return ""; 
  return d.toLocaleDateString("pl-PL",{day:"2-digit",month:"2-digit",year:"numeric"})+" "+d.toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"}); };
 
 async function loadNotes(o){
- if(notesBroken){ o.notesList=[]; return; }
- const { data, error } = await sb.from(NOTES_TBL).select("id,ts,text")
-   .eq("offer_id", o.id).order("ts",{ascending:false});
+ const { data, error } = await sb.from("decisions").select("id,offer_id,status,decided_at")
+   .eq("offer_id", o.id).order("decided_at",{ascending:false});
  if(error){
-   // Brak tabeli (migracja niewklejona) — wyłączamy sekcję raz i nie próbujemy dalej.
-   if(/relation|does not exist|schema/i.test(error.message||"")) notesBroken=true;
    o.notesList=[]; o.notesErr=error.message; return;
  }
- o.notesList=data||[]; o.notesErr=null;
+ o.notesList=notesFromDecisionRows(data||[],o.id); o.notesErr=null;
+}
+
+function notesFromDecisionRows(rows,offerId){
+ const deleted=new Set();
+ rows.forEach(r=>{ if(r.offer_id!==offerId)return; const x=eventJson(r.status,NOTE_DEL_PREFIX); if(x&&Number.isFinite(+x.id))deleted.add(+x.id); });
+ return rows.filter(r=>r.offer_id===offerId&&!deleted.has(+r.id)).map(r=>{
+   const x=eventJson(r.status,NOTE_PREFIX); return x&&typeof x.text==="string"?{id:r.id,ts:r.decided_at,text:x.text}:null;
+ }).filter(Boolean);
 }
 
 function notesHtml(o){
- if(notesBroken) return "";
  const list=o.notesList;
  const body = list===undefined
    ? `<div style="color:#999;font-size:12px">wczytuję notatki…</div>`
@@ -633,13 +741,9 @@ const noteDraft = {};
 // każdej z nich. Jedno zapytanie o same offer_id (tabela jest mała: tyle wierszy, ile
 // wpisów Mateusza) zamiast N zapytań przy renderowaniu listy.
 async function loadNotesIndex(){
- if(notesBroken) return;
- const { data, error } = await sb.from(NOTES_TBL).select("offer_id");
- if(error){
-   if(/relation|does not exist|schema/i.test(error.message||"")) notesBroken=true;
-   return;
- }
- const have=new Set((data||[]).map(r=>r.offer_id));
+ const deleted=new Set();
+ DECS.forEach(r=>{ const x=eventJson(r.status,NOTE_DEL_PREFIX); if(x&&Number.isFinite(+x.id))deleted.add(+x.id); });
+ const have=new Set(DECS.filter(r=>!deleted.has(+r.id)&&eventJson(r.status,NOTE_PREFIX)).map(r=>r.offer_id));
  O.forEach(o=>{ o.hasNotes = have.has(o.id); });
 }
 function bindNoteDraft(){
@@ -653,8 +757,8 @@ async function saveNote(){
  const val=(t.value||"").trim();
  if(!val){ e.textContent="Wpisz treść notatki."; return; }
  b.disabled=true; e.textContent="";
- const o=cur, { data, error } = await sb.from(NOTES_TBL)
-   .insert({offer_id:o.id, text:val}).select("id,ts,text").single();
+ const o=cur, status=NOTE_PREFIX+JSON.stringify({text:val}), { data, error } = await sb.from("decisions")
+   .insert({offer_id:o.id,status}).select("id,offer_id,status,decided_at").single();
  b.disabled=false;
  if(error){
    // WYMÓG: pokaż błąd i ZACHOWAJ treść w polu. Cicha porażka przy notatce z wizyty
@@ -664,7 +768,8 @@ async function saveNote(){
    noteDraft[o.id]=val;
    return;
  }
- o.notesList=[data].concat(o.notesList||[]);
+ const note={id:data.id,ts:data.decided_at,text:val};
+ o.notesList=[note].concat(o.notesList||[]); DECS.unshift(data);
  noteDraft[o.id]="";
  o.hasNotes=true;
  if(cur===o) drawD();
@@ -675,8 +780,10 @@ async function delNote(id){
  if(!cur) return;
  const o=cur, prev=o.notesList||[];
  o.notesList=prev.filter(n=>n.id!==id); drawD();
- const { error } = await sb.from(NOTES_TBL).delete().eq("id", id);
+ const status=NOTE_DEL_PREFIX+JSON.stringify({id}), {data,error}=await sb.from("decisions")
+   .insert({offer_id:o.id,status}).select("id,offer_id,status,decided_at").single();
  if(error){ o.notesList=prev; drawD(); toast("Nie udało się usunąć wpisu"); return; }
+ DECS.unshift(data);
  o.hasNotes=(o.notesList||[]).length>0;
  render(); toast("Wpis usunięty");
 }
@@ -1166,8 +1273,9 @@ async function load(){
  if(cur){ const c=O.find(x=>x.id===cur.id); if(c){ cur=c; drawD(); } }   // re-link otwartej oferty po przeładowaniu
  // ten sam limit 1000 dotyczy decisions (613 wierszy na 06.08, rosnie z kazda decyzja
  // ⭐/✕ — po przekroczeniu 1000 licznik dziennego przegladu zaczalby zanizac po cichu)
- const dr = await fetchAllRows("decisions", "offer_id,status,decided_at", "decided_at", "offer_id");
+ const dr = await fetchAllRows("decisions", "id,offer_id,status,decided_at", "decided_at", "offer_id");
  DECS = dr.data||[];
+ loadTopReviewsFromDecisions();
  await loadNotesIndex();
  lastLoad=Date.now();
  document.title="Oferty ("+O.length+")"; render(); if(view==="stats") renderStats();

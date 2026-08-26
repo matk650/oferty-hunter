@@ -14,9 +14,11 @@
 // v14 (2026-08-25): LEJEK — nowy status „visited" i zakladka „Top" pod Shortlista.
 //   Bump obowiazkowy: bez niego telefon serwuje stary index.html z cache i lejka
 //   po prostu nie ma, a wyglada to jak niedzialajacy przycisk.
+// v15 (2026-08-26): edytowalna macierz porownawcza Top + komentarze zapisywane
+//   append-only w decisions. Bump jest konieczny, bo to przede wszystkim zmiana UI.
 // v13 (2026-08-21): plakietka statusu wrocila na zdjecie (kotwiczyla sie do calej
 // karty i zakrywala przycisk 🚫) + przycisk „Otworz ogloszenie" w stopce karty.
-const C = "oferty-v14";
+const C = "oferty-v15";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",
