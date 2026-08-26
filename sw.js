@@ -16,9 +16,11 @@
 //   po prostu nie ma, a wyglada to jak niedzialajacy przycisk.
 // v15 (2026-08-26): edytowalna macierz porownawcza Top + komentarze zapisywane
 //   append-only w decisions. Bump jest konieczny, bo to przede wszystkim zmiana UI.
+// v16 (2026-08-26): kompaktowe wiersze porownania Top; pola rosna automatycznie
+//   do wysokosci zapisanej tresci zamiast wymuszac 74-82 px dla kazdej komorki.
 // v13 (2026-08-21): plakietka statusu wrocila na zdjecie (kotwiczyla sie do calej
 // karty i zakrywala przycisk 🚫) + przycisk „Otworz ogloszenie" w stopce karty.
-const C = "oferty-v15";
+const C = "oferty-v16";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",
