@@ -125,32 +125,51 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
 .slcard .t{font-weight:600;font-size:13px;margin-bottom:3px}
 .slcard .m{font-size:12px;color:#6f6d67}
 .slcard .lnk{margin-top:6px;display:flex;gap:10px}.slcard .lnk a{color:#27693c;text-decoration:none;font-weight:600;font-size:13px}
-/* ── PORÓWNANIE TOP (2026-08-26) ───────────────────────────────────────────
-   Apple Notes miało działki w kolumnach i kryteria w wierszach. Ten sam model
-   trafia do aplikacji: pierwsza kolumna jest przyklejona, a na telefonie tabela
-   przewija się poziomo bez ściskania komentarzy do nieczytelnych pasków. */
-.g.compare{display:block}
-.topcmp-intro{margin:0 0 10px;color:#5f5d57;font-size:12.5px;line-height:1.45}
-.topcmp-scroll{width:100%;overflow-x:auto;overscroll-behavior-x:contain;border:1px solid #ddd9d0;border-radius:12px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+/* ── PORÓWNANIE TOP v17 (2026-08-27) ──────────────────────────────────────
+   Elastyczny workspace decyzyjny: przyklejone nagłówki, lokalne ustawienia
+   widoku, automatyczne podsumowania i autosave bez zmiany schematu bazy. */
+.g.compare{display:block;max-width:none}
+.topcmp-shell{--criterion-w:154px;--offer-w:270px;--cell-pad:6px;--head-img:90px;position:relative}
+.topcmp-shell[data-density="comfortable"]{--cell-pad:10px;--head-img:118px}
+.topcmp-shell[data-width="narrow"]{--offer-w:225px}.topcmp-shell[data-width="wide"]{--offer-w:330px}
+.topcmp-shell.focus{position:fixed;inset:0;z-index:3500;background:#f6f5f2;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));display:flex;flex-direction:column}
+.topcmp-shell.focus .topcmp-scroll{flex:1;max-height:none}.topcmp-shell.focus .topcmp-intro{display:none}
+.topcmp-intro{margin:0 0 8px;color:#5f5d57;font-size:12.5px;line-height:1.45}
+.topcmp-toolbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:8px;padding:7px;background:#ebe8e1;border:1px solid #ddd9d0;border-radius:11px}
+.topcmp-toolbar label{display:flex;align-items:center;gap:5px;font-size:11px;color:#5e5b55;font-weight:650;white-space:nowrap}
+.topcmp-toolbar select,.topcmp-toolbar button{border:1px solid #d0ccc2;background:#fff;color:#302e2a;border-radius:8px;min-height:34px;padding:6px 9px;font:inherit;font-size:12px;cursor:pointer}
+.topcmp-toolbar select:focus,.topcmp-toolbar button:focus-visible{outline:0;border-color:#2e7d46;box-shadow:0 0 0 2px rgba(46,125,70,.15)}
+.topcmp-toolbar button{font-weight:700}.topcmp-toolbar .push{margin-left:auto}.topcmp-toolbar .restore{color:#27693c}.topcmp-toolbar .restore[disabled]{opacity:.45;cursor:default}
+.topcmp-scroll{width:100%;max-height:calc(100dvh - 250px);overflow:auto;overscroll-behavior:contain;border:1px solid #d7d3ca;border-radius:12px;background:#fff;box-shadow:0 3px 15px rgba(0,0,0,.06);scrollbar-gutter:stable}
 .topcmp{border-collapse:separate;border-spacing:0;min-width:max-content;width:100%;font-size:13px}
-.topcmp th,.topcmp td{border-right:1px solid #e7e3da;border-bottom:1px solid #e7e3da;padding:5px 6px;vertical-align:top;background:#fff}
+.topcmp th,.topcmp td{border-right:1px solid #e7e3da;border-bottom:1px solid #e7e3da;padding:var(--cell-pad);vertical-align:top;background:#fff}
 .topcmp tr:last-child th,.topcmp tr:last-child td{border-bottom:0}.topcmp th:last-child,.topcmp td:last-child{border-right:0}
-.topcmp .criterion{position:sticky;left:0;z-index:2;width:148px;min-width:148px;max-width:148px;background:#f4f1ea;color:#45423c;font-weight:700;line-height:1.25}
-.topcmp thead .criterion{z-index:4;background:#e9e4d9}
-.topcmp .offer-col{width:270px;min-width:270px;max-width:270px;padding:0;background:#fff}
-.topcmp-head{display:flex;flex-direction:column;min-height:100%}
-.topcmp-head img,.topcmp-noimg{width:100%;height:132px;object-fit:cover;background:#eceae4;display:flex;align-items:center;justify-content:center;font-size:34px}
-.topcmp-head-body{padding:10px}.topcmp-head-title{font-size:14px;line-height:1.25;margin-bottom:5px;color:#222}
-.topcmp-head-meta{font-size:12px;color:#6d6a64;line-height:1.35}
-.topcmp-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.topcmp-actions button,.topcmp-actions a{border:1px solid #d7d3ca;background:#fff;color:#34312c;border-radius:7px;padding:7px 8px;min-height:36px;font-size:11.5px;font-weight:650;text-decoration:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:1}
-.topcmp-actions a{background:#1f1e1b;border-color:#1f1e1b;color:#fff}
-.topcmp textarea{box-sizing:border-box;width:100%;height:34px;min-height:34px;overflow:hidden;resize:none;border:1px solid transparent;border-radius:6px;background:#faf9f6;color:#2f2d29;font:inherit;line-height:1.3;padding:6px 7px;transition:border-color .15s,background .15s}
+.topcmp .criterion{position:sticky;left:0;z-index:4;width:var(--criterion-w);min-width:var(--criterion-w);max-width:var(--criterion-w);background:#f2efe8;color:#45423c;font-weight:750;line-height:1.25;box-shadow:1px 0 0 #ddd9d0}
+.topcmp thead th{position:sticky;top:0;z-index:5;box-shadow:0 1px 0 #d8d4ca,0 5px 12px rgba(0,0,0,.05)}
+.topcmp thead .criterion{z-index:7;background:#e7e2d7;vertical-align:middle}
+.topcmp .offer-col{width:var(--offer-w);min-width:var(--offer-w);max-width:var(--offer-w);padding:0;background:#fff}
+.topcmp-head{display:grid;grid-template-columns:82px 1fr;min-height:100%;position:relative}
+.topcmp-head img,.topcmp-noimg{width:82px;height:var(--head-img);object-fit:cover;background:#eceae4;display:flex;align-items:center;justify-content:center;font-size:26px}
+.topcmp-head-body{padding:8px;min-width:0}.topcmp-head-title{font-size:13px;line-height:1.22;margin:0 40px 4px 0;color:#222;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.topcmp-head-meta{font-size:11px;color:#6d6a64;line-height:1.3}.topcmp-head-tools{position:absolute;right:5px;top:5px;display:flex;gap:2px}
+.topcmp-head-tools button{width:26px;height:26px;border:0;border-radius:6px;background:rgba(255,255,255,.92);color:#58554f;cursor:pointer;font-size:12px;padding:0}.topcmp-head-tools button:hover{background:#e8e4dc;color:#111}.topcmp-head-tools button:disabled{opacity:.3;cursor:default}
+.topcmp-rank{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:999px;background:#24231f;color:#fff;font-size:10px;font-weight:800;margin-right:5px}
+.topcmp-metrics{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}.topcmp-metric{font-size:10.5px;padding:3px 6px;border-radius:999px;background:#edf5ef;color:#26623a;font-weight:750}.topcmp-metric.muted{background:#efede8;color:#6c6962}
+.topcmp-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.topcmp-actions button,.topcmp-actions a{border:1px solid #d7d3ca;background:#fff;color:#34312c;border-radius:6px;padding:5px 6px;min-height:28px;font-size:10.5px;font-weight:700;text-decoration:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:1;white-space:nowrap}
+.topcmp-actions a.primary{background:#1f1e1b;border-color:#1f1e1b;color:#fff}
+.topcmp td{position:relative}.topcmp td[data-score]::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--score-color,#bbb)}
+.topcmp td[data-score="1"]{--score-color:#c65349}.topcmp td[data-score="2"]{--score-color:#d98945}.topcmp td[data-score="3"]{--score-color:#c0a63a}.topcmp td[data-score="4"]{--score-color:#58a06b}.topcmp td[data-score="5"]{--score-color:#257445}
+.topcmp textarea{box-sizing:border-box;width:100%;height:30px;min-height:30px;overflow:hidden;resize:none;border:1px solid transparent;border-radius:6px;background:#faf9f6;color:#2f2d29;font:inherit;font-size:12.5px;line-height:1.28;padding:5px 7px;transition:border-color .15s,background .15s,box-shadow .15s}
+.topcmp-shell[data-density="comfortable"] textarea{min-height:36px;padding:8px}
 .topcmp textarea:hover{border-color:#d8d4ca}.topcmp textarea:focus{outline:0;border-color:#2e7d46;background:#fff;box-shadow:0 0 0 2px rgba(46,125,70,.14)}
-.topcmp textarea.saving{background:#fff8df;border-color:#d9b84b}.topcmp textarea.saved{background:#eef7f0;border-color:#7cb58a}.topcmp textarea.saveerr{background:#fff0ee;border-color:#c95b4f}
-.topcmp .review-links{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}.topcmp .review-links a{font-size:11px;color:#27693c;text-decoration:none;font-weight:650}
-.topcmp tr.sum-row .criterion{background:#e9e4d9}.topcmp tr.sum-row textarea{font-weight:700;background:#fff8db}
-@media(max-width:520px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}.topcmp .criterion{width:118px;min-width:118px;max-width:118px;font-size:12px;padding:6px}.topcmp .offer-col{width:238px;min-width:238px;max-width:238px}.topcmp-head img,.topcmp-noimg{height:116px}}
+.topcmp textarea.dirty{background:#fffaf0;border-color:#e1c56b}.topcmp textarea.saving{background:#fff8df;border-color:#d9b84b}.topcmp textarea.saved{background:#eef7f0;border-color:#7cb58a}.topcmp textarea.saveerr{background:#fff0ee;border-color:#c95b4f}
+.topcmp-save-state{height:13px;text-align:right;font-size:9.5px;color:#918d84;line-height:13px}.topcmp textarea.saveerr+.topcmp-save-state{color:#a64137}
+.topcmp .review-links{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}.topcmp .review-links a{font-size:10.5px;color:#27693c;text-decoration:none;font-weight:650}
+.topcmp tr.sum-row .criterion{background:#e7e2d7}.topcmp tr.sum-row td{background:#fffdf2}.topcmp tr.sum-row textarea{font-weight:700;background:#fff8db}
+.topcmp-auto{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:11px;font-weight:750;color:#27693c}.topcmp-auto small{font-weight:500;color:#777}
+.topcmp-empty{padding:42px 18px;text-align:center;color:#6d6a64}.topcmp-hint{margin:7px 2px 0;font-size:10.5px;color:#817e77}
+@media(max-width:720px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}.topcmp-shell{--criterion-w:112px;--offer-w:228px;--head-img:74px}.topcmp-shell[data-width="narrow"]{--offer-w:204px}.topcmp-shell[data-width="wide"]{--offer-w:282px}.topcmp-scroll{max-height:calc(100dvh - 235px)}.topcmp-toolbar{gap:5px;padding:6px}.topcmp-toolbar label span{display:none}.topcmp-toolbar .empty-toggle span{display:inline;font-size:10px}.topcmp-toolbar select,.topcmp-toolbar button{min-height:32px;padding:5px 7px}.topcmp-toolbar .push{margin-left:0}.topcmp .criterion{font-size:11.5px}.topcmp-head{grid-template-columns:64px 1fr}.topcmp-head img,.topcmp-noimg{width:64px}.topcmp-head-title{font-size:12px;margin-right:34px}.topcmp-actions .long{display:none}.topcmp-actions button,.topcmp-actions a{font-size:10px}.topcmp-shell.focus{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.topcmp-shell.focus .topcmp-toolbar{border-radius:0;margin:0 6px 6px}.topcmp-shell.focus .topcmp-scroll{border-radius:0}}
 /* ── MAPA (v8, 2026-08-06) ───────────────────────────────────────────────── */
 /* Widoczność sterowana KLASĄ, nie stylem inline. Powód (2026-08-07): setView()
    ustawiał element.style.display="block", a styl inline bije regułę z arkusza —
@@ -404,6 +423,21 @@ const TOP_IDS={
 };
 const TOP_ORDER={[TOP_IDS.barowa]:0,[TOP_IDS.lodzianka]:1,[TOP_IDS.prosta]:2};
 const TOP_NAMES={[TOP_IDS.barowa]:"Skotniki, Barowa",[TOP_IDS.lodzianka]:"Łódź, ul. Łodzianka",[TOP_IDS.prosta]:"Łagiewniki Nowe, Prosta"};
+const TOP_SCORE_FIELDS=["quiet","area","total_price","price_per_m2","urban_infra","work_distance","walk","north_zgierz","utilities"];
+function topPref(k,d){ try{ const v=localStorage.getItem("vTop_"+k); return v==null?d:v; }catch(e){ return d; } }
+function topPrefJson(k,d){ try{ const v=JSON.parse(localStorage.getItem("vTop_"+k)); return Array.isArray(v)?v:d; }catch(e){ return d; } }
+function saveTopPref(k,v){ try{ localStorage.setItem("vTop_"+k,typeof v==="string"?v:JSON.stringify(v)); }catch(e){} }
+const TOP_VIEW={
+ density:["compact","comfortable"].includes(topPref("density","compact"))?topPref("density","compact"):"compact",
+ width:["narrow","normal","wide"].includes(topPref("width","normal"))?topPref("width","normal"):"normal",
+ sort:["manual","score_desc","price_asc","pm2_asc","area_desc"].includes(topPref("sort","manual"))?topPref("sort","manual"):"manual",
+ hideEmpty:topPref("hideEmpty","0")==="1",
+ hidden:new Set(topPrefJson("hidden",[])),
+ order:topPrefJson("order",[])
+};
+const TOP_SAVE_TIMERS={};
+const TOP_SAVE_INFLIGHT={};
+let topFocus=false;
 const median = arr => { if(!arr.length) return null; const s=[...arr].sort((a,b)=>a-b); const m=s.length>>1; return s.length%2?s[m]:(s[m-1]+s[m])/2; };
 const CATPL = {m_dz:"Mieszk. działki",m_dom:"Mieszk. domy",jez_dz:"Jeziora działki",jez_dom:"Jeziora domy"};
 const cap = s => s? s.charAt(0).toUpperCase()+s.slice(1) : s;
@@ -533,35 +567,113 @@ function loadTopReviewsFromDecisions(){
 }
 const topReviewValue=(id,field)=>((TOP_REV[id]||{})[field]||"");
 const topCmpName=o=>TOP_NAMES[o.id]||o.t||"Oferta";
-function topCmpRows(rows){ return [...rows].sort((a,b)=>{
- const ao=TOP_ORDER[a.id]??999,bo=TOP_ORDER[b.id]??999;
- return ao-bo||topCmpName(a).localeCompare(topCmpName(b),"pl"); }); }
+function parseTopScore(value){
+ const m=String(value||"").trim().match(/^([1-5])(?:\s|$|\()/);
+ return m?Number(m[1]):null;
+}
+function topLiveValue(id,field){
+ let found=null;
+ document.querySelectorAll(".topcmp textarea").forEach(el=>{ if(el.dataset.offer===id&&el.dataset.field===field) found=el.value; });
+ return found==null?topReviewValue(id,field):found;
+}
+function topScoreStats(o,live=false){
+ const scores=TOP_SCORE_FIELDS.map(f=>parseTopScore(live?topLiveValue(o.id,f):topReviewValue(o.id,f))).filter(v=>v!=null);
+ return {count:scores.length,total:TOP_SCORE_FIELDS.length,avg:scores.length?scores.reduce((a,b)=>a+b,0)/scores.length:null};
+}
+function topAutoText(s){ return s.count?`${s.avg.toFixed(1).replace(".",",")} / 5 · ${s.count}/${s.total} ocen`:`Brak ocen liczbowych · 0/${s.total}`; }
+function topManualRows(rows){ return [...rows].sort((a,b)=>{
+ const ai=TOP_VIEW.order.indexOf(a.id),bi=TOP_VIEW.order.indexOf(b.id);
+ const ao=ai>=0?ai:(TOP_ORDER[a.id]??9999),bo=bi>=0?bi:(TOP_ORDER[b.id]??9999);
+ return ao-bo||topCmpName(a).localeCompare(topCmpName(b),"pl");
+ }); }
+function topCmpRows(rows){
+ const base=topManualRows(rows),pos=new Map(base.map((o,i)=>[o.id,i]));
+ const tie=(a,b)=>pos.get(a.id)-pos.get(b.id),nn=v=>v==null?Infinity:v,nnd=v=>v==null?-Infinity:v;
+ const f={
+  score_desc:(a,b)=>nnd(topScoreStats(b).avg)-nnd(topScoreStats(a).avg)||tie(a,b),
+  price_asc:(a,b)=>nn(a.pr)-nn(b.pr)||tie(a,b),
+  pm2_asc:(a,b)=>nn(pm2(a))-nn(pm2(b))||tie(a,b),
+  area_desc:(a,b)=>nnd(b.a)-nnd(a.a)||tie(a,b)
+ }[TOP_VIEW.sort];
+ return f?[...base].sort(f):base;
+}
+function topRankMap(rows){
+ const ranked=rows.map(o=>({o,s:topScoreStats(o)})).filter(x=>x.s.count)
+  .sort((a,b)=>b.s.avg-a.s.avg||b.s.count-a.s.count||topCmpName(a.o).localeCompare(topCmpName(b.o),"pl"));
+ return new Map(ranked.map((x,i)=>[x.o.id,i+1]));
+}
+function topSetViewOption(key,value){
+ if(key==="hideEmpty"){ TOP_VIEW.hideEmpty=!!value; saveTopPref(key,TOP_VIEW.hideEmpty?"1":"0"); }
+ else if(key==="density"&&["compact","comfortable"].includes(value)){ TOP_VIEW.density=value; saveTopPref(key,value); }
+ else if(key==="width"&&["narrow","normal","wide"].includes(value)){ TOP_VIEW.width=value; saveTopPref(key,value); }
+ else if(key==="sort"&&["manual","score_desc","price_asc","pm2_asc","area_desc"].includes(value)){ TOP_VIEW.sort=value; saveTopPref(key,value); }
+ render();
+}
+function topMoveColumn(id,delta){
+ const shown=topCmpRows(visibleRows()).filter(o=>!TOP_VIEW.hidden.has(o.id)).map(o=>o.id),i=shown.indexOf(id),j=i+delta;
+ if(i<0||j<0||j>=shown.length) return;
+ [shown[i],shown[j]]=[shown[j],shown[i]];
+ const rest=topManualRows(visibleRows()).map(o=>o.id).filter(x=>!shown.includes(x));
+ TOP_VIEW.order=shown.concat(rest); TOP_VIEW.sort="manual";
+ saveTopPref("order",TOP_VIEW.order); saveTopPref("sort","manual"); render();
+}
+function topHideColumn(id){ TOP_VIEW.hidden.add(id); saveTopPref("hidden",[...TOP_VIEW.hidden]); render(); }
+function topShowAllColumns(){ TOP_VIEW.hidden.clear(); saveTopPref("hidden",[]); render(); }
+function setTopFocus(on){
+ topFocus=!!on;
+ const shell=document.querySelector(".topcmp-shell"); if(shell) shell.classList.toggle("focus",topFocus);
+ document.body.classList.toggle("fs-lock",topFocus||mapFsOn);
+ const b=document.getElementById("topFocusBtn"); if(b){ b.textContent=topFocus?"× Wyjdź":"⛶ Skupienie"; b.setAttribute("aria-pressed",topFocus?"true":"false"); }
+}
 function reviewLinks(value){
  const urls=String(value||"").match(/https?:\/\/[^\s]+/g)||[];
  return urls.map((u,i)=>{ const h=safeUrl(u.replace(/[),.;]+$/,"")); return h
    ? `<a href="${esc(h)}" target="_blank" rel="noopener">Link ${i+1} ↗</a>`:""; }).join("");
 }
 function fitTopReview(el){
- // Pole zaczyna od jednej zwartej linii, a potem rośnie dokładnie do zapisanej
- // treści. Najwyższa komórka wyznacza wysokość danego wiersza tabeli.
- el.style.height="34px";
- el.style.height=Math.max(34,el.scrollHeight)+"px";
+ el.style.height="30px";
+ el.style.height=Math.max(30,el.scrollHeight)+"px";
+}
+function topReviewState(el,text){ const s=el.parentElement&&el.parentElement.querySelector(".topcmp-save-state"); if(s) s.textContent=text||""; }
+function refreshTopMetrics(offerId){
+ const o=oById(offerId); if(!o)return; const s=topScoreStats(o,true),avg=s.avg==null?"—":s.avg.toFixed(1).replace(".",",");
+ document.querySelectorAll("[data-top-metric]").forEach(el=>{ if(el.dataset.offer!==offerId)return; el.textContent=el.dataset.topMetric==="avg"?`${avg} / 5`:`${s.count}/${s.total}`; el.classList.toggle("muted",!s.count); });
+ document.querySelectorAll("[data-top-auto]").forEach(el=>{ if(el.dataset.offer===offerId) el.textContent=topAutoText(s); });
+}
+function markTopReview(el){
+ fitTopReview(el); const td=el.closest("td"),score=parseTopScore(el.value);
+ if(td){ if(score==null) delete td.dataset.score; else td.dataset.score=score; }
+ refreshTopMetrics(el.dataset.offer);
+}
+function scheduleTopReview(offerId,field,el){
+ markTopReview(el); el.classList.remove("saved","saveerr"); el.classList.add("dirty"); topReviewState(el,"niezapisane");
+ const key=offerId+"|"+field; clearTimeout(TOP_SAVE_TIMERS[key]);
+ TOP_SAVE_TIMERS[key]=setTimeout(()=>{ delete TOP_SAVE_TIMERS[key]; saveTopReview(offerId,field,el.value,el); },900);
+}
+function flushTopReview(offerId,field,el){ const key=offerId+"|"+field; clearTimeout(TOP_SAVE_TIMERS[key]); delete TOP_SAVE_TIMERS[key]; return saveTopReview(offerId,field,el.value,el); }
+function topReviewKey(e,offerId,field,el){
+ if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); flushTopReview(offerId,field,el); }
+ if(e.key==="Escape"){ e.preventDefault(); const key=offerId+"|"+field; clearTimeout(TOP_SAVE_TIMERS[key]); el.value=topReviewValue(offerId,field); el.classList.remove("dirty","saving","saved","saveerr"); topReviewState(el,""); markTopReview(el); el.blur(); }
 }
 async function saveTopReview(offerId,field,value,el){
+ const key=offerId+"|"+field;
+ if(TOP_SAVE_INFLIGHT[key]){ el.classList.add("dirty"); topReviewState(el,"czeka na zapis…"); return TOP_SAVE_INFLIGHT[key].then(()=>{ if(el.isConnected&&String(el.value||"").trim()!==topReviewValue(offerId,field)) scheduleTopReview(offerId,field,el); }); }
  const previous=topReviewValue(offerId,field), val=String(value||"").trim();
- if(val===previous) return;
- el.classList.remove("saved","saveerr"); el.classList.add("saving");
+ if(val===previous){ el.classList.remove("dirty","saving","saved","saveerr"); topReviewState(el,""); return; }
+ el.classList.remove("dirty","saved","saveerr"); el.classList.add("saving"); topReviewState(el,"zapisuję…");
  const status=TOP_REVIEW_PREFIX+JSON.stringify({field,value:val});
- const {data,error}=await sb.from("decisions").insert({offer_id:offerId,status})
-   .select("id,offer_id,status,decided_at").single();
+ const request=sb.from("decisions").insert({offer_id:offerId,status}).select("id,offer_id,status,decided_at").single();
+ TOP_SAVE_INFLIGHT[key]=request;
+ const {data,error}=await request; delete TOP_SAVE_INFLIGHT[key];
  el.classList.remove("saving");
- if(error){ el.value=previous; fitTopReview(el); el.classList.add("saveerr"); toast("Nie zapisano oceny — przywrócono poprzednią wartość");
-   setTimeout(()=>el.isConnected&&el.classList.remove("saveerr"),2200); return; }
+ if(error){ el.classList.add("saveerr"); topReviewState(el,"błąd zapisu · kliknij i spróbuj ponownie"); toast("Nie zapisano oceny — treść pozostaje w polu"); return; }
  (TOP_REV[offerId]||(TOP_REV[offerId]={}))[field]=val; DECS.unshift(data);
- el.classList.add("saved"); toast("Ocena zapisana");
- setTimeout(()=>el.isConnected&&el.classList.remove("saved"),1100);
+ if(String(el.value||"").trim()===val){ el.classList.add("saved"); topReviewState(el,"zapisano");
+   setTimeout(()=>{ if(el.isConnected){ el.classList.remove("saved"); topReviewState(el,""); } },1200);
+ }else{ el.classList.add("dirty"); topReviewState(el,"niezapisane"); scheduleTopReview(offerId,field,el); }
  const links=el.parentElement&&el.parentElement.querySelector(".review-links");
  if(links) links.innerHTML=reviewLinks(val);
+ refreshTopMetrics(offerId);
 }
 
 async function setSt(o, st){
@@ -588,24 +700,32 @@ function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.
 
 function visibleRows(){ return sortRows(O.filter(o=>o.c===tab).filter(passFilters)); }
 function renderTopComparison(rows,g){
- const sl=topCmpRows(rows);
- const heads=sl.map(o=>{
+ const all=topCmpRows(rows),sl=all.filter(o=>!TOP_VIEW.hidden.has(o.id)),ranks=topRankMap(all),hiddenCount=all.length-sl.length;
+ const heads=sl.map((o,i)=>{
    const img=o.ph&&o.ph.length?`<img loading="lazy" decoding="async" src="${esc(o.ph[0])}" alt="${esc(topCmpName(o))}">`:`<div class="topcmp-noimg" aria-hidden="true">🏞️</div>`;
-   const listing=safeUrl(o.u)?`<a href="${esc(o.u)}" target="_blank" rel="noopener">Ogłoszenie ↗</a>`:"";
+   const listing=safeUrl(o.u)?`<a class="primary" href="${esc(o.u)}" target="_blank" rel="noopener">Ogłoszenie ↗</a>`:"";
    const map=(o.lat!=null&&o.lon!=null)?`<a href="${esc(mapsUrl(o.lat+','+o.lon))}" target="_blank" rel="noopener">Mapa ↗</a>`:"";
+   const s=topScoreStats(o),avg=s.avg==null?"—":s.avg.toFixed(1).replace(".",",");
    return `<th class="offer-col" scope="col"><div class="topcmp-head">${img}<div class="topcmp-head-body">
-    <div class="topcmp-head-title">${txt(topCmpName(o))}</div>
+    <div class="topcmp-head-tools"><button ${i===0?"disabled":""} onclick="topMoveColumn(${jsq(o.id)},-1)" title="Przesuń w lewo" aria-label="Przesuń ${esc(topCmpName(o))} w lewo">←</button><button ${i===sl.length-1?"disabled":""} onclick="topMoveColumn(${jsq(o.id)},1)" title="Przesuń w prawo" aria-label="Przesuń ${esc(topCmpName(o))} w prawo">→</button><button onclick="topHideColumn(${jsq(o.id)})" title="Ukryj kolumnę" aria-label="Ukryj ${esc(topCmpName(o))}">×</button></div>
+    <div class="topcmp-head-title">${ranks.has(o.id)?`<span class="topcmp-rank">#${ranks.get(o.id)}</span>`:""}${txt(topCmpName(o))}</div>
     <div class="topcmp-head-meta">${o.pr?fmt(o.pr)+" zł":"cena?"}${o.a?" · "+fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</div>
-    <div class="topcmp-actions"><button onclick="openById(${jsq(o.id)})">Szczegóły</button>${map}${listing}<button onclick="setStId(${jsq(o.id)},'visited')">↓ Shortlist</button></div>
+    <div class="topcmp-metrics"><span class="topcmp-metric${s.count?"":" muted"}" data-top-metric="avg" data-offer="${esc(o.id)}">${avg} / 5</span><span class="topcmp-metric${s.count?"":" muted"}" data-top-metric="complete" data-offer="${esc(o.id)}">${s.count}/${s.total}</span></div>
+    <div class="topcmp-actions"><button onclick="openById(${jsq(o.id)})">Info</button>${map}${listing}<button onclick="setStId(${jsq(o.id)},'visited')">↓ <span class="long">Shortlista</span></button></div>
    </div></div></th>`;
  }).join("");
- const body=TOP_FIELDS.map(([field,label])=>{
-   const cells=sl.map(o=>{ const value=topReviewValue(o.id,field), links=field==="link"?reviewLinks(value):"";
-     return `<td><textarea aria-label="${esc(label+" — "+topCmpName(o))}" spellcheck="true" placeholder="Dodaj ocenę lub komentarz…" oninput="fitTopReview(this)" onchange="saveTopReview(${jsq(o.id)},${jsq(field)},this.value,this)">${esc(value)}</textarea>${field==="link"?`<div class="review-links">${links}</div>`:""}</td>`; }).join("");
+ const fields=TOP_FIELDS.filter(([field])=>!TOP_VIEW.hideEmpty||field==="sum"||sl.some(o=>topReviewValue(o.id,field).trim()));
+ const body=fields.map(([field,label])=>{
+   const cells=sl.map(o=>{ const value=topReviewValue(o.id,field),links=field==="link"?reviewLinks(value):"",score=parseTopScore(value),stats=topScoreStats(o);
+     const auto=field==="sum"?`<div class="topcmp-auto" data-top-auto="1" data-offer="${esc(o.id)}">${topAutoText(stats)}</div>`:"";
+     return `<td${score==null?"":` data-score="${score}"`}>${auto}<textarea data-offer="${esc(o.id)}" data-field="${esc(field)}" aria-label="${esc(label+" — "+topCmpName(o))}" spellcheck="true" placeholder="${field==="sum"?"Własny werdykt…":"Dodaj ocenę 1–5 lub komentarz…"}" oninput="scheduleTopReview(${jsq(o.id)},${jsq(field)},this)" onblur="flushTopReview(${jsq(o.id)},${jsq(field)},this)" onkeydown="topReviewKey(event,${jsq(o.id)},${jsq(field)},this)">${esc(value)}</textarea><div class="topcmp-save-state" aria-live="polite"></div>${field==="link"?`<div class="review-links">${links}</div>`:""}</td>`; }).join("");
    return `<tr class="${field==="sum"?"sum-row":""}"><th class="criterion" scope="row">${txt(label)}</th>${cells}</tr>`;
  }).join("");
- g.innerHTML=`<p class="topcmp-intro"><b>Porównanie Top.</b> Każde pole jest edytowalne; zapis następuje po wyjściu z pola. Przesuń tabelę poziomo, aby zobaczyć kolejne działki.</p><div class="topcmp-scroll"><table class="topcmp"><thead><tr><th class="criterion" scope="col">Kategoria i ocena (1–5)</th>${heads}</tr></thead><tbody>${body}</tbody></table></div>`;
- g.querySelectorAll(".topcmp textarea").forEach(fitTopReview);
+ const toolbar=`<div class="topcmp-toolbar" role="toolbar" aria-label="Ustawienia porównania"><label><span>Kolejność</span><select aria-label="Kolejność ofert" onchange="topSetViewOption('sort',this.value)"><option value="manual"${TOP_VIEW.sort==="manual"?" selected":""}>Własna kolejność</option><option value="score_desc"${TOP_VIEW.sort==="score_desc"?" selected":""}>Najwyższa ocena</option><option value="price_asc"${TOP_VIEW.sort==="price_asc"?" selected":""}>Najniższa cena</option><option value="pm2_asc"${TOP_VIEW.sort==="pm2_asc"?" selected":""}>Najniższa cena/m²</option><option value="area_desc"${TOP_VIEW.sort==="area_desc"?" selected":""}>Największa powierzchnia</option></select></label><label><span>Gęstość</span><select aria-label="Gęstość tabeli" onchange="topSetViewOption('density',this.value)"><option value="compact"${TOP_VIEW.density==="compact"?" selected":""}>Kompaktowa</option><option value="comfortable"${TOP_VIEW.density==="comfortable"?" selected":""}>Komfortowa</option></select></label><label><span>Szerokość</span><select aria-label="Szerokość kolumn" onchange="topSetViewOption('width',this.value)"><option value="narrow"${TOP_VIEW.width==="narrow"?" selected":""}>Wąskie</option><option value="normal"${TOP_VIEW.width==="normal"?" selected":""}>Standard</option><option value="wide"${TOP_VIEW.width==="wide"?" selected":""}>Szerokie</option></select></label><label class="empty-toggle"><input type="checkbox" ${TOP_VIEW.hideEmpty?"checked":""} onchange="topSetViewOption('hideEmpty',this.checked)"><span>Puste</span></label><button class="restore" onclick="topShowAllColumns()" ${hiddenCount?"":"disabled"}>Kolumny +${hiddenCount}</button><button id="topFocusBtn" class="push" aria-pressed="${topFocus?"true":"false"}" onclick="setTopFocus(!topFocus)">${topFocus?"× Wyjdź":"⛶ Skupienie"}</button></div>`;
+ const table=sl.length?`<div class="topcmp-scroll" tabindex="0" aria-label="Tabela porównawcza ofert Top"><table class="topcmp"><thead><tr><th class="criterion" scope="col">Kategoria i ocena (1–5)</th>${heads}</tr></thead><tbody>${body}</tbody></table></div>`:`<div class="topcmp-empty">Wszystkie kolumny są ukryte. Użyj „Kolumny +${hiddenCount}”, aby je przywrócić.</div>`;
+ g.innerHTML=`<section class="topcmp-shell${topFocus?" focus":""}" data-density="${TOP_VIEW.density}" data-width="${TOP_VIEW.width}"><p class="topcmp-intro"><b>Porównanie Top.</b> Oceny zapisują się automatycznie. Liczba na początku pola (1–5) zasila średnią; ustawienia widoku zostają tylko na tym urządzeniu.</p>${toolbar}${table}<p class="topcmp-hint">⌘/Ctrl + Enter zapisuje od razu · Esc przywraca ostatnio zapisaną treść · strzałki w nagłówku zmieniają kolejność kolumn</p></section>`;
+ document.body.classList.toggle("fs-lock",topFocus||mapFsOn);
+ g.querySelectorAll(".topcmp textarea").forEach(markTopReview);
 }
 function render(){
  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.c===tab));
@@ -617,7 +737,8 @@ function render(){
  updateCounter();
  const compareTop=flt==="visited"&&tab==="m_dz";
  g.classList.toggle("compare",compareTop);
- if(!rows.length){ g.innerHTML='<div class="none">Pusto — zmień filtr, kategorię lub wyszukiwanie</div>'; return; }
+ if(!compareTop&&topFocus) setTopFocus(false);
+ if(!rows.length){ if(topFocus)setTopFocus(false); g.innerHTML='<div class="none">Pusto — zmień filtr, kategorię lub wyszukiwanie</div>'; return; }
  if(compareTop){ renderTopComparison(rows,g); return; }
  rows.forEach(o=>{
   const s=decit(o);
@@ -1101,7 +1222,7 @@ function setMapFs(on){
  mapFsOn=!!on;
  const w=document.getElementById("mapWrap");
  w.classList.toggle("fs", mapFsOn);
- document.body.classList.toggle("fs-lock", mapFsOn);
+ document.body.classList.toggle("fs-lock", mapFsOn||topFocus);
  const b=document.getElementById("mapFs");
  b.textContent = mapFsOn ? "⤢ Zwykły widok" : "⛶ Pełny ekran";
  b.setAttribute("aria-label", mapFsOn ? "Wyjdź z pełnego ekranu" : "Pełny ekran mapy");
@@ -1117,6 +1238,7 @@ document.getElementById("mapClose").onclick=()=>setMapFs(false);
 // Esc zamyka pełny ekran. Sprawdzamy PRZED obsługą modala oferty (ten sam klawisz),
 // bo gdy mapa jest na pełnym ekranie, to ona jest wierzchnią warstwą.
 document.addEventListener("keydown", e=>{
+ if(e.key==="Escape" && topFocus && !cur){ setTopFocus(false); e.preventDefault(); e.stopImmediatePropagation(); return; }
  if(e.key==="Escape" && mapFsOn && !cur){ setMapFs(false); e.stopPropagation(); }
 }, true);
 

@@ -18,9 +18,11 @@
 //   append-only w decisions. Bump jest konieczny, bo to przede wszystkim zmiana UI.
 // v16 (2026-08-26): kompaktowe wiersze porownania Top; pola rosna automatycznie
 //   do wysokosci zapisanej tresci zamiast wymuszac 74-82 px dla kazdej komorki.
+// v17 (2026-08-27): interaktywny workspace Top — sticky header, focus, gestosc,
+//   szerokosc i kolejnosc kolumn, autosave oraz automatyczne podsumowanie ocen.
 // v13 (2026-08-21): plakietka statusu wrocila na zdjecie (kotwiczyla sie do calej
 // karty i zakrywala przycisk 🚫) + przycisk „Otworz ogloszenie" w stopce karty.
-const C = "oferty-v16";
+const C = "oferty-v17";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",
