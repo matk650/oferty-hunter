@@ -142,12 +142,26 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
 .topcmp-toolbar button{font-weight:700}.topcmp-toolbar .push{margin-left:auto}.topcmp-toolbar .restore{color:#27693c}.topcmp-toolbar .restore[disabled]{opacity:.45;cursor:default}
 .topcmp-scroll{width:100%;max-height:calc(100dvh - 250px);overflow:auto;overscroll-behavior:contain;border:1px solid #d7d3ca;border-radius:12px;background:#fff;box-shadow:0 3px 15px rgba(0,0,0,.06);scrollbar-gutter:stable}
 .topcmp{border-collapse:separate;border-spacing:0;min-width:max-content;width:100%;font-size:13px}
+.topcmp-shell[data-fit="true"] .topcmp{min-width:100%;width:100%;table-layout:fixed}
 .topcmp th,.topcmp td{border-right:1px solid #e7e3da;border-bottom:1px solid #e7e3da;padding:var(--cell-pad);vertical-align:top;background:#fff}
 .topcmp tr:last-child th,.topcmp tr:last-child td{border-bottom:0}.topcmp th:last-child,.topcmp td:last-child{border-right:0}
 .topcmp .criterion{position:sticky;left:0;z-index:4;width:var(--criterion-w);min-width:var(--criterion-w);max-width:var(--criterion-w);background:#f2efe8;color:#45423c;font-weight:750;line-height:1.25;box-shadow:1px 0 0 #ddd9d0}
 .topcmp thead th{position:sticky;top:0;z-index:5;box-shadow:0 1px 0 #d8d4ca,0 5px 12px rgba(0,0,0,.05)}
 .topcmp thead .criterion{z-index:7;background:#e7e2d7;vertical-align:middle}
-.topcmp .offer-col{width:var(--offer-w);min-width:var(--offer-w);max-width:var(--offer-w);padding:0;background:#fff}
+.topcmp .offer-col,.topcmp .offer-cell{width:var(--col-w,var(--offer-w));min-width:var(--col-w,var(--offer-w));max-width:var(--col-w,var(--offer-w))}
+.topcmp .offer-col{padding:0;background:#fff}
+.topcmp-col-resizer{position:absolute;right:-5px;top:0;bottom:0;width:10px;z-index:12;cursor:col-resize;touch-action:none}
+.topcmp-col-resizer::after{content:"";position:absolute;right:4px;top:0;bottom:0;width:1px;background:transparent;transition:background .12s}
+.topcmp-col-resizer:hover::after,.topcmp-col-resizer:focus-visible::after{background:#2e7d46}
+.topcmp-row-resizer{position:absolute;left:0;right:0;bottom:-5px;height:10px;z-index:11;cursor:row-resize;touch-action:none}
+.topcmp-row-resizer::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:1px;background:transparent;transition:background .12s}
+.topcmp-row-resizer:hover::after,.topcmp-row-resizer:focus-visible::after{background:#2e7d46}
+body.top-resizing{cursor:col-resize;user-select:none}body.top-resizing.row{cursor:row-resize}
+.topcmp-shell[data-fit-compact="true"]{--cell-pad:3px;--head-img:56px}
+.topcmp-shell[data-fit-compact="true"] .topcmp-head{display:block}.topcmp-shell[data-fit-compact="true"] .topcmp-head img,.topcmp-shell[data-fit-compact="true"] .topcmp-noimg{display:none}
+.topcmp-shell[data-fit-compact="true"] .topcmp-head-body{padding:5px 4px}.topcmp-shell[data-fit-compact="true"] .topcmp-head-title{font-size:10.5px;margin:0 0 3px;-webkit-line-clamp:3}.topcmp-shell[data-fit-compact="true"] .topcmp-head-tools{display:none}
+.topcmp-shell[data-fit-compact="true"] .topcmp-head-meta,.topcmp-shell[data-fit-compact="true"] .topcmp-metrics{font-size:9px}.topcmp-shell[data-fit-compact="true"] .topcmp-actions{display:none}
+.topcmp-shell[data-fit-compact="true"] textarea{font-size:10.5px;padding:3px 4px}.topcmp-shell[data-fit-compact="true"] .topcmp-head-tools button{width:20px;height:20px}
 .topcmp-head{display:grid;grid-template-columns:82px 1fr;min-height:100%;position:relative}
 .topcmp-head img,.topcmp-noimg{width:82px;height:var(--head-img);object-fit:cover;background:#eceae4;display:flex;align-items:center;justify-content:center;font-size:26px}
 .topcmp-head-body{padding:8px;min-width:0}.topcmp-head-title{font-size:13px;line-height:1.22;margin:0 40px 4px 0;color:#222;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -169,6 +183,28 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
 .topcmp tr.sum-row .criterion{background:#e7e2d7}.topcmp tr.sum-row td{background:#fffdf2}.topcmp tr.sum-row textarea{font-weight:700;background:#fff8db}
 .topcmp-auto{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:11px;font-weight:750;color:#27693c}.topcmp-auto small{font-weight:500;color:#777}
 .topcmp-empty{padding:42px 18px;text-align:center;color:#6d6a64}.topcmp-hint{margin:7px 2px 0;font-size:10.5px;color:#817e77}
+@media print{
+ body.top-printing{background:#fff!important;padding:0!important;color:#000}
+ body.top-printing>*:not(#grid){display:none!important}
+ body.top-printing #grid{display:block!important;margin:0!important;padding:0!important}
+ body.top-printing #grid>*:not(.topcmp-shell){display:none!important}
+ body.top-printing .topcmp-shell{display:block!important;position:static!important;inset:auto!important;z-index:auto!important;background:#fff!important;padding:0!important}
+ body.top-printing .topcmp-toolbar,body.top-printing .topcmp-hint,body.top-printing .topcmp-save-state,body.top-printing .topcmp-head-tools,body.top-printing .topcmp-col-resizer,body.top-printing .topcmp-row-resizer{display:none!important}
+ body.top-printing .topcmp-intro{display:block!important;margin:0 0 3mm;font-size:8pt}
+ body.top-printing .topcmp-scroll{display:block!important;max-height:none!important;overflow:visible!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+ body.top-printing .topcmp{width:100%!important;min-width:0!important;table-layout:fixed!important;border-collapse:collapse!important;font-size:7.5pt}
+ body.top-printing .topcmp th,body.top-printing .topcmp td{border:0.25mm solid #bbb!important;padding:1.4mm!important;break-inside:avoid}
+ body.top-printing .topcmp tr{height:auto!important}
+ body.top-printing .topcmp .criterion{position:static!important;width:25mm!important;min-width:25mm!important;max-width:25mm!important;box-shadow:none!important;font-size:7.5pt}
+ body.top-printing .topcmp .offer-col,body.top-printing .topcmp .offer-cell{width:auto!important;min-width:0!important;max-width:none!important}
+ body.top-printing .topcmp thead th{position:static!important;box-shadow:none!important}
+ body.top-printing .topcmp-head{display:block!important}body.top-printing .topcmp-head img,body.top-printing .topcmp-noimg{float:left!important;width:18mm!important;height:14mm!important;margin:0 1.5mm 1mm 0!important;display:block!important}
+ body.top-printing .topcmp-head-body{padding:1mm!important}body.top-printing .topcmp-head-title{font-size:7.5pt!important;margin:0 0 1mm!important;display:block!important;overflow:visible!important}
+ body.top-printing .topcmp-head-meta,body.top-printing .topcmp-metric,body.top-printing .topcmp-actions button,body.top-printing .topcmp-actions a{font-size:6.5pt!important}
+ body.top-printing .topcmp-actions{display:none!important}
+ body.top-printing .topcmp textarea{border:0!important;background:transparent!important;box-shadow:none!important;padding:0!important;min-height:0!important;font-size:7.2pt!important;line-height:1.18!important;overflow:visible!important;resize:none!important;color:#000!important}
+ body.top-printing .topcmp .review-links{display:none!important}
+}
 @media(max-width:720px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}.topcmp-shell{--criterion-w:112px;--offer-w:228px;--head-img:74px}.topcmp-shell[data-width="narrow"]{--offer-w:204px}.topcmp-shell[data-width="wide"]{--offer-w:282px}.topcmp-scroll{max-height:calc(100dvh - 235px)}.topcmp-toolbar{gap:5px;padding:6px}.topcmp-toolbar label span{display:none}.topcmp-toolbar .empty-toggle span{display:inline;font-size:10px}.topcmp-toolbar select,.topcmp-toolbar button{min-height:32px;padding:5px 7px}.topcmp-toolbar .push{margin-left:0}.topcmp .criterion{font-size:11.5px}.topcmp-head{grid-template-columns:64px 1fr}.topcmp-head img,.topcmp-noimg{width:64px}.topcmp-head-title{font-size:12px;margin-right:34px}.topcmp-actions .long{display:none}.topcmp-actions button,.topcmp-actions a{font-size:10px}.topcmp-shell.focus{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.topcmp-shell.focus .topcmp-toolbar{border-radius:0;margin:0 6px 6px}.topcmp-shell.focus .topcmp-scroll{border-radius:0}}
 /* ── MAPA (v8, 2026-08-06) ───────────────────────────────────────────────── */
 /* Widoczność sterowana KLASĄ, nie stylem inline. Powód (2026-08-07): setView()
@@ -426,18 +462,25 @@ const TOP_NAMES={[TOP_IDS.barowa]:"Skotniki, Barowa",[TOP_IDS.lodzianka]:"Łód�
 const TOP_SCORE_FIELDS=["quiet","area","total_price","price_per_m2","urban_infra","work_distance","walk","north_zgierz","utilities"];
 function topPref(k,d){ try{ const v=localStorage.getItem("vTop_"+k); return v==null?d:v; }catch(e){ return d; } }
 function topPrefJson(k,d){ try{ const v=JSON.parse(localStorage.getItem("vTop_"+k)); return Array.isArray(v)?v:d; }catch(e){ return d; } }
+function topPrefObject(k,d){ try{ const v=JSON.parse(localStorage.getItem("vTop_"+k)); return v&&typeof v==="object"&&!Array.isArray(v)?v:d; }catch(e){ return d; } }
 function saveTopPref(k,v){ try{ localStorage.setItem("vTop_"+k,typeof v==="string"?v:JSON.stringify(v)); }catch(e){} }
+const topClamp=(n,min,max)=>Math.min(max,Math.max(min,Number(n)||min));
 const TOP_VIEW={
  density:["compact","comfortable"].includes(topPref("density","compact"))?topPref("density","compact"):"compact",
  width:["narrow","normal","wide"].includes(topPref("width","normal"))?topPref("width","normal"):"normal",
  sort:["manual","score_desc","price_asc","pm2_asc","area_desc"].includes(topPref("sort","manual"))?topPref("sort","manual"):"manual",
  hideEmpty:topPref("hideEmpty","0")==="1",
  hidden:new Set(topPrefJson("hidden",[])),
- order:topPrefJson("order",[])
+ order:topPrefJson("order",[]),
+ fit:topPref("fit","0")==="1",
+ criterionWidth:topClamp(topPref("criterionWidth","154"),56,420),
+ colWidths:topPrefObject("colWidths",{}),
+ rowHeights:topPrefObject("rowHeights",{}),
+ printSize:["A4","A3"].includes(topPref("printSize","A4"))?topPref("printSize","A4"):"A4"
 };
 const TOP_SAVE_TIMERS={};
 const TOP_SAVE_INFLIGHT={};
-let topFocus=false;
+let topFocus=false,TOP_RESIZE=null,topResizeFrame=0;
 const median = arr => { if(!arr.length) return null; const s=[...arr].sort((a,b)=>a-b); const m=s.length>>1; return s.length%2?s[m]:(s[m-1]+s[m])/2; };
 const CATPL = {m_dz:"Mieszk. działki",m_dom:"Mieszk. domy",jez_dz:"Jeziora działki",jez_dom:"Jeziora domy"};
 const cap = s => s? s.charAt(0).toUpperCase()+s.slice(1) : s;
@@ -605,7 +648,7 @@ function topRankMap(rows){
 function topSetViewOption(key,value){
  if(key==="hideEmpty"){ TOP_VIEW.hideEmpty=!!value; saveTopPref(key,TOP_VIEW.hideEmpty?"1":"0"); }
  else if(key==="density"&&["compact","comfortable"].includes(value)){ TOP_VIEW.density=value; saveTopPref(key,value); }
- else if(key==="width"&&["narrow","normal","wide"].includes(value)){ TOP_VIEW.width=value; saveTopPref(key,value); }
+ else if(key==="width"&&["narrow","normal","wide"].includes(value)){ TOP_VIEW.width=value; TOP_VIEW.fit=false; TOP_VIEW.colWidths={}; saveTopPref(key,value); saveTopPref("fit","0"); saveTopPref("colWidths",{}); }
  else if(key==="sort"&&["manual","score_desc","price_asc","pm2_asc","area_desc"].includes(value)){ TOP_VIEW.sort=value; saveTopPref(key,value); }
  render();
 }
@@ -619,6 +662,73 @@ function topMoveColumn(id,delta){
 }
 function topHideColumn(id){ TOP_VIEW.hidden.add(id); saveTopPref("hidden",[...TOP_VIEW.hidden]); render(); }
 function topShowAllColumns(){ TOP_VIEW.hidden.clear(); saveTopPref("hidden",[]); render(); }
+function topBaseColumnWidth(){ return TOP_VIEW.width==="narrow"?225:(TOP_VIEW.width==="wide"?330:270); }
+function topColumnWidth(id){ return topClamp(TOP_VIEW.colWidths[id]||topBaseColumnWidth(),36,720); }
+function topColumnCss(id){ return `--col-w:${topColumnWidth(id)}px`; }
+function topRowHeight(field){ const n=Number(TOP_VIEW.rowHeights[field]); return Number.isFinite(n)&&n>=34?topClamp(n,34,520):null; }
+function applyTopSizing(){
+ const shell=document.querySelector(".topcmp-shell"); if(!shell)return;
+ shell.style.setProperty("--criterion-w",TOP_VIEW.criterionWidth+"px");
+ shell.dataset.fit=TOP_VIEW.fit?"true":"false";
+ const shown=[...shell.querySelectorAll("[data-col-id]")];
+ shown.forEach(el=>{ const id=el.dataset.colId; el.style.setProperty("--col-w",topColumnWidth(id)+"px"); });
+ shell.querySelectorAll("tr[data-field]").forEach(tr=>{ const h=topRowHeight(tr.dataset.field); tr.style.height=h?h+"px":""; tr.dataset.manualHeight=h?"true":"false"; tr.querySelectorAll("textarea").forEach(fitTopReview); });
+ const compact=TOP_VIEW.fit&&shown.some(el=>topColumnWidth(el.dataset.colId)<150);
+ shell.dataset.fitCompact=compact?"true":"false";
+}
+function finishTopResize(){
+ if(!TOP_RESIZE)return;
+ const kind=TOP_RESIZE.kind; TOP_RESIZE=null;
+ document.body.classList.remove("top-resizing","row");
+ window.removeEventListener("pointermove",moveTopResize); window.removeEventListener("pointerup",finishTopResize); window.removeEventListener("pointercancel",finishTopResize);
+ if(kind==="col"){ saveTopPref("criterionWidth",String(TOP_VIEW.criterionWidth)); saveTopPref("colWidths",TOP_VIEW.colWidths); saveTopPref("fit","0"); }
+ else saveTopPref("rowHeights",TOP_VIEW.rowHeights);
+}
+function moveTopResize(e){
+ if(!TOP_RESIZE)return; e.preventDefault();
+ if(TOP_RESIZE.kind==="col"){
+   const w=topClamp(TOP_RESIZE.start+e.clientX-TOP_RESIZE.pointer,TOP_RESIZE.id==="__criterion"?72:48,720);
+   if(TOP_RESIZE.id==="__criterion") TOP_VIEW.criterionWidth=w; else TOP_VIEW.colWidths[TOP_RESIZE.id]=w;
+ }else TOP_VIEW.rowHeights[TOP_RESIZE.field]=topClamp(TOP_RESIZE.start+e.clientY-TOP_RESIZE.pointer,34,520);
+ cancelAnimationFrame(topResizeFrame); topResizeFrame=requestAnimationFrame(applyTopSizing);
+}
+function topStartColumnResize(e,id){
+ e.preventDefault(); e.stopPropagation(); TOP_VIEW.fit=false;
+ TOP_RESIZE={kind:"col",id,start:id==="__criterion"?TOP_VIEW.criterionWidth:topColumnWidth(id),pointer:e.clientX};
+ document.body.classList.add("top-resizing");
+ window.addEventListener("pointermove",moveTopResize,{passive:false}); window.addEventListener("pointerup",finishTopResize); window.addEventListener("pointercancel",finishTopResize);
+ applyTopSizing();
+}
+function topStartRowResize(e,field){
+ e.preventDefault(); e.stopPropagation(); const tr=e.currentTarget.closest("tr");
+ TOP_RESIZE={kind:"row",field,start:topRowHeight(field)||(tr?tr.getBoundingClientRect().height:46),pointer:e.clientY};
+ document.body.classList.add("top-resizing","row");
+ window.addEventListener("pointermove",moveTopResize,{passive:false}); window.addEventListener("pointerup",finishTopResize); window.addEventListener("pointercancel",finishTopResize);
+}
+function topFitToViewport(){
+ const ids=topCmpRows(visibleRows()).filter(o=>!TOP_VIEW.hidden.has(o.id)).map(o=>o.id); if(!ids.length)return;
+ const scroll=document.querySelector(".topcmp-scroll"),available=Math.max(240,(scroll&&scroll.clientWidth)||document.documentElement.clientWidth-32);
+ const criterion=topClamp(available<700?Math.round(available*.21):130,56,154),each=topClamp(Math.floor((available-criterion-2)/ids.length),36,420);
+ TOP_VIEW.criterionWidth=criterion; TOP_VIEW.colWidths={}; ids.forEach(id=>TOP_VIEW.colWidths[id]=each); TOP_VIEW.fit=true;
+ saveTopPref("criterionWidth",String(criterion)); saveTopPref("colWidths",TOP_VIEW.colWidths); saveTopPref("fit","1"); render();
+}
+function topResetSizes(){
+ TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=154; TOP_VIEW.colWidths={}; TOP_VIEW.rowHeights={};
+ saveTopPref("fit","0"); saveTopPref("criterionWidth","154"); saveTopPref("colWidths",{}); saveTopPref("rowHeights",{}); render();
+}
+function topSetPrintSize(value){ if(!["A4","A3"].includes(value))return; TOP_VIEW.printSize=value; saveTopPref("printSize",value); }
+function topPrintTable(){
+ if(!topFocus)setTopFocus(true);
+ let page=document.getElementById("topPrintPage"); if(!page){ page=document.createElement("style"); page.id="topPrintPage"; document.head.appendChild(page); }
+ page.textContent=`@page{size:${TOP_VIEW.printSize} landscape;margin:8mm}`;
+ document.body.classList.add("top-printing");
+ const textareas=[...document.querySelectorAll(".topcmp textarea")],previous=textareas.map(el=>[el,el.style.height,el.style.overflow]);
+ textareas.forEach(el=>{ el.style.height="30px"; el.style.height=Math.max(30,el.scrollHeight)+"px"; el.style.overflow="visible"; });
+ const done=()=>{ document.body.classList.remove("top-printing"); previous.forEach(([el,height,overflow])=>{ el.style.height=height; el.style.overflow=overflow; }); window.removeEventListener("afterprint",done); };
+ window.addEventListener("afterprint",done); requestAnimationFrame(()=>requestAnimationFrame(()=>window.print()));
+}
+let topWindowResizeTimer=0;
+window.addEventListener("resize",()=>{ if(!TOP_VIEW.fit||!document.querySelector(".topcmp-shell"))return; clearTimeout(topWindowResizeTimer); topWindowResizeTimer=setTimeout(topFitToViewport,140); });
 function setTopFocus(on){
  topFocus=!!on;
  const shell=document.querySelector(".topcmp-shell"); if(shell) shell.classList.toggle("focus",topFocus);
@@ -631,6 +741,9 @@ function reviewLinks(value){
    ? `<a href="${esc(h)}" target="_blank" rel="noopener">Link ${i+1} ↗</a>`:""; }).join("");
 }
 function fitTopReview(el){
+ const tr=el.closest("tr[data-field]"),manual=tr&&topRowHeight(tr.dataset.field);
+ if(manual){ el.style.height=Math.max(30,manual-35)+"px"; el.style.overflow="auto"; return; }
+ el.style.overflow="hidden";
  el.style.height="30px";
  el.style.height=Math.max(30,el.scrollHeight)+"px";
 }
@@ -706,26 +819,39 @@ function renderTopComparison(rows,g){
    const listing=safeUrl(o.u)?`<a class="primary" href="${esc(o.u)}" target="_blank" rel="noopener">Ogłoszenie ↗</a>`:"";
    const map=(o.lat!=null&&o.lon!=null)?`<a href="${esc(mapsUrl(o.lat+','+o.lon))}" target="_blank" rel="noopener">Mapa ↗</a>`:"";
    const s=topScoreStats(o),avg=s.avg==null?"—":s.avg.toFixed(1).replace(".",",");
-   return `<th class="offer-col" scope="col"><div class="topcmp-head">${img}<div class="topcmp-head-body">
+   return `<th class="offer-col" scope="col" data-col-id="${esc(o.id)}" style="${topColumnCss(o.id)}"><div class="topcmp-head">${img}<div class="topcmp-head-body">
     <div class="topcmp-head-tools"><button ${i===0?"disabled":""} onclick="topMoveColumn(${jsq(o.id)},-1)" title="Przesuń w lewo" aria-label="Przesuń ${esc(topCmpName(o))} w lewo">←</button><button ${i===sl.length-1?"disabled":""} onclick="topMoveColumn(${jsq(o.id)},1)" title="Przesuń w prawo" aria-label="Przesuń ${esc(topCmpName(o))} w prawo">→</button><button onclick="topHideColumn(${jsq(o.id)})" title="Ukryj kolumnę" aria-label="Ukryj ${esc(topCmpName(o))}">×</button></div>
     <div class="topcmp-head-title">${ranks.has(o.id)?`<span class="topcmp-rank">#${ranks.get(o.id)}</span>`:""}${txt(topCmpName(o))}</div>
     <div class="topcmp-head-meta">${o.pr?fmt(o.pr)+" zł":"cena?"}${o.a?" · "+fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</div>
     <div class="topcmp-metrics"><span class="topcmp-metric${s.count?"":" muted"}" data-top-metric="avg" data-offer="${esc(o.id)}">${avg} / 5</span><span class="topcmp-metric${s.count?"":" muted"}" data-top-metric="complete" data-offer="${esc(o.id)}">${s.count}/${s.total}</span></div>
     <div class="topcmp-actions"><button onclick="openById(${jsq(o.id)})">Info</button>${map}${listing}<button onclick="setStId(${jsq(o.id)},'visited')">↓ <span class="long">Shortlista</span></button></div>
-   </div></div></th>`;
+   </div></div><span class="topcmp-col-resizer" role="separator" aria-orientation="vertical" aria-label="Zmień szerokość kolumny ${esc(topCmpName(o))}" onpointerdown="topStartColumnResize(event,${jsq(o.id)})"></span></th>`;
  }).join("");
  const fields=TOP_FIELDS.filter(([field])=>!TOP_VIEW.hideEmpty||field==="sum"||sl.some(o=>topReviewValue(o.id,field).trim()));
  const body=fields.map(([field,label])=>{
    const cells=sl.map(o=>{ const value=topReviewValue(o.id,field),links=field==="link"?reviewLinks(value):"",score=parseTopScore(value),stats=topScoreStats(o);
      const auto=field==="sum"?`<div class="topcmp-auto" data-top-auto="1" data-offer="${esc(o.id)}">${topAutoText(stats)}</div>`:"";
-     return `<td${score==null?"":` data-score="${score}"`}>${auto}<textarea data-offer="${esc(o.id)}" data-field="${esc(field)}" aria-label="${esc(label+" — "+topCmpName(o))}" spellcheck="true" placeholder="${field==="sum"?"Własny werdykt…":"Dodaj ocenę 1–5 lub komentarz…"}" oninput="scheduleTopReview(${jsq(o.id)},${jsq(field)},this)" onblur="flushTopReview(${jsq(o.id)},${jsq(field)},this)" onkeydown="topReviewKey(event,${jsq(o.id)},${jsq(field)},this)">${esc(value)}</textarea><div class="topcmp-save-state" aria-live="polite"></div>${field==="link"?`<div class="review-links">${links}</div>`:""}</td>`; }).join("");
-   return `<tr class="${field==="sum"?"sum-row":""}"><th class="criterion" scope="row">${txt(label)}</th>${cells}</tr>`;
+     return `<td class="offer-cell" data-col-id="${esc(o.id)}" style="${topColumnCss(o.id)}"${score==null?"":` data-score="${score}"`}>${auto}<textarea data-offer="${esc(o.id)}" data-field="${esc(field)}" aria-label="${esc(label+" — "+topCmpName(o))}" spellcheck="true" placeholder="${field==="sum"?"Własny werdykt…":"Dodaj ocenę 1–5 lub komentarz…"}" oninput="scheduleTopReview(${jsq(o.id)},${jsq(field)},this)" onblur="flushTopReview(${jsq(o.id)},${jsq(field)},this)" onkeydown="topReviewKey(event,${jsq(o.id)},${jsq(field)},this)">${esc(value)}</textarea><div class="topcmp-save-state" aria-live="polite"></div>${field==="link"?`<div class="review-links">${links}</div>`:""}</td>`; }).join("");
+   const rowH=topRowHeight(field);
+   return `<tr class="${field==="sum"?"sum-row":""}" data-field="${esc(field)}"${rowH?` style="height:${rowH}px"`:""}><th class="criterion" scope="row">${txt(label)}<span class="topcmp-row-resizer" role="separator" aria-orientation="horizontal" aria-label="Zmień wysokość wiersza ${esc(label)}" onpointerdown="topStartRowResize(event,${jsq(field)})"></span></th>${cells}</tr>`;
  }).join("");
- const toolbar=`<div class="topcmp-toolbar" role="toolbar" aria-label="Ustawienia porównania"><label><span>Kolejność</span><select aria-label="Kolejność ofert" onchange="topSetViewOption('sort',this.value)"><option value="manual"${TOP_VIEW.sort==="manual"?" selected":""}>Własna kolejność</option><option value="score_desc"${TOP_VIEW.sort==="score_desc"?" selected":""}>Najwyższa ocena</option><option value="price_asc"${TOP_VIEW.sort==="price_asc"?" selected":""}>Najniższa cena</option><option value="pm2_asc"${TOP_VIEW.sort==="pm2_asc"?" selected":""}>Najniższa cena/m²</option><option value="area_desc"${TOP_VIEW.sort==="area_desc"?" selected":""}>Największa powierzchnia</option></select></label><label><span>Gęstość</span><select aria-label="Gęstość tabeli" onchange="topSetViewOption('density',this.value)"><option value="compact"${TOP_VIEW.density==="compact"?" selected":""}>Kompaktowa</option><option value="comfortable"${TOP_VIEW.density==="comfortable"?" selected":""}>Komfortowa</option></select></label><label><span>Szerokość</span><select aria-label="Szerokość kolumn" onchange="topSetViewOption('width',this.value)"><option value="narrow"${TOP_VIEW.width==="narrow"?" selected":""}>Wąskie</option><option value="normal"${TOP_VIEW.width==="normal"?" selected":""}>Standard</option><option value="wide"${TOP_VIEW.width==="wide"?" selected":""}>Szerokie</option></select></label><label class="empty-toggle"><input type="checkbox" ${TOP_VIEW.hideEmpty?"checked":""} onchange="topSetViewOption('hideEmpty',this.checked)"><span>Puste</span></label><button class="restore" onclick="topShowAllColumns()" ${hiddenCount?"":"disabled"}>Kolumny +${hiddenCount}</button><button id="topFocusBtn" class="push" aria-pressed="${topFocus?"true":"false"}" onclick="setTopFocus(!topFocus)">${topFocus?"× Wyjdź":"⛶ Skupienie"}</button></div>`;
- const table=sl.length?`<div class="topcmp-scroll" tabindex="0" aria-label="Tabela porównawcza ofert Top"><table class="topcmp"><thead><tr><th class="criterion" scope="col">Kategoria i ocena (1–5)</th>${heads}</tr></thead><tbody>${body}</tbody></table></div>`:`<div class="topcmp-empty">Wszystkie kolumny są ukryte. Użyj „Kolumny +${hiddenCount}”, aby je przywrócić.</div>`;
- g.innerHTML=`<section class="topcmp-shell${topFocus?" focus":""}" data-density="${TOP_VIEW.density}" data-width="${TOP_VIEW.width}"><p class="topcmp-intro"><b>Porównanie Top.</b> Oceny zapisują się automatycznie. Liczba na początku pola (1–5) zasila średnią; ustawienia widoku zostają tylko na tym urządzeniu.</p>${toolbar}${table}<p class="topcmp-hint">⌘/Ctrl + Enter zapisuje od razu · Esc przywraca ostatnio zapisaną treść · strzałki w nagłówku zmieniają kolejność kolumn</p></section>`;
+ const toolbar=`<div class="topcmp-toolbar" role="toolbar" aria-label="Ustawienia porównania">
+  <label><span>Kolejność</span><select aria-label="Kolejność ofert" onchange="topSetViewOption('sort',this.value)"><option value="manual"${TOP_VIEW.sort==="manual"?" selected":""}>Własna kolejność</option><option value="score_desc"${TOP_VIEW.sort==="score_desc"?" selected":""}>Najwyższa ocena</option><option value="price_asc"${TOP_VIEW.sort==="price_asc"?" selected":""}>Najniższa cena</option><option value="pm2_asc"${TOP_VIEW.sort==="pm2_asc"?" selected":""}>Najniższa cena/m²</option><option value="area_desc"${TOP_VIEW.sort==="area_desc"?" selected":""}>Największa powierzchnia</option></select></label>
+  <label><span>Gęstość</span><select aria-label="Gęstość tabeli" onchange="topSetViewOption('density',this.value)"><option value="compact"${TOP_VIEW.density==="compact"?" selected":""}>Kompaktowa</option><option value="comfortable"${TOP_VIEW.density==="comfortable"?" selected":""}>Komfortowa</option></select></label>
+  <label><span>Szerokość</span><select aria-label="Szerokość kolumn" onchange="topSetViewOption('width',this.value)"><option value="narrow"${TOP_VIEW.width==="narrow"?" selected":""}>Wąskie</option><option value="normal"${TOP_VIEW.width==="normal"?" selected":""}>Standard</option><option value="wide"${TOP_VIEW.width==="wide"?" selected":""}>Szerokie</option></select></label>
+  <label class="empty-toggle"><input type="checkbox" ${TOP_VIEW.hideEmpty?"checked":""} onchange="topSetViewOption('hideEmpty',this.checked)"><span>Puste</span></label>
+  <button class="restore" onclick="topShowAllColumns()" ${hiddenCount?"":"disabled"}>Kolumny +${hiddenCount}</button>
+  <button onclick="topFitToViewport()" title="Zmieść wszystkie oferty bez przewijania poziomego">↔ Dopasuj ekran</button>
+  <button onclick="topResetSizes()" title="Przywróć domyślne szerokości i wysokości">↺ Rozmiary</button>
+  <label><span>Papier</span><select aria-label="Format wydruku" onchange="topSetPrintSize(this.value)"><option value="A4"${TOP_VIEW.printSize==="A4"?" selected":""}>A4 poziomo</option><option value="A3"${TOP_VIEW.printSize==="A3"?" selected":""}>A3 poziomo</option></select></label>
+  <button onclick="topPrintTable()">🖨 Drukuj</button>
+  <button id="topFocusBtn" class="push" aria-pressed="${topFocus?"true":"false"}" onclick="setTopFocus(!topFocus)">${topFocus?"× Wyjdź":"⛶ Skupienie"}</button>
+ </div>`;
+ const table=sl.length?`<div class="topcmp-scroll" tabindex="0" aria-label="Tabela porównawcza ofert Top"><table class="topcmp"><thead><tr><th class="criterion" scope="col">Kategoria i ocena (1–5)<span class="topcmp-col-resizer" role="separator" aria-orientation="vertical" aria-label="Zmień szerokość kolumny kategorii" onpointerdown="topStartColumnResize(event,'__criterion')"></span></th>${heads}</tr></thead><tbody>${body}</tbody></table></div>`:`<div class="topcmp-empty">Wszystkie kolumny są ukryte. Użyj „Kolumny +${hiddenCount}”, aby je przywrócić.</div>`;
+ const compactFit=TOP_VIEW.fit&&sl.some(o=>topColumnWidth(o.id)<150);
+ g.innerHTML=`<section class="topcmp-shell${topFocus?" focus":""}" data-density="${TOP_VIEW.density}" data-width="${TOP_VIEW.width}" data-fit="${TOP_VIEW.fit?"true":"false"}" data-fit-compact="${compactFit?"true":"false"}" style="--criterion-w:${TOP_VIEW.criterionWidth}px"><p class="topcmp-intro"><b>Porównanie Top.</b> Oceny zapisują się automatycznie. Liczba na początku pola (1–5) zasila średnią; ustawienia widoku zostają tylko na tym urządzeniu.</p>${toolbar}${table}<p class="topcmp-hint">Przeciągnij prawą krawędź nagłówka, aby zmienić szerokość całej kolumny; przeciągnij dolną krawędź nazwy kategorii, aby zmienić wysokość całego wiersza · ⌘/Ctrl + Enter zapisuje · Esc cofa</p></section>`;
  document.body.classList.toggle("fs-lock",topFocus||mapFsOn);
- g.querySelectorAll(".topcmp textarea").forEach(markTopReview);
+ g.querySelectorAll(".topcmp textarea").forEach(markTopReview); applyTopSizing();
 }
 function render(){
  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.c===tab));
