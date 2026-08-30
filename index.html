@@ -469,6 +469,13 @@ function topPrefJson(k,d){ try{ const v=JSON.parse(localStorage.getItem("vTop_"+
 function topPrefObject(k,d){ try{ const v=JSON.parse(localStorage.getItem("vTop_"+k)); return v&&typeof v==="object"&&!Array.isArray(v)?v:d; }catch(e){ return d; } }
 function saveTopPref(k,v){ try{ localStorage.setItem("vTop_"+k,typeof v==="string"?v:JSON.stringify(v)); }catch(e){} }
 const topClamp=(n,min,max)=>Math.min(max,Math.max(min,Number(n)||min));
+const savedTopOfferWidth=Number(topPref("offerWidth",""));
+// Jednorazowa migracja z poprzedniego modelu, w którym każda oferta mogła mieć
+// inną szerokość. Mediana zachowuje najbardziej reprezentatywny rozmiar użytkownika,
+// ale od tej wersji wszystkie kolumny korzystają już z jednej wspólnej wartości.
+const legacyTopWidths=Object.values(topPrefObject("colWidths",{})).map(Number).filter(n=>Number.isFinite(n)&&n>=36).sort((a,b)=>a-b);
+const migratedTopOfferWidth=Number.isFinite(savedTopOfferWidth)&&savedTopOfferWidth>=36?savedTopOfferWidth:
+ (legacyTopWidths.length?legacyTopWidths[Math.floor(legacyTopWidths.length/2)]:null);
 const TOP_VIEW={
  density:["compact","mobile","comfortable"].includes(topPref("density","compact"))?topPref("density","compact"):"compact",
  width:["narrow","normal","wide"].includes(topPref("width","normal"))?topPref("width","normal"):"normal",
@@ -478,7 +485,7 @@ const TOP_VIEW={
  order:topPrefJson("order",[]),
  fit:topPref("fit","0")==="1",
  criterionWidth:topClamp(topPref("criterionWidth","154"),56,420),
- colWidths:topPrefObject("colWidths",{}),
+ offerWidth:migratedTopOfferWidth==null?null:topClamp(migratedTopOfferWidth,36,720),
  rowHeights:topPrefObject("rowHeights",{}),
  printSize:["A4","A3"].includes(topPref("printSize","A4"))?topPref("printSize","A4"):"A4"
 };
@@ -653,9 +660,9 @@ function topSetViewOption(key,value){
  if(key==="hideEmpty"){ TOP_VIEW.hideEmpty=!!value; saveTopPref(key,TOP_VIEW.hideEmpty?"1":"0"); }
  else if(key==="density"&&["compact","mobile","comfortable"].includes(value)){
    TOP_VIEW.density=value; saveTopPref(key,value);
-   if(value==="mobile"){ TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=72; TOP_VIEW.colWidths={}; saveTopPref("fit","0"); saveTopPref("criterionWidth","72"); saveTopPref("colWidths",{}); }
+   if(value==="mobile"){ TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=72; TOP_VIEW.offerWidth=null; saveTopPref("fit","0"); saveTopPref("criterionWidth","72"); saveTopPref("offerWidth",""); }
  }
- else if(key==="width"&&["narrow","normal","wide"].includes(value)){ TOP_VIEW.width=value; TOP_VIEW.fit=false; TOP_VIEW.colWidths={}; saveTopPref(key,value); saveTopPref("fit","0"); saveTopPref("colWidths",{}); }
+ else if(key==="width"&&["narrow","normal","wide"].includes(value)){ TOP_VIEW.width=value; TOP_VIEW.fit=false; TOP_VIEW.offerWidth=null; saveTopPref(key,value); saveTopPref("fit","0"); saveTopPref("offerWidth",""); }
  else if(key==="sort"&&["manual","score_desc","price_asc","pm2_asc","area_desc"].includes(value)){ TOP_VIEW.sort=value; saveTopPref(key,value); }
  render();
 }
@@ -670,7 +677,7 @@ function topMoveColumn(id,delta){
 function topHideColumn(id){ TOP_VIEW.hidden.add(id); saveTopPref("hidden",[...TOP_VIEW.hidden]); render(); }
 function topShowAllColumns(){ TOP_VIEW.hidden.clear(); saveTopPref("hidden",[]); render(); }
 function topBaseColumnWidth(){ return TOP_VIEW.density==="mobile"?120:(TOP_VIEW.width==="narrow"?225:(TOP_VIEW.width==="wide"?330:270)); }
-function topColumnWidth(id){ return topClamp(TOP_VIEW.colWidths[id]||topBaseColumnWidth(),36,720); }
+function topColumnWidth(){ return topClamp(TOP_VIEW.offerWidth||topBaseColumnWidth(),36,720); }
 function topColumnCss(id){ return `--col-w:${topColumnWidth(id)}px`; }
 function topRowHeight(field){ const n=Number(TOP_VIEW.rowHeights[field]); return Number.isFinite(n)&&n>=34?topClamp(n,34,520):null; }
 function applyTopSizing(){
@@ -688,14 +695,14 @@ function finishTopResize(){
  const kind=TOP_RESIZE.kind; TOP_RESIZE=null;
  document.body.classList.remove("top-resizing","row");
  window.removeEventListener("pointermove",moveTopResize); window.removeEventListener("pointerup",finishTopResize); window.removeEventListener("pointercancel",finishTopResize);
- if(kind==="col"){ saveTopPref("criterionWidth",String(TOP_VIEW.criterionWidth)); saveTopPref("colWidths",TOP_VIEW.colWidths); saveTopPref("fit","0"); }
+ if(kind==="col"){ saveTopPref("criterionWidth",String(TOP_VIEW.criterionWidth)); saveTopPref("offerWidth",TOP_VIEW.offerWidth==null?"":String(TOP_VIEW.offerWidth)); saveTopPref("fit","0"); }
  else saveTopPref("rowHeights",TOP_VIEW.rowHeights);
 }
 function moveTopResize(e){
  if(!TOP_RESIZE)return; e.preventDefault();
  if(TOP_RESIZE.kind==="col"){
    const w=topClamp(TOP_RESIZE.start+e.clientX-TOP_RESIZE.pointer,TOP_RESIZE.id==="__criterion"?72:48,720);
-   if(TOP_RESIZE.id==="__criterion") TOP_VIEW.criterionWidth=w; else TOP_VIEW.colWidths[TOP_RESIZE.id]=w;
+   if(TOP_RESIZE.id==="__criterion") TOP_VIEW.criterionWidth=w; else TOP_VIEW.offerWidth=w;
  }else TOP_VIEW.rowHeights[TOP_RESIZE.field]=topClamp(TOP_RESIZE.start+e.clientY-TOP_RESIZE.pointer,34,520);
  cancelAnimationFrame(topResizeFrame); topResizeFrame=requestAnimationFrame(applyTopSizing);
 }
@@ -716,19 +723,19 @@ function topFitToViewport(){
  const ids=topCmpRows(visibleRows()).filter(o=>!TOP_VIEW.hidden.has(o.id)).map(o=>o.id); if(!ids.length)return;
  const scroll=document.querySelector(".topcmp-scroll"),available=Math.max(240,(scroll&&scroll.clientWidth)||document.documentElement.clientWidth-32);
  const criterion=topClamp(available<700?Math.round(available*.21):130,56,154),each=topClamp(Math.floor((available-criterion-2)/ids.length),36,420);
- TOP_VIEW.criterionWidth=criterion; TOP_VIEW.colWidths={}; ids.forEach(id=>TOP_VIEW.colWidths[id]=each); TOP_VIEW.fit=true;
- saveTopPref("criterionWidth",String(criterion)); saveTopPref("colWidths",TOP_VIEW.colWidths); saveTopPref("fit","1"); render();
+ TOP_VIEW.criterionWidth=criterion; TOP_VIEW.offerWidth=each; TOP_VIEW.fit=true;
+ saveTopPref("criterionWidth",String(criterion)); saveTopPref("offerWidth",String(each)); saveTopPref("fit","1"); render();
 }
 function topMobileTwoColumns(){
  const ids=topCmpRows(visibleRows()).filter(o=>!TOP_VIEW.hidden.has(o.id)).map(o=>o.id); if(!ids.length)return;
  const scroll=document.querySelector(".topcmp-scroll"),available=Math.max(280,(scroll&&scroll.clientWidth)||document.documentElement.clientWidth-8);
  const criterion=topClamp(Math.round(available*.22),64,82),each=topClamp(Math.floor((available-criterion-2)/2),96,156);
- TOP_VIEW.density="mobile"; TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=criterion; TOP_VIEW.colWidths={}; ids.forEach(id=>TOP_VIEW.colWidths[id]=each);
- saveTopPref("density","mobile"); saveTopPref("fit","0"); saveTopPref("criterionWidth",String(criterion)); saveTopPref("colWidths",TOP_VIEW.colWidths); render(); setTopFocus(true);
+ TOP_VIEW.density="mobile"; TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=criterion; TOP_VIEW.offerWidth=each;
+ saveTopPref("density","mobile"); saveTopPref("fit","0"); saveTopPref("criterionWidth",String(criterion)); saveTopPref("offerWidth",String(each)); render(); setTopFocus(true);
 }
 function topResetSizes(){
- TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=TOP_VIEW.density==="mobile"?72:154; TOP_VIEW.colWidths={}; TOP_VIEW.rowHeights={};
- saveTopPref("fit","0"); saveTopPref("criterionWidth",String(TOP_VIEW.criterionWidth)); saveTopPref("colWidths",{}); saveTopPref("rowHeights",{}); render();
+ TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=TOP_VIEW.density==="mobile"?72:154; TOP_VIEW.offerWidth=null; TOP_VIEW.rowHeights={};
+ saveTopPref("fit","0"); saveTopPref("criterionWidth",String(TOP_VIEW.criterionWidth)); saveTopPref("offerWidth",""); saveTopPref("rowHeights",{}); render();
 }
 function topSetPrintSize(value){ if(!["A4","A3"].includes(value))return; TOP_VIEW.printSize=value; saveTopPref("printSize",value); }
 function topPrintTable(){
@@ -839,7 +846,7 @@ function renderTopComparison(rows,g){
     <div class="topcmp-head-meta">${o.pr?fmt(o.pr)+" zł":"cena?"}${o.a?" · "+fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</div>
     <div class="topcmp-metrics"><span class="topcmp-metric${s.count?"":" muted"}" data-top-metric="avg" data-offer="${esc(o.id)}">${avg} / 5</span><span class="topcmp-metric${s.count?"":" muted"}" data-top-metric="complete" data-offer="${esc(o.id)}">${s.count}/${s.total}</span></div>
     <div class="topcmp-actions"><button onclick="openById(${jsq(o.id)})">Info</button>${map}${listing}<button onclick="setStId(${jsq(o.id)},'visited')">↓ <span class="long">Shortlista</span></button></div>
-   </div></div><span class="topcmp-col-resizer" role="separator" aria-orientation="vertical" aria-label="Zmień szerokość kolumny ${esc(topCmpName(o))}" onpointerdown="topStartColumnResize(event,${jsq(o.id)})"></span></th>`;
+   </div></div><span class="topcmp-col-resizer" role="separator" aria-orientation="vertical" aria-label="Zmień wspólną szerokość kolumn ofert" onpointerdown="topStartColumnResize(event,${jsq(o.id)})"></span></th>`;
  }).join("");
  const fields=TOP_FIELDS.filter(([field])=>!TOP_VIEW.hideEmpty||field==="sum"||sl.some(o=>topReviewValue(o.id,field).trim()));
  const body=fields.map(([field,label])=>{
@@ -864,7 +871,7 @@ function renderTopComparison(rows,g){
  </div>`;
  const table=sl.length?`<div class="topcmp-scroll" tabindex="0" aria-label="Tabela porównawcza ofert Top"><table class="topcmp"><thead><tr><th class="criterion" scope="col">Kategoria i ocena (1–5)<span class="topcmp-col-resizer" role="separator" aria-orientation="vertical" aria-label="Zmień szerokość kolumny kategorii" onpointerdown="topStartColumnResize(event,'__criterion')"></span></th>${heads}</tr></thead><tbody>${body}</tbody></table></div>`:`<div class="topcmp-empty">Wszystkie kolumny są ukryte. Użyj „Kolumny +${hiddenCount}”, aby je przywrócić.</div>`;
  const compactFit=TOP_VIEW.fit&&sl.some(o=>topColumnWidth(o.id)<150);
- g.innerHTML=`<section class="topcmp-shell${topFocus?" focus":""}" data-density="${TOP_VIEW.density}" data-width="${TOP_VIEW.width}" data-fit="${TOP_VIEW.fit?"true":"false"}" data-fit-compact="${compactFit?"true":"false"}" style="--criterion-w:${TOP_VIEW.criterionWidth}px"><p class="topcmp-intro"><b>Porównanie Top.</b> Oceny zapisują się automatycznie. Liczba na początku pola (1–5) zasila średnią; ustawienia widoku zostają tylko na tym urządzeniu.</p>${toolbar}${table}<p class="topcmp-hint">Przeciągnij prawą krawędź nagłówka, aby zmienić szerokość całej kolumny; przeciągnij dolną krawędź nazwy kategorii, aby zmienić wysokość całego wiersza · ⌘/Ctrl + Enter zapisuje · Esc cofa</p></section>`;
+ g.innerHTML=`<section class="topcmp-shell${topFocus?" focus":""}" data-density="${TOP_VIEW.density}" data-width="${TOP_VIEW.width}" data-fit="${TOP_VIEW.fit?"true":"false"}" data-fit-compact="${compactFit?"true":"false"}" style="--criterion-w:${TOP_VIEW.criterionWidth}px"><p class="topcmp-intro"><b>Porównanie Top.</b> Oceny zapisują się automatycznie. Liczba na początku pola (1–5) zasila średnią; ustawienia widoku zostają tylko na tym urządzeniu.</p>${toolbar}${table}<p class="topcmp-hint">Przeciągnij prawą krawędź dowolnego nagłówka, aby zmienić jednakowo szerokość wszystkich ofert; przeciągnij dolną krawędź nazwy kategorii, aby zmienić wysokość całego wiersza · ⌘/Ctrl + Enter zapisuje · Esc cofa</p></section>`;
  document.body.classList.toggle("fs-lock",topFocus||mapFsOn);
  g.querySelectorAll(".topcmp textarea").forEach(markTopReview); applyTopSizing();
 }
