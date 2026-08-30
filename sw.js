@@ -25,9 +25,11 @@
 // v19 (2026-08-30): mobilny tryb mini i szybki widok dwoch ofert obok siebie.
 // v20 (2026-08-30): pole „Wymiary" w tabeli Top, uwzgledniane w sredniej ocen.
 // v21 (2026-08-30): pole „Naslonecznienie" pod mediami, jako 11. kryterium oceny.
+// v22 (2026-08-30): niegrupowane, kompaktowe pinezki oraz przełącznik mapy
+// ulicznej i satelitarnej Esri z zapamiętywaniem wybranej warstwy.
 // v13 (2026-08-21): plakietka statusu wrocila na zdjecie (kotwiczyla sie do calej
 // karty i zakrywala przycisk 🚫) + przycisk „Otworz ogloszenie" w stopce karty.
-const C = "oferty-v21";
+const C = "oferty-v22";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",

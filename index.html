@@ -304,22 +304,25 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
    Rodzaj nieruchomości niesie KSZTAŁT, więc identyczność nigdy nie zależy od
    samego koloru — a jeziora i Łódź leżą 100 km od siebie i tak nigdy nie sąsiadują.
 
-   ROZMIARY. Poprzednio 14 px (nieocenione) i 11 px (odrzucone) — za mało, żeby
-   trafić palcem i żeby odróżnić kształt. Teraz 26/34/18 px. */
-.pin{box-sizing:border-box;box-shadow:0 1px 4px rgba(0,0,0,.5);
-  border:2px solid #fff;background-clip:padding-box}
+   ROZMIARY. Widoczny znak ma tylko 8–16 px, więc setki niegrupowanych ofert
+   pozostają czytelne przy oddaleniu. Sam divIcon ma jednak 28×28 px: to niewidoczny
+   obszar kliknięcia, dzięki któremu mała pinezka nadal działa wygodnie na mobile. */
+.map-pin-hit{background:transparent!important;border:0!important}
+.pin{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  box-sizing:border-box;box-shadow:0 1px 3px rgba(0,0,0,.58);
+  border:1.5px solid #fff;background-clip:padding-box}
 .pin.k-dz{border-radius:3px}      /* działka — kwadrat (parcela) */
 .pin.k-dom{border-radius:50%}     /* dom — koło */
-.pin.st-new{width:26px;height:26px}
-.pin.st-short{width:34px;height:34px;border:3px solid #f5a300;
-  box-shadow:0 0 0 2px rgba(245,163,0,.35),0 2px 6px rgba(0,0,0,.5)}
+.pin.st-new{width:10px;height:10px}
+.pin.st-short{width:14px;height:14px;border:2px solid #f5a300;
+  box-shadow:0 0 0 1px rgba(245,163,0,.45),0 1px 4px rgba(0,0,0,.58)}
 /* Top = pinezka shortlisty plus czarny pierścień. Celowo TA SAMA złota obwódka:
    Top nie jest osobnym bytem, tylko awansem w tym samym lejku, więc ma wyglądać
    jak shortlist o szczebel wyżej. Czerń odróżnia go od obu kolorów regionu
    (#1976d2 / #e8590c) i od samego złota, na jasnym i ciemnym tle mapy. */
-.pin.st-visited{width:40px;height:40px;border:3px solid #f5a300;
-  box-shadow:0 0 0 3px #1f1e1b,0 2px 8px rgba(0,0,0,.55)}
-.pin.st-rej{width:18px;height:18px;opacity:.5}
+.pin.st-visited{width:16px;height:16px;border:2px solid #f5a300;
+  box-shadow:0 0 0 2px #1f1e1b,0 1px 5px rgba(0,0,0,.62)}
+.pin.st-rej{width:8px;height:8px;opacity:.45}
 /* Etykieta ceny na pinezce — pokazywana WYŁĄCZNIE przy dużym zoomie (klasa .zoom-lg
    na kontenerze mapy). Przy oddaleniu 400 etykiet byłoby nieczytelną kaszą, a przy
    zbliżeniu to najszybszy sposób porównania ofert w okolicy bez klikania każdej.
@@ -331,11 +334,6 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
   color:#1a1a1c;box-shadow:0 1px 3px rgba(0,0,0,.3);pointer-events:none}
 #map.zoom-lg .pinlab{display:block}
 #map.zoom-lg .st-rej .pinlab{display:none}   /* odrzucone bez etykiet — to tylko tło */
-/* Klaster: NEUTRALNA grafit, nie kolor kategorii. Domyślne zielono-żółto-pomarańczowe
-   bąbelki markerclustera czytały się jak jeszcze jedna kategoria. */
-.mclus{background:rgba(38,38,42,.88);color:#fff;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-weight:700;
-  border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45)}
 /* Moja lokalizacja — celowo INNY język wizualny niż oferty (nie kwadrat, nie koło
    z obwódką): pulsujący punkt z aureolą dokładności, jak w mapach systemowych. */
 .mepin{width:16px;height:16px;border-radius:50%;background:#1a73e8;
@@ -430,13 +428,11 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
 <div id="ov" role="dialog" aria-modal="true" aria-label="Szczegóły oferty"><div class="sh"><button id="cl" onclick="clO()" aria-label="Zamknij">✕</button><div class="gal" id="gg"></div><div class="st" id="ss"></div><div class="actbar" id="ac"></div><div class="dt" id="dd"></div></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- MAPA (v8, 2026-08-06). Leaflet + kafelki OpenStreetMap: bez klucza i bez billingu.
-     Google Maps wymaga karty (Mateusz nie ma tu budżetu), Apple MapKit JS wymaga tokena
-     JWT podpisywanego kluczem prywatnym, czyli backendu — a to statyczny plik na GitHub
-     Pages. MarkerCluster jest konieczny, nie kosmetyczny: 2141 pinezek naraz zabija
-     przeglądarkę na telefonie, a telefon jest głównym urządzeniem Mateusza.
-     Skrypty ładowane leniwie (dopiero przy pierwszym wejściu na mapę), żeby nie
-     opóźniać startu listy ofert. -->
+<!-- MAPA. Leaflet jest ładowany leniwie dopiero przy pierwszym wejściu na mapę,
+     żeby nie opóźniać startu listy ofert. Mapa ma dwie warstwy bazowe bez klucza:
+     OpenStreetMap oraz zdjęcia satelitarne Esri z etykietami miejsc. Pinezki ofert nie
+     są grupowane: mały symbol zachowuje czytelność przy oddaleniu, a niewidoczny
+     obszar 28×28 px pozostawia wygodne klikanie na telefonie. -->
 <script>
 const SB_URL = "https://gbmvooprdfqufptfggdb.supabase.co";
 const SB_KEY = "sb_publishable_-CNmiowgRI-WSnxnR42cOw_o0EFCRid";
@@ -1109,7 +1105,7 @@ function kmOd(o){
 const cenaKrotko = p => p==null ? "" :
   (p>=1e6 ? (p/1e6).toFixed(2).replace(/\.?0+$/,"").replace(".",",")+"M"
           : Math.round(p/1000)+"k");
-let MAP=null, MCLUS=null, MRINGS=null, mapLoaded=false, mapDirty=true;
+let MAP=null, MPOINTS=null, MRINGS=null, mapLoaded=false, mapDirty=true;
 let mapSt = readLS("vMapSt", ["new","short","visited"]);
 // MIGRACJA 2026-08-25. Filtr statusu na mapie siedzi w localStorage, więc telefon
 // Mateusza ma tam zapisane ["new","short"] sprzed lejka — a to znaczy, że pierwsza
@@ -1125,44 +1121,17 @@ let mapCat = readLS("vMapCat", ["m_dz","m_dom","jez_dz","jez_dom"]);
 function readLS(k, dflt){ try{ const v=JSON.parse(localStorage[k]); return Array.isArray(v)?v:dflt; }catch(e){ return dflt; } }
 function writeLS(k, v){ try{ localStorage[k]=JSON.stringify(v); }catch(e){} }
 
-// Leaflet + MarkerCluster ładowane LENIWIE — dopiero przy pierwszym wejściu na mapę.
+// Leaflet ładowany LENIWIE — dopiero przy pierwszym wejściu na mapę.
 // Lista ofert to główny ekran i nie ma powodu, żeby czekała na 200 kB bibliotek mapy.
 function loadScript(src){ return new Promise((ok,no)=>{ const el=document.createElement("script"); el.src=src; el.onload=ok; el.onerror=()=>no(new Error(src)); document.head.appendChild(el); }); }
 function loadCss(href){ return new Promise(ok=>{ const el=document.createElement("link"); el.rel="stylesheet"; el.href=href; el.onload=ok; el.onerror=ok; document.head.appendChild(el); }); }
 async function ensureLeaflet(){
- if(window.L && window.L.markerClusterGroup) return true;
+ if(window.L) return true;
  try{
   await loadCss("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
   await loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js");
-  await loadCss("https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css");
-  await loadCss("https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css");
-  await loadScript("https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js");
-  if(!(window.L && window.L.markerClusterGroup)) return false;
-  patchClusterHasLayer();
-  return true;
+  return !!window.L;
  }catch(e){ return false; }
-}
-// SHIM dla niezgodności markercluster 1.5.3 ↔ Leaflet 1.9.4 (2026-08-06).
-// Objaw: przy każdym zoomend/moveend na mapie leci „Uncaught TypeError: Cannot use 'in'
-// operator to search for '_leaflet_id' in undefined". Źródło: markercluster wywołuje
-// hasLayer() na obiekcie, którego `_layers` jeszcze (albo już) nie istnieje, a Leaflet
-// 1.9 robi tam `stamp(layer) in this._layers` bez sprawdzenia.
-// Dlaczego to naprawiamy, choć mapa „działa": nieprzechwycony wyjątek w handlerze
-// zdarzenia PRZERYWA łańcuch pozostałych handlerów tego samego zdarzenia. Zapisywanie
-// pozycji mapy (saveMapPos) też wisi na moveend — czyli błąd biblioteki mógł po cichu
-// zjadać zapamiętywanie widoku, a to jeden z wymogów tej funkcji.
-// Shim jest zawężony maksymalnie: gdy `_layers` istnieje, wołamy oryginał bez zmian.
-let _clusterPatched=false;
-function patchClusterHasLayer(){
- if(_clusterPatched) return; _clusterPatched=true;
- [L.Map, L.LayerGroup].forEach(K=>{
-  if(!K||!K.prototype||!K.prototype.hasLayer) return;
-  const orig=K.prototype.hasLayer;
-  K.prototype.hasLayer=function(layer){
-    if(!this._layers) return false;
-    return orig.call(this,layer);
-  };
- });
 }
 
 const hasGeo = o => o.lat!=null && o.lon!=null && !(Math.abs(o.lat)<0.01 && Math.abs(o.lon)<0.01);
@@ -1177,11 +1146,9 @@ function mapRows(){
 
 function pinIcon(o){
  const s=norm(o.st), cls = s==="visited"?"st-visited":s==="short"?"st-short":s==="rej"?"st-rej":"st-new";
- const sz = s==="visited"?40:s==="short"?34:s==="rej"?18:26;
  const lab = o.pr ? `<span class="pinlab">${esc(cenaKrotko(o.pr))}</span>` : "";
- // Rozmiar i kształt są w CSS (klasy .st-* i .k-*), nie w stylu inline — inaczej
- // każda zmiana rozmiaru wymagałaby przebudowy wszystkich ikon w JS.
- return L.divIcon({className:"", iconSize:[sz,sz], iconAnchor:[sz/2,sz/2],
+ // Widoczny rozmiar jest w CSS, ale obszar dotykowy pozostaje stały (28×28 px).
+ return L.divIcon({className:"map-pin-hit", iconSize:[28,28], iconAnchor:[14,14],
    html:`<span class="pin ${cls} ${CAT_KSZT[o.c]||"k-dom"}" `
        +`style="background:${CAT_COLOR[o.c]||"#666"};display:block">${lab}</span>`});
 }
@@ -1232,27 +1199,29 @@ async function drawMap(){
   wrap.querySelector("#map").innerHTML="";
   const pos=readLS("vMapPos", null);
   MAP=L.map("map",{zoomControl:true}).setView(pos?[pos[0],pos[1]]:HOME_LL, pos?pos[2]:10);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {maxZoom:19, attribution:"© OpenStreetMap"}).addTo(MAP);
-  // disableClusteringAtZoom: od zoomu 16 pokazujemy POJEDYNCZE pinezki, nie bąbelki.
-  // Dwa powody. (1) UX: przy zoomie ulicy chcemy widzieć, KTÓRA działka to która, a nie
-  // „2". (2) Obejście błędu markercluster 1.5.3 + Leaflet 1.9: rozwijanie klastra
-  // (spiderfy) wywala TypeError „Cannot use 'in' operator to search for '_leaflet_id'
-  // in undefined" w jego własnym handlerze moveend, i wtedy popup się nie otwiera.
-  // Bez klastrowania na dużym zoomie ta ścieżka w ogóle nie jest używana.
-  MCLUS=L.markerClusterGroup({chunkedLoading:true, spiderfyOnMaxZoom:false,
-    disableClusteringAtZoom:16, maxClusterRadius:52,
-    // Własna ikona klastra: NEUTRALNA grafit i rozmiar rosnący z liczbą ofert.
-    // Domyślne zielono-żółto-pomarańczowe bąbelki markerclustera czytały się jak
-    // jeszcze jedna kategoria obok niebieskiego i pomarańczowego.
-    iconCreateFunction: c => {
-      const n=c.getChildCount();
-      const sz = n<10?34 : n<50?42 : n<200?50 : 58;
-      return L.divIcon({className:"", iconSize:[sz,sz], iconAnchor:[sz/2,sz/2],
-        html:`<span class="mclus" style="width:${sz}px;height:${sz}px;`
-            +`font-size:${n<100?13:12}px">${n}</span>`});
-    }});
-  MAP.addLayer(MCLUS);
+  const street=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+    maxZoom:20,maxNativeZoom:19,
+    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  });
+  const aerial=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{
+    maxZoom:20,maxNativeZoom:19,
+    attribution:'Tiles © Esri — Esri, Maxar, Earthstar Geographics'
+  });
+  const aerialLabels=L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",{
+    maxZoom:20,maxNativeZoom:19,attribution:'Labels © Esri'
+  });
+  const satellite=L.layerGroup([aerial,aerialLabels]);
+  const savedBase=localStorage.vMapBase==="satellite"?satellite:street;
+  savedBase.addTo(MAP);
+  const layerControl=L.control.layers({"Mapa uliczna":street,"Satelitarna":satellite},null,
+    {position:"topright",collapsed:true}).addTo(MAP);
+  const layerButton=layerControl.getContainer().querySelector(".leaflet-control-layers-toggle");
+  if(layerButton){ layerButton.title="Zmień rodzaj mapy"; layerButton.setAttribute("aria-label","Zmień rodzaj mapy"); }
+  MAP.on("baselayerchange",e=>{
+    try{ localStorage.vMapBase=e.name==="Satelitarna"?"satellite":"street"; }catch(err){}
+  });
+  // Zwykła grupa: wszystkie oferty są zawsze osobnymi punktami, niezależnie od zoomu.
+  MPOINTS=L.layerGroup().addTo(MAP);
   MAP.on("moveend zoomend", saveMapPos);
   // Etykiety cen pojawiają się od zoomu 15 — jedna klasa na kontenerze, bez
   // przebudowy 400 ikon (przebudowa przy każdym zoomie zamula telefon).
@@ -1263,17 +1232,15 @@ async function drawMap(){
   mapLoaded=true; mapDirty=true;
   document.getElementById("mapRings").checked = localStorage.vMapRings==="1";
  }
- // invalidateSize() PRZED przebudową warstw, nie po. Kontener dopiero co dostał
- // display:block, więc Leaflet zna jeszcze stary (zerowy) rozmiar. Gdy invalidateSize
- // leciało w setTimeout PO addLayers(), jego moveend trafiał w markercluster w trakcie
- // chunkedLoading i biblioteka rzucała „Cannot use 'in' operator … in undefined".
+ // invalidateSize() przed przebudową warstw: kontener dopiero dostał display:block,
+ // więc Leaflet może jeszcze pamiętać jego poprzedni, zerowy rozmiar.
  if(MAP) MAP.invalidateSize();
  if(mapDirty){
-  MCLUS.clearLayers();
+  MPOINTS.clearLayers();
   const rows=mapRows(), zGeo=rows.filter(hasGeo);
   const ms=zGeo.map(o=>L.marker([o.lat,o.lon],{icon:pinIcon(o)})
                         .bindPopup(()=>popupHtml(o),{maxWidth:250,minWidth:190}));
-  MCLUS.addLayers(ms);
+  ms.forEach(m=>MPOINTS.addLayer(m));
   drawRings();
   const brak=rows.length-zGeo.length;
   // Legenda pokazuje OBA kanały osobno (kolor = region, kształt = rodzaj), bo tak
