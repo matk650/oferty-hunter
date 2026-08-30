@@ -132,6 +132,7 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
 .topcmp-shell{--criterion-w:154px;--offer-w:270px;--cell-pad:6px;--head-img:90px;position:relative}
 .topcmp-shell[data-density="comfortable"]{--cell-pad:10px;--head-img:118px}
 .topcmp-shell[data-width="narrow"]{--offer-w:225px}.topcmp-shell[data-width="wide"]{--offer-w:330px}
+.topcmp-shell[data-density="mobile"]{--criterion-w:72px;--offer-w:120px;--cell-pad:2px;--head-img:0px}
 .topcmp-shell.focus{position:fixed;inset:0;z-index:3500;background:#f6f5f2;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));display:flex;flex-direction:column}
 .topcmp-shell.focus .topcmp-scroll{flex:1;max-height:none}.topcmp-shell.focus .topcmp-intro{display:none}
 .topcmp-intro{margin:0 0 8px;color:#5f5d57;font-size:12.5px;line-height:1.45}
@@ -162,6 +163,13 @@ body.top-resizing{cursor:col-resize;user-select:none}body.top-resizing.row{curso
 .topcmp-shell[data-fit-compact="true"] .topcmp-head-body{padding:5px 4px}.topcmp-shell[data-fit-compact="true"] .topcmp-head-title{font-size:10.5px;margin:0 0 3px;-webkit-line-clamp:3}.topcmp-shell[data-fit-compact="true"] .topcmp-head-tools{display:none}
 .topcmp-shell[data-fit-compact="true"] .topcmp-head-meta,.topcmp-shell[data-fit-compact="true"] .topcmp-metrics{font-size:9px}.topcmp-shell[data-fit-compact="true"] .topcmp-actions{display:none}
 .topcmp-shell[data-fit-compact="true"] textarea{font-size:10.5px;padding:3px 4px}.topcmp-shell[data-fit-compact="true"] .topcmp-head-tools button{width:20px;height:20px}
+.topcmp-shell[data-density="mobile"] .topcmp-head{display:block}.topcmp-shell[data-density="mobile"] .topcmp-head img,.topcmp-shell[data-density="mobile"] .topcmp-noimg,.topcmp-shell[data-density="mobile"] .topcmp-head-tools,.topcmp-shell[data-density="mobile"] .topcmp-actions{display:none}
+.topcmp-shell[data-density="mobile"] .topcmp-head-body{padding:4px 3px}.topcmp-shell[data-density="mobile"] .topcmp-head-title{font-size:9.5px;line-height:1.15;margin:0 0 3px;-webkit-line-clamp:3}
+.topcmp-shell[data-density="mobile"] .topcmp-head-meta{font-size:8.5px;line-height:1.15}.topcmp-shell[data-density="mobile"] .topcmp-metrics{gap:2px;margin-top:3px}.topcmp-shell[data-density="mobile"] .topcmp-metric{font-size:8px;padding:2px 3px}
+.topcmp-shell[data-density="mobile"] .topcmp-rank{min-width:16px;height:16px;font-size:8px;margin-right:2px}.topcmp-shell[data-density="mobile"] .criterion{font-size:9.5px;line-height:1.1}
+.topcmp-shell[data-density="mobile"] textarea{min-height:24px;height:24px;font-size:9.5px;line-height:1.14;padding:2px 3px;border-radius:4px}.topcmp-shell[data-density="mobile"] .topcmp-save-state{display:none}
+.topcmp-shell[data-density="mobile"] .topcmp-auto{font-size:8.5px;line-height:1.1;gap:2px;margin-bottom:2px}.topcmp-shell[data-density="mobile"] .review-links{gap:2px;margin-top:1px}.topcmp-shell[data-density="mobile"] .review-links a{font-size:8px}
+.topcmp-toolbar .mobile-only{display:none}
 .topcmp-head{display:grid;grid-template-columns:82px 1fr;min-height:100%;position:relative}
 .topcmp-head img,.topcmp-noimg{width:82px;height:var(--head-img);object-fit:cover;background:#eceae4;display:flex;align-items:center;justify-content:center;font-size:26px}
 .topcmp-head-body{padding:8px;min-width:0}.topcmp-head-title{font-size:13px;line-height:1.22;margin:0 40px 4px 0;color:#222;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -205,7 +213,7 @@ body.top-resizing{cursor:col-resize;user-select:none}body.top-resizing.row{curso
  body.top-printing .topcmp textarea{border:0!important;background:transparent!important;box-shadow:none!important;padding:0!important;min-height:0!important;font-size:7.2pt!important;line-height:1.18!important;overflow:visible!important;resize:none!important;color:#000!important}
  body.top-printing .topcmp .review-links{display:none!important}
 }
-@media(max-width:720px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}.topcmp-shell{--criterion-w:112px;--offer-w:228px;--head-img:74px}.topcmp-shell[data-width="narrow"]{--offer-w:204px}.topcmp-shell[data-width="wide"]{--offer-w:282px}.topcmp-scroll{max-height:calc(100dvh - 235px)}.topcmp-toolbar{gap:5px;padding:6px}.topcmp-toolbar label span{display:none}.topcmp-toolbar .empty-toggle span{display:inline;font-size:10px}.topcmp-toolbar select,.topcmp-toolbar button{min-height:32px;padding:5px 7px}.topcmp-toolbar .push{margin-left:0}.topcmp .criterion{font-size:11.5px}.topcmp-head{grid-template-columns:64px 1fr}.topcmp-head img,.topcmp-noimg{width:64px}.topcmp-head-title{font-size:12px;margin-right:34px}.topcmp-actions .long{display:none}.topcmp-actions button,.topcmp-actions a{font-size:10px}.topcmp-shell.focus{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.topcmp-shell.focus .topcmp-toolbar{border-radius:0;margin:0 6px 6px}.topcmp-shell.focus .topcmp-scroll{border-radius:0}}
+@media(max-width:720px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}.topcmp-shell{--criterion-w:112px;--offer-w:228px;--head-img:74px}.topcmp-shell[data-width="narrow"]{--offer-w:204px}.topcmp-shell[data-width="wide"]{--offer-w:282px}.topcmp-shell[data-density="mobile"]{--criterion-w:72px;--offer-w:120px}.topcmp-scroll{max-height:calc(100dvh - 235px);scrollbar-gutter:auto}.topcmp-toolbar{gap:4px;padding:5px;position:sticky;top:0;z-index:20}.topcmp-toolbar label span{display:none}.topcmp-toolbar .empty-toggle span{display:inline;font-size:10px}.topcmp-toolbar select,.topcmp-toolbar button{min-height:30px;padding:4px 6px;font-size:10.5px}.topcmp-toolbar .mobile-only{display:inline-flex;align-items:center}.topcmp-toolbar .push{margin-left:0}.topcmp .criterion{font-size:11.5px}.topcmp-head{grid-template-columns:64px 1fr}.topcmp-head img,.topcmp-noimg{width:64px}.topcmp-head-title{font-size:12px;margin-right:34px}.topcmp-actions .long{display:none}.topcmp-actions button,.topcmp-actions a{font-size:10px}.topcmp-shell.focus{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.topcmp-shell.focus .topcmp-toolbar{border-radius:0;margin:0 4px 4px}.topcmp-shell.focus .topcmp-scroll{border-radius:0}.topcmp-shell[data-density="mobile"] .topcmp-hint,.topcmp-shell[data-density="mobile"] .topcmp-toolbar .mobile-hide{display:none}.topcmp-shell[data-density="mobile"] .topcmp-toolbar{flex-wrap:nowrap;overflow-x:auto}.topcmp-shell[data-density="mobile"] .topcmp-toolbar .push{margin-left:auto}}
 /* ── MAPA (v8, 2026-08-06) ───────────────────────────────────────────────── */
 /* Widoczność sterowana KLASĄ, nie stylem inline. Powód (2026-08-07): setView()
    ustawiał element.style.display="block", a styl inline bije regułę z arkusza —
@@ -466,7 +474,7 @@ function topPrefObject(k,d){ try{ const v=JSON.parse(localStorage.getItem("vTop_
 function saveTopPref(k,v){ try{ localStorage.setItem("vTop_"+k,typeof v==="string"?v:JSON.stringify(v)); }catch(e){} }
 const topClamp=(n,min,max)=>Math.min(max,Math.max(min,Number(n)||min));
 const TOP_VIEW={
- density:["compact","comfortable"].includes(topPref("density","compact"))?topPref("density","compact"):"compact",
+ density:["compact","mobile","comfortable"].includes(topPref("density","compact"))?topPref("density","compact"):"compact",
  width:["narrow","normal","wide"].includes(topPref("width","normal"))?topPref("width","normal"):"normal",
  sort:["manual","score_desc","price_asc","pm2_asc","area_desc"].includes(topPref("sort","manual"))?topPref("sort","manual"):"manual",
  hideEmpty:topPref("hideEmpty","0")==="1",
@@ -647,7 +655,10 @@ function topRankMap(rows){
 }
 function topSetViewOption(key,value){
  if(key==="hideEmpty"){ TOP_VIEW.hideEmpty=!!value; saveTopPref(key,TOP_VIEW.hideEmpty?"1":"0"); }
- else if(key==="density"&&["compact","comfortable"].includes(value)){ TOP_VIEW.density=value; saveTopPref(key,value); }
+ else if(key==="density"&&["compact","mobile","comfortable"].includes(value)){
+   TOP_VIEW.density=value; saveTopPref(key,value);
+   if(value==="mobile"){ TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=72; TOP_VIEW.colWidths={}; saveTopPref("fit","0"); saveTopPref("criterionWidth","72"); saveTopPref("colWidths",{}); }
+ }
  else if(key==="width"&&["narrow","normal","wide"].includes(value)){ TOP_VIEW.width=value; TOP_VIEW.fit=false; TOP_VIEW.colWidths={}; saveTopPref(key,value); saveTopPref("fit","0"); saveTopPref("colWidths",{}); }
  else if(key==="sort"&&["manual","score_desc","price_asc","pm2_asc","area_desc"].includes(value)){ TOP_VIEW.sort=value; saveTopPref(key,value); }
  render();
@@ -662,7 +673,7 @@ function topMoveColumn(id,delta){
 }
 function topHideColumn(id){ TOP_VIEW.hidden.add(id); saveTopPref("hidden",[...TOP_VIEW.hidden]); render(); }
 function topShowAllColumns(){ TOP_VIEW.hidden.clear(); saveTopPref("hidden",[]); render(); }
-function topBaseColumnWidth(){ return TOP_VIEW.width==="narrow"?225:(TOP_VIEW.width==="wide"?330:270); }
+function topBaseColumnWidth(){ return TOP_VIEW.density==="mobile"?120:(TOP_VIEW.width==="narrow"?225:(TOP_VIEW.width==="wide"?330:270)); }
 function topColumnWidth(id){ return topClamp(TOP_VIEW.colWidths[id]||topBaseColumnWidth(),36,720); }
 function topColumnCss(id){ return `--col-w:${topColumnWidth(id)}px`; }
 function topRowHeight(field){ const n=Number(TOP_VIEW.rowHeights[field]); return Number.isFinite(n)&&n>=34?topClamp(n,34,520):null; }
@@ -712,9 +723,16 @@ function topFitToViewport(){
  TOP_VIEW.criterionWidth=criterion; TOP_VIEW.colWidths={}; ids.forEach(id=>TOP_VIEW.colWidths[id]=each); TOP_VIEW.fit=true;
  saveTopPref("criterionWidth",String(criterion)); saveTopPref("colWidths",TOP_VIEW.colWidths); saveTopPref("fit","1"); render();
 }
+function topMobileTwoColumns(){
+ const ids=topCmpRows(visibleRows()).filter(o=>!TOP_VIEW.hidden.has(o.id)).map(o=>o.id); if(!ids.length)return;
+ const scroll=document.querySelector(".topcmp-scroll"),available=Math.max(280,(scroll&&scroll.clientWidth)||document.documentElement.clientWidth-8);
+ const criterion=topClamp(Math.round(available*.22),64,82),each=topClamp(Math.floor((available-criterion-2)/2),96,156);
+ TOP_VIEW.density="mobile"; TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=criterion; TOP_VIEW.colWidths={}; ids.forEach(id=>TOP_VIEW.colWidths[id]=each);
+ saveTopPref("density","mobile"); saveTopPref("fit","0"); saveTopPref("criterionWidth",String(criterion)); saveTopPref("colWidths",TOP_VIEW.colWidths); render(); setTopFocus(true);
+}
 function topResetSizes(){
- TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=154; TOP_VIEW.colWidths={}; TOP_VIEW.rowHeights={};
- saveTopPref("fit","0"); saveTopPref("criterionWidth","154"); saveTopPref("colWidths",{}); saveTopPref("rowHeights",{}); render();
+ TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=TOP_VIEW.density==="mobile"?72:154; TOP_VIEW.colWidths={}; TOP_VIEW.rowHeights={};
+ saveTopPref("fit","0"); saveTopPref("criterionWidth",String(TOP_VIEW.criterionWidth)); saveTopPref("colWidths",{}); saveTopPref("rowHeights",{}); render();
 }
 function topSetPrintSize(value){ if(!["A4","A3"].includes(value))return; TOP_VIEW.printSize=value; saveTopPref("printSize",value); }
 function topPrintTable(){
@@ -741,11 +759,11 @@ function reviewLinks(value){
    ? `<a href="${esc(h)}" target="_blank" rel="noopener">Link ${i+1} ↗</a>`:""; }).join("");
 }
 function fitTopReview(el){
- const tr=el.closest("tr[data-field]"),manual=tr&&topRowHeight(tr.dataset.field);
- if(manual){ el.style.height=Math.max(30,manual-35)+"px"; el.style.overflow="auto"; return; }
- el.style.overflow="hidden";
- el.style.height="30px";
- el.style.height=Math.max(30,el.scrollHeight)+"px";
+ const min=TOP_VIEW.density==="mobile"?24:30,tr=el.closest("tr[data-field]"),manual=tr&&topRowHeight(tr.dataset.field);
+ if(manual){ el.style.height=Math.max(min,manual-35)+"px"; el.style.overflow="auto"; return; }
+ el.style.height=min+"px";
+ const wanted=Math.max(min,el.scrollHeight),height=TOP_VIEW.density==="mobile"?Math.min(62,wanted):wanted;
+ el.style.height=height+"px"; el.style.overflow=wanted>height?"auto":"hidden";
 }
 function topReviewState(el,text){ const s=el.parentElement&&el.parentElement.querySelector(".topcmp-save-state"); if(s) s.textContent=text||""; }
 function refreshTopMetrics(offerId){
@@ -836,15 +854,16 @@ function renderTopComparison(rows,g){
    return `<tr class="${field==="sum"?"sum-row":""}" data-field="${esc(field)}"${rowH?` style="height:${rowH}px"`:""}><th class="criterion" scope="row">${txt(label)}<span class="topcmp-row-resizer" role="separator" aria-orientation="horizontal" aria-label="Zmień wysokość wiersza ${esc(label)}" onpointerdown="topStartRowResize(event,${jsq(field)})"></span></th>${cells}</tr>`;
  }).join("");
  const toolbar=`<div class="topcmp-toolbar" role="toolbar" aria-label="Ustawienia porównania">
-  <label><span>Kolejność</span><select aria-label="Kolejność ofert" onchange="topSetViewOption('sort',this.value)"><option value="manual"${TOP_VIEW.sort==="manual"?" selected":""}>Własna kolejność</option><option value="score_desc"${TOP_VIEW.sort==="score_desc"?" selected":""}>Najwyższa ocena</option><option value="price_asc"${TOP_VIEW.sort==="price_asc"?" selected":""}>Najniższa cena</option><option value="pm2_asc"${TOP_VIEW.sort==="pm2_asc"?" selected":""}>Najniższa cena/m²</option><option value="area_desc"${TOP_VIEW.sort==="area_desc"?" selected":""}>Największa powierzchnia</option></select></label>
-  <label><span>Gęstość</span><select aria-label="Gęstość tabeli" onchange="topSetViewOption('density',this.value)"><option value="compact"${TOP_VIEW.density==="compact"?" selected":""}>Kompaktowa</option><option value="comfortable"${TOP_VIEW.density==="comfortable"?" selected":""}>Komfortowa</option></select></label>
-  <label><span>Szerokość</span><select aria-label="Szerokość kolumn" onchange="topSetViewOption('width',this.value)"><option value="narrow"${TOP_VIEW.width==="narrow"?" selected":""}>Wąskie</option><option value="normal"${TOP_VIEW.width==="normal"?" selected":""}>Standard</option><option value="wide"${TOP_VIEW.width==="wide"?" selected":""}>Szerokie</option></select></label>
-  <label class="empty-toggle"><input type="checkbox" ${TOP_VIEW.hideEmpty?"checked":""} onchange="topSetViewOption('hideEmpty',this.checked)"><span>Puste</span></label>
-  <button class="restore" onclick="topShowAllColumns()" ${hiddenCount?"":"disabled"}>Kolumny +${hiddenCount}</button>
+  <label class="mobile-hide"><span>Kolejność</span><select aria-label="Kolejność ofert" onchange="topSetViewOption('sort',this.value)"><option value="manual"${TOP_VIEW.sort==="manual"?" selected":""}>Własna kolejność</option><option value="score_desc"${TOP_VIEW.sort==="score_desc"?" selected":""}>Najwyższa ocena</option><option value="price_asc"${TOP_VIEW.sort==="price_asc"?" selected":""}>Najniższa cena</option><option value="pm2_asc"${TOP_VIEW.sort==="pm2_asc"?" selected":""}>Najniższa cena/m²</option><option value="area_desc"${TOP_VIEW.sort==="area_desc"?" selected":""}>Największa powierzchnia</option></select></label>
+  <label><span>Gęstość</span><select aria-label="Gęstość tabeli" onchange="topSetViewOption('density',this.value)"><option value="mobile"${TOP_VIEW.density==="mobile"?" selected":""}>Mobilna mini</option><option value="compact"${TOP_VIEW.density==="compact"?" selected":""}>Kompaktowa</option><option value="comfortable"${TOP_VIEW.density==="comfortable"?" selected":""}>Komfortowa</option></select></label>
+  <label class="mobile-hide"><span>Szerokość</span><select aria-label="Szerokość kolumn" onchange="topSetViewOption('width',this.value)"><option value="narrow"${TOP_VIEW.width==="narrow"?" selected":""}>Wąskie</option><option value="normal"${TOP_VIEW.width==="normal"?" selected":""}>Standard</option><option value="wide"${TOP_VIEW.width==="wide"?" selected":""}>Szerokie</option></select></label>
+  <label class="empty-toggle mobile-hide"><input type="checkbox" ${TOP_VIEW.hideEmpty?"checked":""} onchange="topSetViewOption('hideEmpty',this.checked)"><span>Puste</span></label>
+  <button class="restore mobile-hide" onclick="topShowAllColumns()" ${hiddenCount?"":"disabled"}>Kolumny +${hiddenCount}</button>
   <button onclick="topFitToViewport()" title="Zmieść wszystkie oferty bez przewijania poziomego">↔ Dopasuj ekran</button>
-  <button onclick="topResetSizes()" title="Przywróć domyślne szerokości i wysokości">↺ Rozmiary</button>
-  <label><span>Papier</span><select aria-label="Format wydruku" onchange="topSetPrintSize(this.value)"><option value="A4"${TOP_VIEW.printSize==="A4"?" selected":""}>A4 poziomo</option><option value="A3"${TOP_VIEW.printSize==="A3"?" selected":""}>A3 poziomo</option></select></label>
-  <button onclick="topPrintTable()">🖨 Drukuj</button>
+  <button class="mobile-only" onclick="topMobileTwoColumns()" title="Pokaż dwie oferty obok siebie na telefonie">📱 2 oferty</button>
+  <button class="mobile-hide" onclick="topResetSizes()" title="Przywróć domyślne szerokości i wysokości">↺ Rozmiary</button>
+  <label class="mobile-hide"><span>Papier</span><select aria-label="Format wydruku" onchange="topSetPrintSize(this.value)"><option value="A4"${TOP_VIEW.printSize==="A4"?" selected":""}>A4 poziomo</option><option value="A3"${TOP_VIEW.printSize==="A3"?" selected":""}>A3 poziomo</option></select></label>
+  <button class="mobile-hide" onclick="topPrintTable()">🖨 Drukuj</button>
   <button id="topFocusBtn" class="push" aria-pressed="${topFocus?"true":"false"}" onclick="setTopFocus(!topFocus)">${topFocus?"× Wyjdź":"⛶ Skupienie"}</button>
  </div>`;
  const table=sl.length?`<div class="topcmp-scroll" tabindex="0" aria-label="Tabela porównawcza ofert Top"><table class="topcmp"><thead><tr><th class="criterion" scope="col">Kategoria i ocena (1–5)<span class="topcmp-col-resizer" role="separator" aria-orientation="vertical" aria-label="Zmień szerokość kolumny kategorii" onpointerdown="topStartColumnResize(event,'__criterion')"></span></th>${heads}</tr></thead><tbody>${body}</tbody></table></div>`:`<div class="topcmp-empty">Wszystkie kolumny są ukryte. Użyj „Kolumny +${hiddenCount}”, aby je przywrócić.</div>`;

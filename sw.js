@@ -22,9 +22,10 @@
 //   szerokosc i kolejnosc kolumn, autosave oraz automatyczne podsumowanie ocen.
 // v18 (2026-08-30): reczne rozmiary kolumn i wierszy, dopasowanie calej tabeli
 //   do ekranu oraz izolowany wydruk trybu Top w A4/A3.
+// v19 (2026-08-30): mobilny tryb mini i szybki widok dwoch ofert obok siebie.
 // v13 (2026-08-21): plakietka statusu wrocila na zdjecie (kotwiczyla sie do calej
 // karty i zakrywala przycisk 🚫) + przycisk „Otworz ogloszenie" w stopce karty.
-const C = "oferty-v18";
+const C = "oferty-v19";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",
