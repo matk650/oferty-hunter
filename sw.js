@@ -27,9 +27,10 @@
 // v21 (2026-08-30): pole „Naslonecznienie" pod mediami, jako 11. kryterium oceny.
 // v22 (2026-08-30): niegrupowane, kompaktowe pinezki oraz przełącznik mapy
 // ulicznej i satelitarnej Esri z zapamiętywaniem wybranej warstwy.
+// v23 (2026-08-30): usunięcie zbędnego wiersza Link z porównania Top.
 // v13 (2026-08-21): plakietka statusu wrocila na zdjecie (kotwiczyla sie do calej
 // karty i zakrywala przycisk 🚫) + przycisk „Otworz ogloszenie" w stopce karty.
-const C = "oferty-v22";
+const C = "oferty-v23";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",
