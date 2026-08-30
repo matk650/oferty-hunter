@@ -455,7 +455,7 @@ const TOP_REVIEW_PREFIX="top_review_v1:";
 const NOTE_PREFIX="note_v1:", NOTE_DEL_PREFIX="note_del_v1:";
 const TOP_FIELDS=[
  ["quiet","Cisza"],["area","Powierzchnia"],["total_price","Cena łączna"],
- ["price_per_m2","Cena za metr"],["urban_infra","Infrastruktura miejska"],
+ ["price_per_m2","Cena za metr"],["dimensions","Wymiary"],["urban_infra","Infrastruktura miejska"],
  ["work_distance","Odległość do pracy (czas wieczorem)"],["walk","Spacer"],
  ["north_zgierz","Północ/Zgierz"],["utilities","Media"],["other","Inne"],
  ["link","Link"],["sum","SUMA"]
@@ -467,7 +467,7 @@ const TOP_IDS={
 };
 const TOP_ORDER={[TOP_IDS.barowa]:0,[TOP_IDS.lodzianka]:1,[TOP_IDS.prosta]:2};
 const TOP_NAMES={[TOP_IDS.barowa]:"Skotniki, Barowa",[TOP_IDS.lodzianka]:"Łódź, ul. Łodzianka",[TOP_IDS.prosta]:"Łagiewniki Nowe, Prosta"};
-const TOP_SCORE_FIELDS=["quiet","area","total_price","price_per_m2","urban_infra","work_distance","walk","north_zgierz","utilities"];
+const TOP_SCORE_FIELDS=["quiet","area","total_price","price_per_m2","dimensions","urban_infra","work_distance","walk","north_zgierz","utilities"];
 function topPref(k,d){ try{ const v=localStorage.getItem("vTop_"+k); return v==null?d:v; }catch(e){ return d; } }
 function topPrefJson(k,d){ try{ const v=JSON.parse(localStorage.getItem("vTop_"+k)); return Array.isArray(v)?v:d; }catch(e){ return d; } }
 function topPrefObject(k,d){ try{ const v=JSON.parse(localStorage.getItem("vTop_"+k)); return v&&typeof v==="object"&&!Array.isArray(v)?v:d; }catch(e){ return d; } }
