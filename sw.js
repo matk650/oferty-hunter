@@ -29,9 +29,11 @@
 // ulicznej i satelitarnej Esri z zapamiętywaniem wybranej warstwy.
 // v23 (2026-08-30): usunięcie zbędnego wiersza Link z porównania Top.
 // v24 (2026-08-30): jedna wspólna szerokość wszystkich kolumn ofert w Top.
+// v25 (2026-08-31): wybierane porównanie 2-5 ofert, kompaktowy sticky header,
+//   ukrywanie wierszy, rozwijane komentarze i pełny podgląd po kliknięciu oferty.
 // v13 (2026-08-21): plakietka statusu wrocila na zdjecie (kotwiczyla sie do calej
 // karty i zakrywala przycisk 🚫) + przycisk „Otworz ogloszenie" w stopce karty.
-const C = "oferty-v24";
+const C = "oferty-v25";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",

@@ -82,7 +82,7 @@ input.ctrl{width:120px}#q{flex:1;min-width:150px}
 .grow{color:#2e7d46}.gred{color:#c0392b}
 .daycount{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:#3c3a35;background:#fff;border:1px solid #e5e2da;border-radius:10px;padding:9px 13px;margin-bottom:12px}
 .daycount b{font-size:15px;color:#1f1e1b}.daycount .sep{color:#cfccc3}.daycount .lbl{color:#6b6a66}
-#ov{position:fixed;inset:0;background:rgba(15,14,12,.85);display:none;align-items:center;justify-content:center;z-index:9;padding:14px}
+#ov{position:fixed;inset:0;background:rgba(15,14,12,.85);display:none;align-items:center;justify-content:center;z-index:10000;padding:14px}
 #ov.on{display:flex}.sh{background:#fff;border-radius:16px;max-width:920px;width:100%;max-height:95vh;overflow:auto;position:relative}
 .gal{position:relative;background:#111;display:flex;align-items:center;justify-content:center;min-height:300px;max-height:62vh}
 .gal img{max-width:100%;max-height:62vh;object-fit:contain}
@@ -101,8 +101,8 @@ table.params td:first-child{color:#777;width:42%}
 .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .acts button,.acts a{flex:1;min-width:110px;text-align:center;border:1px solid #d8d5cc;background:#fff;border-radius:9px;padding:12px 0;font-size:13px;font-weight:600;cursor:pointer;color:#3c3a35;text-decoration:none;min-height:46px;display:flex;align-items:center;justify-content:center}
 .acts a.go{background:#1f1e1b;color:#fff;border-color:#1f1e1b}
-#cl{position:fixed;top:max(10px,env(safe-area-inset-top));right:14px;background:rgba(20,18,15,.82);color:#fff;border:0;width:44px;height:44px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;z-index:30;box-shadow:0 2px 12px rgba(0,0,0,.4)}
-.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1f1e1b;color:#fff;padding:11px 20px;border-radius:99px;font-size:13px;display:none;z-index:99}
+#cl{position:fixed;top:max(10px,env(safe-area-inset-top));right:14px;background:rgba(20,18,15,.82);color:#fff;border:0;width:44px;height:44px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;z-index:10002;box-shadow:0 2px 12px rgba(0,0,0,.4)}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1f1e1b;color:#fff;padding:11px 20px;border-radius:99px;font-size:13px;display:none;z-index:10003}
 #stats{display:none}
 .panel{background:#fff;border:1px solid #e5e2da;border-radius:12px;padding:14px 16px;margin-bottom:14px}
 .panel h3{margin:0 0 10px;font-size:15px}.panel .sub{color:#777;font-size:12px;margin:-6px 0 10px}
@@ -140,7 +140,12 @@ table.tbl td.num,table.tbl th.num{text-align:right;white-space:nowrap}
 .topcmp-toolbar label{display:flex;align-items:center;gap:5px;font-size:11px;color:#5e5b55;font-weight:650;white-space:nowrap}
 .topcmp-toolbar select,.topcmp-toolbar button{border:1px solid #d0ccc2;background:#fff;color:#302e2a;border-radius:8px;min-height:34px;padding:6px 9px;font:inherit;font-size:12px;cursor:pointer}
 .topcmp-toolbar select:focus,.topcmp-toolbar button:focus-visible{outline:0;border-color:#2e7d46;box-shadow:0 0 0 2px rgba(46,125,70,.15)}
-.topcmp-toolbar button{font-weight:700}.topcmp-toolbar .push{margin-left:auto}.topcmp-toolbar .restore{color:#27693c}.topcmp-toolbar .restore[disabled]{opacity:.45;cursor:default}
+.topcmp-toolbar button{font-weight:700}.topcmp-toolbar .push{margin-left:auto}.topcmp-toolbar .restore{color:#27693c}.topcmp-toolbar .restore[disabled],.topcmp-toolbar button[disabled]{opacity:.45;cursor:default}
+.topcmp-rows-menu{position:relative}.topcmp-rows-menu>summary{list-style:none;border:1px solid #d0ccc2;background:#fff;color:#302e2a;border-radius:8px;min-height:34px;padding:7px 9px;font-size:12px;font-weight:700;cursor:pointer}.topcmp-rows-menu>summary::-webkit-details-marker{display:none}
+.topcmp-rows-pop{position:absolute;left:0;top:calc(100% + 5px);z-index:30;width:245px;max-height:min(420px,70dvh);overflow:auto;padding:8px;background:#fff;border:1px solid #d5d1c8;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.topcmp-rows-pop label{display:flex;padding:6px 4px;font-size:12px;font-weight:550;white-space:normal}.topcmp-rows-pop label:hover{background:#f4f2ed;border-radius:6px}
+.topcmp-rows-pop>button{width:100%;margin-top:5px;border:0;background:#edf5ef;color:#27693c;border-radius:6px;padding:7px;font-weight:750;cursor:pointer}
+.topcmp-compare-on{background:#1f1e1b!important;color:#fff!important;border-color:#1f1e1b!important}
 .topcmp-scroll{width:100%;max-height:calc(100dvh - 250px);overflow:auto;overscroll-behavior:contain;border:1px solid #d7d3ca;border-radius:12px;background:#fff;box-shadow:0 3px 15px rgba(0,0,0,.06);scrollbar-gutter:stable}
 .topcmp{border-collapse:separate;border-spacing:0;min-width:max-content;width:100%;font-size:13px}
 .topcmp-shell[data-fit="true"] .topcmp{min-width:100%;width:100%;table-layout:fixed}
@@ -170,34 +175,42 @@ body.top-resizing{cursor:col-resize;user-select:none}body.top-resizing.row{curso
 .topcmp-shell[data-density="mobile"] textarea{min-height:24px;height:24px;font-size:9.5px;line-height:1.14;padding:2px 3px;border-radius:4px}.topcmp-shell[data-density="mobile"] .topcmp-save-state{display:none}
 .topcmp-shell[data-density="mobile"] .topcmp-auto{font-size:8.5px;line-height:1.1;gap:2px;margin-bottom:2px}.topcmp-shell[data-density="mobile"] .review-links{gap:2px;margin-top:1px}.topcmp-shell[data-density="mobile"] .review-links a{font-size:8px}
 .topcmp-toolbar .mobile-only{display:none}
-.topcmp-head{display:grid;grid-template-columns:82px 1fr;min-height:100%;position:relative}
+.topcmp-head{display:grid;grid-template-columns:82px 1fr;min-height:100%;position:relative;cursor:pointer;transition:grid-template-columns .18s,background .18s}
+.topcmp-head:hover{background:#faf9f6}.topcmp-head:focus-visible{outline:2px solid #2e7d46;outline-offset:-2px}
 .topcmp-head img,.topcmp-noimg{width:82px;height:var(--head-img);object-fit:cover;background:#eceae4;display:flex;align-items:center;justify-content:center;font-size:26px}
 .topcmp-head-body{padding:8px;min-width:0}.topcmp-head-title{font-size:13px;line-height:1.22;margin:0 40px 4px 0;color:#222;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .topcmp-head-meta{font-size:11px;color:#6d6a64;line-height:1.3}.topcmp-head-tools{position:absolute;right:5px;top:5px;display:flex;gap:2px}
+.topcmp-select{position:absolute;left:5px;top:5px;z-index:4;width:22px;height:22px;margin:0;accent-color:#2e7d46;cursor:pointer;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
 .topcmp-head-tools button{width:26px;height:26px;border:0;border-radius:6px;background:rgba(255,255,255,.92);color:#58554f;cursor:pointer;font-size:12px;padding:0}.topcmp-head-tools button:hover{background:#e8e4dc;color:#111}.topcmp-head-tools button:disabled{opacity:.3;cursor:default}
 .topcmp-rank{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:999px;background:#24231f;color:#fff;font-size:10px;font-weight:800;margin-right:5px}
 .topcmp-metrics{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}.topcmp-metric{font-size:10.5px;padding:3px 6px;border-radius:999px;background:#edf5ef;color:#26623a;font-weight:750}.topcmp-metric.muted{background:#efede8;color:#6c6962}
-.topcmp-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
-.topcmp-actions button,.topcmp-actions a{border:1px solid #d7d3ca;background:#fff;color:#34312c;border-radius:6px;padding:5px 6px;min-height:28px;font-size:10.5px;font-weight:700;text-decoration:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:1;white-space:nowrap}
-.topcmp-actions a.primary{background:#1f1e1b;border-color:#1f1e1b;color:#fff}
+.topcmp-actions{display:flex;gap:4px;align-items:center;margin-top:6px;position:relative}.topcmp-actions>button{border:1px solid #d7d3ca;background:#fff;color:#34312c;border-radius:6px;padding:5px 7px;min-height:28px;font-size:10.5px;font-weight:700;cursor:pointer}
+.topcmp-more{position:relative}.topcmp-more>summary{list-style:none;border:1px solid #d7d3ca;background:#fff;color:#34312c;border-radius:6px;padding:5px 9px;min-height:28px;font-size:11px;font-weight:800;cursor:pointer}.topcmp-more>summary::-webkit-details-marker{display:none}
+.topcmp-more-menu{position:absolute;right:0;top:calc(100% + 4px);z-index:18;min-width:150px;padding:5px;background:#fff;border:1px solid #d7d3ca;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.topcmp-more-menu button,.topcmp-more-menu a{box-sizing:border-box;width:100%;border:0;background:#fff;color:#34312c;border-radius:5px;padding:7px 8px;min-height:30px;font-size:11px;font-weight:700;text-decoration:none;cursor:pointer;display:flex;align-items:center;white-space:nowrap}.topcmp-more-menu button:hover,.topcmp-more-menu a:hover{background:#f0eee8}.topcmp-more-menu a.primary{background:#1f1e1b;color:#fff}
+.topcmp thead th:has(.topcmp-more[open]){z-index:20}
 .topcmp td{position:relative}.topcmp td[data-score]::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--score-color,#bbb)}
-.topcmp td[data-score="1"]{--score-color:#c65349}.topcmp td[data-score="2"]{--score-color:#d98945}.topcmp td[data-score="3"]{--score-color:#c0a63a}.topcmp td[data-score="4"]{--score-color:#58a06b}.topcmp td[data-score="5"]{--score-color:#257445}
-.topcmp textarea{box-sizing:border-box;width:100%;height:30px;min-height:30px;overflow:hidden;resize:none;border:1px solid transparent;border-radius:6px;background:#faf9f6;color:#2f2d29;font:inherit;font-size:12.5px;line-height:1.28;padding:5px 7px;transition:border-color .15s,background .15s,box-shadow .15s}
+.topcmp td[data-score="1"]{--score-color:#c65349;background:#fff3f2}.topcmp td[data-score="2"]{--score-color:#d98945;background:#fff7ef}.topcmp td[data-score="3"]{--score-color:#c0a63a;background:#fffbed}.topcmp td[data-score="4"]{--score-color:#58a06b;background:#f1f8f2}.topcmp td[data-score="5"]{--score-color:#257445;background:#eaf5ed}
+.topcmp td[data-score] textarea{background:rgba(255,255,255,.58)}
+.topcmp textarea{box-sizing:border-box;width:100%;height:30px;min-height:30px;overflow:hidden;resize:none;border:1px solid transparent;border-radius:6px;background:rgba(250,249,246,.82);color:#2f2d29;font:inherit;font-size:12.5px;line-height:1.28;padding:5px 7px;transition:border-color .15s,background .15s,box-shadow .15s}
 .topcmp-shell[data-density="comfortable"] textarea{min-height:36px;padding:8px}
 .topcmp textarea:hover{border-color:#d8d4ca}.topcmp textarea:focus{outline:0;border-color:#2e7d46;background:#fff;box-shadow:0 0 0 2px rgba(46,125,70,.14)}
 .topcmp textarea.dirty{background:#fffaf0;border-color:#e1c56b}.topcmp textarea.saving{background:#fff8df;border-color:#d9b84b}.topcmp textarea.saved{background:#eef7f0;border-color:#7cb58a}.topcmp textarea.saveerr{background:#fff0ee;border-color:#c95b4f}
 .topcmp-save-state{height:13px;text-align:right;font-size:9.5px;color:#918d84;line-height:13px}.topcmp textarea.saveerr+.topcmp-save-state{color:#a64137}
+.topcmp-expand{display:none;border:0;background:transparent;color:#27693c;padding:1px 2px;font-size:10px;font-weight:750;cursor:pointer}.topcmp-expand.on{display:inline-block}
+.topcmp-criterion-inner{display:flex;align-items:flex-start;gap:4px;justify-content:space-between}.topcmp-hide-row{border:0;background:transparent;color:#8b877f;padding:0 2px;font-size:14px;cursor:pointer;line-height:1}.topcmp-hide-row:hover{color:#a43c33}
 .topcmp .review-links{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}.topcmp .review-links a{font-size:10.5px;color:#27693c;text-decoration:none;font-weight:650}
 .topcmp tr.sum-row .criterion{background:#e7e2d7}.topcmp tr.sum-row td{background:#fffdf2}.topcmp tr.sum-row textarea{font-weight:700;background:#fff8db}
 .topcmp-auto{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:11px;font-weight:750;color:#27693c}.topcmp-auto small{font-weight:500;color:#777}
 .topcmp-empty{padding:42px 18px;text-align:center;color:#6d6a64}.topcmp-hint{margin:7px 2px 0;font-size:10.5px;color:#817e77}
+.topcmp-shell.topcmp-scrolled{--head-img:42px}.topcmp-shell.topcmp-scrolled .topcmp-head{grid-template-columns:42px 1fr}.topcmp-shell.topcmp-scrolled .topcmp-head img,.topcmp-shell.topcmp-scrolled .topcmp-noimg{width:42px;height:42px;font-size:15px}.topcmp-shell.topcmp-scrolled .topcmp-head-body{padding:4px 5px}.topcmp-shell.topcmp-scrolled .topcmp-head-title{font-size:10.5px;line-height:1.12;margin:0 30px 2px 0;-webkit-line-clamp:1}.topcmp-shell.topcmp-scrolled .topcmp-head-meta{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.topcmp-shell.topcmp-scrolled .topcmp-metrics{position:absolute;right:4px;bottom:3px;margin:0}.topcmp-shell.topcmp-scrolled .topcmp-metric{font-size:8px;padding:2px 3px}.topcmp-shell.topcmp-scrolled .topcmp-metric[data-top-metric="complete"],.topcmp-shell.topcmp-scrolled .topcmp-actions,.topcmp-shell.topcmp-scrolled .topcmp-head-tools{display:none}.topcmp-shell.topcmp-scrolled .topcmp-select{left:2px;top:2px;width:16px;height:16px}
 @media print{
  body.top-printing{background:#fff!important;padding:0!important;color:#000}
  body.top-printing>*:not(#grid){display:none!important}
  body.top-printing #grid{display:block!important;margin:0!important;padding:0!important}
  body.top-printing #grid>*:not(.topcmp-shell){display:none!important}
  body.top-printing .topcmp-shell{display:block!important;position:static!important;inset:auto!important;z-index:auto!important;background:#fff!important;padding:0!important}
- body.top-printing .topcmp-toolbar,body.top-printing .topcmp-hint,body.top-printing .topcmp-save-state,body.top-printing .topcmp-head-tools,body.top-printing .topcmp-col-resizer,body.top-printing .topcmp-row-resizer{display:none!important}
+ body.top-printing .topcmp-toolbar,body.top-printing .topcmp-hint,body.top-printing .topcmp-save-state,body.top-printing .topcmp-expand,body.top-printing .topcmp-hide-row,body.top-printing .topcmp-select,body.top-printing .topcmp-head-tools,body.top-printing .topcmp-col-resizer,body.top-printing .topcmp-row-resizer{display:none!important}
  body.top-printing .topcmp-intro{display:block!important;margin:0 0 3mm;font-size:8pt}
  body.top-printing .topcmp-scroll{display:block!important;max-height:none!important;overflow:visible!important;border:0!important;border-radius:0!important;box-shadow:none!important}
  body.top-printing .topcmp{width:100%!important;min-width:0!important;table-layout:fixed!important;border-collapse:collapse!important;font-size:7.5pt}
@@ -213,7 +226,7 @@ body.top-resizing{cursor:col-resize;user-select:none}body.top-resizing.row{curso
  body.top-printing .topcmp textarea{border:0!important;background:transparent!important;box-shadow:none!important;padding:0!important;min-height:0!important;font-size:7.2pt!important;line-height:1.18!important;overflow:visible!important;resize:none!important;color:#000!important}
  body.top-printing .topcmp .review-links{display:none!important}
 }
-@media(max-width:720px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}.topcmp-shell{--criterion-w:112px;--offer-w:228px;--head-img:74px}.topcmp-shell[data-width="narrow"]{--offer-w:204px}.topcmp-shell[data-width="wide"]{--offer-w:282px}.topcmp-shell[data-density="mobile"]{--criterion-w:72px;--offer-w:120px}.topcmp-scroll{max-height:calc(100dvh - 235px);scrollbar-gutter:auto}.topcmp-toolbar{gap:4px;padding:5px;position:sticky;top:0;z-index:20}.topcmp-toolbar label span{display:none}.topcmp-toolbar .empty-toggle span{display:inline;font-size:10px}.topcmp-toolbar select,.topcmp-toolbar button{min-height:30px;padding:4px 6px;font-size:10.5px}.topcmp-toolbar .mobile-only{display:inline-flex;align-items:center}.topcmp-toolbar .push{margin-left:0}.topcmp .criterion{font-size:11.5px}.topcmp-head{grid-template-columns:64px 1fr}.topcmp-head img,.topcmp-noimg{width:64px}.topcmp-head-title{font-size:12px;margin-right:34px}.topcmp-actions .long{display:none}.topcmp-actions button,.topcmp-actions a{font-size:10px}.topcmp-shell.focus{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.topcmp-shell.focus .topcmp-toolbar{border-radius:0;margin:0 4px 4px}.topcmp-shell.focus .topcmp-scroll{border-radius:0}.topcmp-shell[data-density="mobile"] .topcmp-hint,.topcmp-shell[data-density="mobile"] .topcmp-toolbar .mobile-hide{display:none}.topcmp-shell[data-density="mobile"] .topcmp-toolbar{flex-wrap:nowrap;overflow-x:auto}.topcmp-shell[data-density="mobile"] .topcmp-toolbar .push{margin-left:auto}}
+@media(max-width:720px){.bar-row .lbl{width:96px}.kpi .box{min-width:78px}#cl{top:calc(env(safe-area-inset-top,0px) + 58px)}.topcmp-shell{--criterion-w:112px;--offer-w:228px;--head-img:74px}.topcmp-shell[data-width="narrow"]{--offer-w:204px}.topcmp-shell[data-width="wide"]{--offer-w:282px}.topcmp-shell[data-density="mobile"]{--criterion-w:72px;--offer-w:120px}.topcmp-scroll{max-height:calc(100dvh - 235px);scrollbar-gutter:auto}.topcmp-toolbar{gap:4px;padding:5px;position:sticky;top:0;z-index:20}.topcmp-toolbar label span{display:none}.topcmp-toolbar .empty-toggle span{display:inline;font-size:10px}.topcmp-toolbar select,.topcmp-toolbar button,.topcmp-toolbar .topcmp-rows-menu>summary{min-height:30px;padding:4px 6px;font-size:10.5px}.topcmp-toolbar .mobile-only{display:inline-flex;align-items:center}.topcmp-toolbar .push{margin-left:0}.topcmp .criterion{font-size:11.5px}.topcmp-head{grid-template-columns:64px 1fr}.topcmp-head img,.topcmp-noimg{width:64px}.topcmp-head-title{font-size:12px;margin-right:34px}.topcmp-actions .long{display:none}.topcmp-actions button,.topcmp-actions a{font-size:10px}.topcmp-shell.focus{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.topcmp-shell.focus .topcmp-toolbar{border-radius:0;margin:0 4px 4px}.topcmp-shell.focus .topcmp-scroll{border-radius:0}.topcmp-shell[data-density="mobile"] .topcmp-hint,.topcmp-shell[data-density="mobile"] .topcmp-toolbar .mobile-hide{display:none}.topcmp-shell[data-density="mobile"] .topcmp-toolbar{flex-wrap:nowrap;overflow-x:auto}.topcmp-shell[data-density="mobile"] .topcmp-toolbar .push{margin-left:auto}.topcmp-shell[data-density="mobile"] .topcmp-rows-menu{display:block}.topcmp-rows-pop{position:fixed;left:8px;right:8px;top:58px;width:auto}}
 /* ── MAPA (v8, 2026-08-06) ───────────────────────────────────────────────── */
 /* Widoczność sterowana KLASĄ, nie stylem inline. Powód (2026-08-07): setView()
    ustawiał element.style.display="block", a styl inline bije regułę z arkusza —
@@ -482,6 +495,9 @@ const TOP_VIEW={
  sort:["manual","score_desc","price_asc","pm2_asc","area_desc"].includes(topPref("sort","manual"))?topPref("sort","manual"):"manual",
  hideEmpty:topPref("hideEmpty","0")==="1",
  hidden:new Set(topPrefJson("hidden",[])),
+ hiddenFields:new Set(topPrefJson("hiddenFields",[])),
+ selected:new Set(topPrefJson("selected",[])),
+ compareOnly:topPref("compareOnly","0")==="1",
  order:topPrefJson("order",[]),
  fit:topPref("fit","0")==="1",
  criterionWidth:topClamp(topPref("criterionWidth","154"),56,420),
@@ -491,7 +507,8 @@ const TOP_VIEW={
 };
 const TOP_SAVE_TIMERS={};
 const TOP_SAVE_INFLIGHT={};
-let topFocus=false,TOP_RESIZE=null,topResizeFrame=0;
+const TOP_EXPANDED_CELLS=new Set();
+let topFocus=false,TOP_RESIZE=null,topResizeFrame=0,TOP_RENDER_WIDTH=null;
 const median = arr => { if(!arr.length) return null; const s=[...arr].sort((a,b)=>a-b); const m=s.length>>1; return s.length%2?s[m]:(s[m-1]+s[m])/2; };
 const CATPL = {m_dz:"Mieszk. działki",m_dom:"Mieszk. domy",jez_dz:"Jeziora działki",jez_dom:"Jeziora domy"};
 const cap = s => s? s.charAt(0).toUpperCase()+s.slice(1) : s;
@@ -676,9 +693,40 @@ function topMoveColumn(id,delta){
 }
 function topHideColumn(id){ TOP_VIEW.hidden.add(id); saveTopPref("hidden",[...TOP_VIEW.hidden]); render(); }
 function topShowAllColumns(){ TOP_VIEW.hidden.clear(); saveTopPref("hidden",[]); render(); }
+function topToggleField(field,shown){
+ if(shown) TOP_VIEW.hiddenFields.delete(field); else TOP_VIEW.hiddenFields.add(field);
+ saveTopPref("hiddenFields",[...TOP_VIEW.hiddenFields]); render();
+}
+function topShowAllFields(){ TOP_VIEW.hiddenFields.clear(); saveTopPref("hiddenFields",[]); render(); }
+function topToggleSelection(id,checked){
+ if(checked&&TOP_VIEW.selected.size>=5&&!TOP_VIEW.selected.has(id)){ toast("Możesz porównać maksymalnie 5 ofert"); render(); return; }
+ if(checked) TOP_VIEW.selected.add(id); else TOP_VIEW.selected.delete(id);
+ if(TOP_VIEW.compareOnly&&TOP_VIEW.selected.size<2) TOP_VIEW.compareOnly=false;
+ saveTopPref("selected",[...TOP_VIEW.selected]); saveTopPref("compareOnly",TOP_VIEW.compareOnly?"1":"0"); render();
+}
+function topToggleCompare(){
+ if(TOP_VIEW.compareOnly){ TOP_VIEW.compareOnly=false; saveTopPref("compareOnly","0"); render(); return; }
+ if(TOP_VIEW.selected.size<2||TOP_VIEW.selected.size>5){ toast("Zaznacz od 2 do 5 ofert"); return; }
+ TOP_VIEW.compareOnly=true; saveTopPref("compareOnly","1"); render();
+}
+function topOpenFromHeader(e,id){
+ if(e.target.closest("button,a,input,summary,details,.topcmp-col-resizer")) return;
+ if(e.type==="keydown"&&e.key!=="Enter"&&e.key!==" ") return;
+ if(e.type==="keydown") e.preventDefault(); openById(id);
+}
 function topBaseColumnWidth(){ return TOP_VIEW.density==="mobile"?120:(TOP_VIEW.width==="narrow"?225:(TOP_VIEW.width==="wide"?330:270)); }
-function topColumnWidth(){ return topClamp(TOP_VIEW.offerWidth||topBaseColumnWidth(),36,720); }
-function topColumnCss(id){ return `--col-w:${topColumnWidth(id)}px`; }
+function topSmartColumnWidth(rows,fields){
+ if(TOP_VIEW.density==="mobile") return 120;
+ let longest=18;
+ rows.forEach(o=>{
+   longest=Math.max(longest,Math.min(44,String(topCmpName(o)||"").length));
+   fields.forEach(([field])=>String(topReviewValue(o.id,field)||"").split(/\n/).forEach(line=>{ longest=Math.max(longest,Math.min(44,line.length)); }));
+ });
+ const natural=Math.round(86+longest*4.7),base=topBaseColumnWidth();
+ return topClamp(Math.round((natural+base)/2),TOP_VIEW.width==="narrow"?185:210,TOP_VIEW.width==="wide"?390:340);
+}
+function topColumnWidth(){ return topClamp(TOP_VIEW.offerWidth||TOP_RENDER_WIDTH||topBaseColumnWidth(),36,720); }
+function topColumnCss(){ return `--col-w:${topColumnWidth()}px`; }
 function topRowHeight(field){ const n=Number(TOP_VIEW.rowHeights[field]); return Number.isFinite(n)&&n>=34?topClamp(n,34,520):null; }
 function applyTopSizing(){
  const shell=document.querySelector(".topcmp-shell"); if(!shell)return;
@@ -728,11 +776,15 @@ function topFitToViewport(){
 }
 function topMobileTwoColumns(){
  const ids=topCmpRows(visibleRows()).filter(o=>!TOP_VIEW.hidden.has(o.id)).map(o=>o.id); if(!ids.length)return;
+ let chosen=ids.filter(id=>TOP_VIEW.selected.has(id));
+ if(chosen.length<2||chosen.length>3){ chosen=ids.slice(0,Math.min(2,ids.length)); TOP_VIEW.selected=new Set(chosen); saveTopPref("selected",chosen); }
+ TOP_VIEW.compareOnly=chosen.length>=2; saveTopPref("compareOnly",TOP_VIEW.compareOnly?"1":"0");
  const scroll=document.querySelector(".topcmp-scroll"),available=Math.max(280,(scroll&&scroll.clientWidth)||document.documentElement.clientWidth-8);
- const criterion=topClamp(Math.round(available*.22),64,82),each=topClamp(Math.floor((available-criterion-2)/2),96,156);
+ const criterion=topClamp(Math.round(available*.22),64,82),each=topClamp(Math.floor((available-criterion-2)/Math.max(2,chosen.length)),96,156);
  TOP_VIEW.density="mobile"; TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=criterion; TOP_VIEW.offerWidth=each;
  saveTopPref("density","mobile"); saveTopPref("fit","0"); saveTopPref("criterionWidth",String(criterion)); saveTopPref("offerWidth",String(each)); render(); setTopFocus(true);
 }
+function topUseSmartWidth(){ TOP_VIEW.fit=false; TOP_VIEW.offerWidth=null; saveTopPref("fit","0"); saveTopPref("offerWidth",""); render(); }
 function topResetSizes(){
  TOP_VIEW.fit=false; TOP_VIEW.criterionWidth=TOP_VIEW.density==="mobile"?72:154; TOP_VIEW.offerWidth=null; TOP_VIEW.rowHeights={};
  saveTopPref("fit","0"); saveTopPref("criterionWidth",String(TOP_VIEW.criterionWidth)); saveTopPref("offerWidth",""); saveTopPref("rowHeights",{}); render();
@@ -756,17 +808,26 @@ function setTopFocus(on){
  document.body.classList.toggle("fs-lock",topFocus||mapFsOn);
  const b=document.getElementById("topFocusBtn"); if(b){ b.textContent=topFocus?"× Wyjdź":"⛶ Skupienie"; b.setAttribute("aria-pressed",topFocus?"true":"false"); }
 }
+function topComparisonScroll(scroll){
+ const shell=scroll.closest(".topcmp-shell"); if(shell) shell.classList.toggle("topcmp-scrolled",scroll.scrollTop>72);
+}
 function reviewLinks(value){
  const urls=String(value||"").match(/https?:\/\/[^\s]+/g)||[];
  return urls.map((u,i)=>{ const h=safeUrl(u.replace(/[),.;]+$/,"")); return h
    ? `<a href="${esc(h)}" target="_blank" rel="noopener">Link ${i+1} ↗</a>`:""; }).join("");
 }
 function fitTopReview(el){
- const min=TOP_VIEW.density==="mobile"?24:30,tr=el.closest("tr[data-field]"),manual=tr&&topRowHeight(tr.dataset.field);
- if(manual){ el.style.height=Math.max(min,manual-35)+"px"; el.style.overflow="auto"; return; }
+ const min=TOP_VIEW.density==="mobile"?24:30,tr=el.closest("tr[data-field]"),manual=tr&&topRowHeight(tr.dataset.field),key=el.dataset.offer+"|"+el.dataset.field;
  el.style.height=min+"px";
- const wanted=Math.max(min,el.scrollHeight),height=TOP_VIEW.density==="mobile"?Math.min(62,wanted):wanted;
- el.style.height=height+"px"; el.style.overflow=wanted>height?"auto":"hidden";
+ const wanted=Math.max(min,el.scrollHeight),collapsed=manual?Math.max(min,manual-35):(TOP_VIEW.density==="mobile"?46:62),expanded=TOP_EXPANDED_CELLS.has(key),height=expanded?wanted:Math.min(collapsed,wanted);
+ el.style.height=height+"px"; el.style.overflow="hidden";
+ const more=el.parentElement&&el.parentElement.querySelector(".topcmp-expand");
+ if(more){ more.classList.toggle("on",wanted>collapsed||expanded); more.textContent=expanded?"Mniej":"Więcej"; more.setAttribute("aria-expanded",expanded?"true":"false"); }
+}
+function topToggleCellExpand(offerId,field,button){
+ const key=offerId+"|"+field;
+ if(TOP_EXPANDED_CELLS.has(key)) TOP_EXPANDED_CELLS.delete(key); else TOP_EXPANDED_CELLS.add(key);
+ const td=button.closest("td"),el=td&&td.querySelector("textarea"); if(el) fitTopReview(el);
 }
 function topReviewState(el,text){ const s=el.parentElement&&el.parentElement.querySelector(".topcmp-save-state"); if(s) s.textContent=text||""; }
 function refreshTopMetrics(offerId){
@@ -834,43 +895,53 @@ function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.
 
 function visibleRows(){ return sortRows(O.filter(o=>o.c===tab).filter(passFilters)); }
 function renderTopComparison(rows,g){
- const all=topCmpRows(rows),sl=all.filter(o=>!TOP_VIEW.hidden.has(o.id)),ranks=topRankMap(all),hiddenCount=all.length-sl.length;
+ const all=topCmpRows(rows),available=all.filter(o=>!TOP_VIEW.hidden.has(o.id)),validIds=new Set(all.map(o=>o.id));
+ let selectionChanged=false; [...TOP_VIEW.selected].forEach(id=>{ if(!validIds.has(id)){ TOP_VIEW.selected.delete(id); selectionChanged=true; } });
+ if(selectionChanged) saveTopPref("selected",[...TOP_VIEW.selected]);
+ const selectedAvailable=available.filter(o=>TOP_VIEW.selected.has(o.id)),activeCompare=TOP_VIEW.compareOnly&&selectedAvailable.length>=2&&selectedAvailable.length<=5;
+ if(TOP_VIEW.compareOnly&&!activeCompare){ TOP_VIEW.compareOnly=false; saveTopPref("compareOnly","0"); }
+ const sl=activeCompare?selectedAvailable:available,ranks=topRankMap(all),hiddenCount=all.length-available.length;
+ const fields=TOP_FIELDS.filter(([field])=>!TOP_VIEW.hiddenFields.has(field)&&(!TOP_VIEW.hideEmpty||field==="sum"||sl.some(o=>topReviewValue(o.id,field).trim())));
+ TOP_RENDER_WIDTH=topSmartColumnWidth(sl,fields);
  const heads=sl.map((o,i)=>{
    const img=o.ph&&o.ph.length?`<img loading="lazy" decoding="async" src="${esc(o.ph[0])}" alt="${esc(topCmpName(o))}">`:`<div class="topcmp-noimg" aria-hidden="true">🏞️</div>`;
    const listing=safeUrl(o.u)?`<a class="primary" href="${esc(o.u)}" target="_blank" rel="noopener">Ogłoszenie ↗</a>`:"";
    const map=(o.lat!=null&&o.lon!=null)?`<a href="${esc(mapsUrl(o.lat+','+o.lon))}" target="_blank" rel="noopener">Mapa ↗</a>`:"";
    const s=topScoreStats(o),avg=s.avg==null?"—":s.avg.toFixed(1).replace(".",",");
-   return `<th class="offer-col" scope="col" data-col-id="${esc(o.id)}" style="${topColumnCss(o.id)}"><div class="topcmp-head">${img}<div class="topcmp-head-body">
+   return `<th class="offer-col" scope="col" data-col-id="${esc(o.id)}" style="${topColumnCss()}"><div class="topcmp-head" role="button" tabindex="0" aria-label="Otwórz podgląd ${esc(topCmpName(o))}" onclick="topOpenFromHeader(event,${jsq(o.id)})" onkeydown="topOpenFromHeader(event,${jsq(o.id)})"><input class="topcmp-select" type="checkbox" ${TOP_VIEW.selected.has(o.id)?"checked":""} aria-label="Zaznacz ${esc(topCmpName(o))} do porównania" onclick="event.stopPropagation()" onchange="topToggleSelection(${jsq(o.id)},this.checked)">${img}<div class="topcmp-head-body">
     <div class="topcmp-head-tools"><button ${i===0?"disabled":""} onclick="topMoveColumn(${jsq(o.id)},-1)" title="Przesuń w lewo" aria-label="Przesuń ${esc(topCmpName(o))} w lewo">←</button><button ${i===sl.length-1?"disabled":""} onclick="topMoveColumn(${jsq(o.id)},1)" title="Przesuń w prawo" aria-label="Przesuń ${esc(topCmpName(o))} w prawo">→</button><button onclick="topHideColumn(${jsq(o.id)})" title="Ukryj kolumnę" aria-label="Ukryj ${esc(topCmpName(o))}">×</button></div>
     <div class="topcmp-head-title">${ranks.has(o.id)?`<span class="topcmp-rank">#${ranks.get(o.id)}</span>`:""}${txt(topCmpName(o))}</div>
     <div class="topcmp-head-meta">${o.pr?fmt(o.pr)+" zł":"cena?"}${o.a?" · "+fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</div>
     <div class="topcmp-metrics"><span class="topcmp-metric${s.count?"":" muted"}" data-top-metric="avg" data-offer="${esc(o.id)}">${avg} / 5</span><span class="topcmp-metric${s.count?"":" muted"}" data-top-metric="complete" data-offer="${esc(o.id)}">${s.count}/${s.total}</span></div>
-    <div class="topcmp-actions"><button onclick="openById(${jsq(o.id)})">Info</button>${map}${listing}<button onclick="setStId(${jsq(o.id)},'visited')">↓ <span class="long">Shortlista</span></button></div>
+    <div class="topcmp-actions"><button onclick="event.stopPropagation();openById(${jsq(o.id)})">👁 Podgląd</button><details class="topcmp-more" onclick="event.stopPropagation()"><summary aria-label="Więcej akcji">•••</summary><div class="topcmp-more-menu">${map}${listing}<button onclick="setStId(${jsq(o.id)},'visited')">↓ Do shortlisty</button></div></details></div>
    </div></div><span class="topcmp-col-resizer" role="separator" aria-orientation="vertical" aria-label="Zmień wspólną szerokość kolumn ofert" onpointerdown="topStartColumnResize(event,${jsq(o.id)})"></span></th>`;
  }).join("");
- const fields=TOP_FIELDS.filter(([field])=>!TOP_VIEW.hideEmpty||field==="sum"||sl.some(o=>topReviewValue(o.id,field).trim()));
  const body=fields.map(([field,label])=>{
    const cells=sl.map(o=>{ const value=topReviewValue(o.id,field),links=field==="link"?reviewLinks(value):"",score=parseTopScore(value),stats=topScoreStats(o);
      const auto=field==="sum"?`<div class="topcmp-auto" data-top-auto="1" data-offer="${esc(o.id)}">${topAutoText(stats)}</div>`:"";
-     return `<td class="offer-cell" data-col-id="${esc(o.id)}" style="${topColumnCss(o.id)}"${score==null?"":` data-score="${score}"`}>${auto}<textarea data-offer="${esc(o.id)}" data-field="${esc(field)}" aria-label="${esc(label+" — "+topCmpName(o))}" spellcheck="true" placeholder="${field==="sum"?"Własny werdykt…":"Dodaj ocenę 1–5 lub komentarz…"}" oninput="scheduleTopReview(${jsq(o.id)},${jsq(field)},this)" onblur="flushTopReview(${jsq(o.id)},${jsq(field)},this)" onkeydown="topReviewKey(event,${jsq(o.id)},${jsq(field)},this)">${esc(value)}</textarea><div class="topcmp-save-state" aria-live="polite"></div>${field==="link"?`<div class="review-links">${links}</div>`:""}</td>`; }).join("");
+     return `<td class="offer-cell" data-col-id="${esc(o.id)}" style="${topColumnCss()}"${score==null?"":` data-score="${score}"`}>${auto}<textarea data-offer="${esc(o.id)}" data-field="${esc(field)}" aria-label="${esc(label+" — "+topCmpName(o))}" spellcheck="true" placeholder="${field==="sum"?"Własny werdykt…":"Dodaj ocenę 1–5 lub komentarz…"}" oninput="scheduleTopReview(${jsq(o.id)},${jsq(field)},this)" onblur="flushTopReview(${jsq(o.id)},${jsq(field)},this)" onkeydown="topReviewKey(event,${jsq(o.id)},${jsq(field)},this)">${esc(value)}</textarea><button class="topcmp-expand" onclick="topToggleCellExpand(${jsq(o.id)},${jsq(field)},this)" aria-expanded="false">Więcej</button><div class="topcmp-save-state" aria-live="polite"></div></td>`; }).join("");
    const rowH=topRowHeight(field);
-   return `<tr class="${field==="sum"?"sum-row":""}" data-field="${esc(field)}"${rowH?` style="height:${rowH}px"`:""}><th class="criterion" scope="row">${txt(label)}<span class="topcmp-row-resizer" role="separator" aria-orientation="horizontal" aria-label="Zmień wysokość wiersza ${esc(label)}" onpointerdown="topStartRowResize(event,${jsq(field)})"></span></th>${cells}</tr>`;
+   return `<tr class="${field==="sum"?"sum-row":""}" data-field="${esc(field)}"${rowH?` style="height:${rowH}px"`:""}><th class="criterion" scope="row"><span class="topcmp-criterion-inner"><span>${txt(label)}</span><button class="topcmp-hide-row" onclick="topToggleField(${jsq(field)},false)" title="Ukryj wiersz" aria-label="Ukryj wiersz ${esc(label)}">×</button></span><span class="topcmp-row-resizer" role="separator" aria-orientation="horizontal" aria-label="Zmień wysokość wiersza ${esc(label)}" onpointerdown="topStartRowResize(event,${jsq(field)})"></span></th>${cells}</tr>`;
  }).join("");
+ const rowsMenu=TOP_FIELDS.map(([field,label])=>`<label><input type="checkbox" ${TOP_VIEW.hiddenFields.has(field)?"":"checked"} onchange="topToggleField(${jsq(field)},this.checked)"><span>${txt(label)}</span></label>`).join("");
  const toolbar=`<div class="topcmp-toolbar" role="toolbar" aria-label="Ustawienia porównania">
   <label class="mobile-hide"><span>Kolejność</span><select aria-label="Kolejność ofert" onchange="topSetViewOption('sort',this.value)"><option value="manual"${TOP_VIEW.sort==="manual"?" selected":""}>Własna kolejność</option><option value="score_desc"${TOP_VIEW.sort==="score_desc"?" selected":""}>Najwyższa ocena</option><option value="price_asc"${TOP_VIEW.sort==="price_asc"?" selected":""}>Najniższa cena</option><option value="pm2_asc"${TOP_VIEW.sort==="pm2_asc"?" selected":""}>Najniższa cena/m²</option><option value="area_desc"${TOP_VIEW.sort==="area_desc"?" selected":""}>Największa powierzchnia</option></select></label>
   <label><span>Gęstość</span><select aria-label="Gęstość tabeli" onchange="topSetViewOption('density',this.value)"><option value="mobile"${TOP_VIEW.density==="mobile"?" selected":""}>Mobilna mini</option><option value="compact"${TOP_VIEW.density==="compact"?" selected":""}>Kompaktowa</option><option value="comfortable"${TOP_VIEW.density==="comfortable"?" selected":""}>Komfortowa</option></select></label>
   <label class="mobile-hide"><span>Szerokość</span><select aria-label="Szerokość kolumn" onchange="topSetViewOption('width',this.value)"><option value="narrow"${TOP_VIEW.width==="narrow"?" selected":""}>Wąskie</option><option value="normal"${TOP_VIEW.width==="normal"?" selected":""}>Standard</option><option value="wide"${TOP_VIEW.width==="wide"?" selected":""}>Szerokie</option></select></label>
   <label class="empty-toggle mobile-hide"><input type="checkbox" ${TOP_VIEW.hideEmpty?"checked":""} onchange="topSetViewOption('hideEmpty',this.checked)"><span>Puste</span></label>
+  <button class="${activeCompare?"topcmp-compare-on":""}" onclick="topToggleCompare()" ${!activeCompare&&(selectedAvailable.length<2||selectedAvailable.length>5)?"disabled":""} title="Pokaż tylko 2–5 zaznaczonych ofert">☑ Porównaj ${selectedAvailable.length||""}</button>
   <button class="restore mobile-hide" onclick="topShowAllColumns()" ${hiddenCount?"":"disabled"}>Kolumny +${hiddenCount}</button>
+  <details class="topcmp-rows-menu"><summary>Wiersze ${fields.length}/${TOP_FIELDS.length}</summary><div class="topcmp-rows-pop">${rowsMenu}${TOP_VIEW.hiddenFields.size?`<button onclick="topShowAllFields()">Pokaż wszystkie</button>`:""}</div></details>
   <button onclick="topFitToViewport()" title="Zmieść wszystkie oferty bez przewijania poziomego">↔ Dopasuj ekran</button>
-  <button class="mobile-only" onclick="topMobileTwoColumns()" title="Pokaż dwie oferty obok siebie na telefonie">📱 2 oferty</button>
+  <button class="mobile-hide" onclick="topUseSmartWidth()" title="Dobierz wspólną szerokość do najdłuższej widocznej treści">✨ Auto szer.</button>
+  <button class="mobile-only" onclick="topMobileTwoColumns()" title="Pokaż zaznaczone 2–3 oferty obok siebie na telefonie">📱 2–3 oferty</button>
   <button class="mobile-hide" onclick="topResetSizes()" title="Przywróć domyślne szerokości i wysokości">↺ Rozmiary</button>
   <label class="mobile-hide"><span>Papier</span><select aria-label="Format wydruku" onchange="topSetPrintSize(this.value)"><option value="A4"${TOP_VIEW.printSize==="A4"?" selected":""}>A4 poziomo</option><option value="A3"${TOP_VIEW.printSize==="A3"?" selected":""}>A3 poziomo</option></select></label>
   <button class="mobile-hide" onclick="topPrintTable()">🖨 Drukuj</button>
   <button id="topFocusBtn" class="push" aria-pressed="${topFocus?"true":"false"}" onclick="setTopFocus(!topFocus)">${topFocus?"× Wyjdź":"⛶ Skupienie"}</button>
  </div>`;
- const table=sl.length?`<div class="topcmp-scroll" tabindex="0" aria-label="Tabela porównawcza ofert Top"><table class="topcmp"><thead><tr><th class="criterion" scope="col">Kategoria i ocena (1–5)<span class="topcmp-col-resizer" role="separator" aria-orientation="vertical" aria-label="Zmień szerokość kolumny kategorii" onpointerdown="topStartColumnResize(event,'__criterion')"></span></th>${heads}</tr></thead><tbody>${body}</tbody></table></div>`:`<div class="topcmp-empty">Wszystkie kolumny są ukryte. Użyj „Kolumny +${hiddenCount}”, aby je przywrócić.</div>`;
- const compactFit=TOP_VIEW.fit&&sl.some(o=>topColumnWidth(o.id)<150);
+ const table=sl.length?`<div class="topcmp-scroll" tabindex="0" aria-label="Tabela porównawcza ofert Top" onscroll="topComparisonScroll(this)"><table class="topcmp"><thead><tr><th class="criterion" scope="col">Kategoria i ocena (1–5)<span class="topcmp-col-resizer" role="separator" aria-orientation="vertical" aria-label="Zmień szerokość kolumny kategorii" onpointerdown="topStartColumnResize(event,'__criterion')"></span></th>${heads}</tr></thead><tbody>${body}</tbody></table></div>`:`<div class="topcmp-empty">Wszystkie kolumny są ukryte. Użyj „Kolumny +${hiddenCount}”, aby je przywrócić.</div>`;
+ const compactFit=TOP_VIEW.fit&&sl.some(()=>topColumnWidth()<150);
  g.innerHTML=`<section class="topcmp-shell${topFocus?" focus":""}" data-density="${TOP_VIEW.density}" data-width="${TOP_VIEW.width}" data-fit="${TOP_VIEW.fit?"true":"false"}" data-fit-compact="${compactFit?"true":"false"}" style="--criterion-w:${TOP_VIEW.criterionWidth}px"><p class="topcmp-intro"><b>Porównanie Top.</b> Oceny zapisują się automatycznie. Liczba na początku pola (1–5) zasila średnią; ustawienia widoku zostają tylko na tym urządzeniu.</p>${toolbar}${table}<p class="topcmp-hint">Przeciągnij prawą krawędź dowolnego nagłówka, aby zmienić jednakowo szerokość wszystkich ofert; przeciągnij dolną krawędź nazwy kategorii, aby zmienić wysokość całego wiersza · ⌘/Ctrl + Enter zapisuje · Esc cofa</p></section>`;
  document.body.classList.toggle("fs-lock",topFocus||mapFsOn);
  g.querySelectorAll(".topcmp textarea").forEach(markTopReview); applyTopSizing();
