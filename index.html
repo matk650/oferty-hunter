@@ -77,6 +77,11 @@ input.ctrl{width:120px}#q{flex:1;min-width:150px}
 /* 🔝 Top (2026-08-25) — ostatni szczebel lejka. Obwódka GRUBSZA i złota, żeby
    czytała się jako „shortlist, tylko wyżej", a nie jako inna kategoria. */
 .c.st-visited{outline:4px solid #f5a300}
+/* ⏳ Poczekalnia (2026-09-20) — szczebel MIĘDZY shortlistą a Topem. Ta sama złota
+   rodzina co shortlist i Top, ale obwódka przerywana: „już po shortliście, jeszcze
+   nie czołówka". Grubość 3 px mieści się między shortlistą (2) a Topem (4), więc
+   trzy szczeble lejka czytają się z karty bez patrzenia na etykietę. */
+.c.st-wait{outline:3px dashed #f5a300}
 .stbadge{position:absolute;bottom:8px;right:8px;background:#1f1e1b;color:#fff;font-size:10.5px;padding:3px 9px;border-radius:99px;z-index:2}
 .none{color:#8a877f;padding:30px 0}
 .grow{color:#2e7d46}.gred{color:#c0392b}
@@ -335,6 +340,11 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
    (#1976d2 / #e8590c) i od samego złota, na jasnym i ciemnym tle mapy. */
 .pin.st-visited{width:16px;height:16px;border:2px solid #f5a300;
   box-shadow:0 0 0 2px #1f1e1b,0 1px 5px rgba(0,0,0,.62)}
+/* ⏳ Poczekalnia — pinezka między shortlistą a Topem: ten sam złoty kolor, rozmiar
+   pośredni (14 px), pierścień SZARY zamiast czarnego. Czerń zostaje zarezerwowana dla
+   Topu, żeby czołówka nadal wyróżniała się na mapie jednym spojrzeniem. */
+.pin.st-wait{width:14px;height:14px;border:2px solid #f5a300;
+  box-shadow:0 0 0 2px #6b6862,0 1px 5px rgba(0,0,0,.55)}
 .pin.st-rej{width:8px;height:8px;opacity:.45}
 /* Etykieta ceny na pinezce — pokazywana WYŁĄCZNIE przy dużym zoomie (klasa .zoom-lg
    na kontenerze mapy). Przy oddaleniu 400 etykiet byłoby nieczytelną kaszą, a przy
@@ -398,6 +408,7 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
  </nav>
  <span class="chip on" data-f="todo">Do przejrzenia</span>
  <span class="chip" data-f="short">⭐ Shortlist</span>
+ <span class="chip" data-f="wait">⏳ Poczekalnia</span>
  <span class="chip" data-f="visited">🔝 Top</span>
  <span class="chip" data-f="rej">Odrzucone</span>
  <span class="chip" data-f="all">Wszystkie</span>
@@ -424,7 +435,7 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
 <div id="mapWrap">
  <div class="mapbar">
   <span class="mchips" id="mapStatus" role="group" aria-label="Filtr statusu na mapie">
-   <span class="mchip on" data-s="new">nieocenione</span><span class="mchip on" data-s="short">⭐</span><span class="mchip on" data-s="visited">🔝</span><span class="mchip" data-s="rej">✕</span>
+   <span class="mchip on" data-s="new">nieocenione</span><span class="mchip on" data-s="short">⭐</span><span class="mchip on" data-s="wait">⏳</span><span class="mchip on" data-s="visited">🔝</span><span class="mchip" data-s="rej">✕</span>
   </span>
   <span class="mchips" id="mapCats" role="group" aria-label="Filtr kategorii na mapie">
    <span class="mchip on" data-c="m_dz">M-dz</span><span class="mchip on" data-c="m_dom">M-dom</span><span class="mchip on" data-c="jez_dz">J-dz</span><span class="mchip on" data-c="jez_dom">J-dom</span>
@@ -527,26 +538,40 @@ const safeUrl = u => /^https?:\/\//i.test(u||"") ? u : "";      // tylko http(s)
 // przypadek teoretyczny.
 const linkOglosz = (u, tekst) => { const h = safeUrl(u); return h
   ? `<a class="go" href="${esc(h)}" target="_blank" rel="noopener">${tekst} ↗</a>` : ""; };
-const SL = {short:"⭐ shortlist",visited:"🔝 top",rej:"✕ odrzucone",hidden:"🚫 ukryte"};
+const SL = {short:"⭐ shortlist",wait:"⏳ poczekalnia",visited:"🔝 top",rej:"✕ odrzucone",hidden:"🚫 ukryte"};
 const statusLabel = s => SL[s] || "";
 // Przycisk „🔝 Top" pokazuje się WYŁĄCZNIE na ofertach, które są już na shortliście
 // (albo już w Topie — żeby dało się cofnąć). Powód: Top to awans z shortlisty, więc na
 // 2600 nieprzejrzanych ofertach byłby zaproszeniem do przeskoczenia całego lejka,
 // a na telefonie zabierałby miejsce czwartemu przyciskowi w rzędzie.
+// 2026-09-20: warunek rozszerzony o „wait" — z Poczekalni też trzeba móc awansować
+// na Top, inaczej nowy szczebel byłby ślepą uliczką.
 function btnTop(o, akcja, etykieta){
   const s = norm(o.st);
-  if(s!=="short" && s!=="visited") return "";
+  if(s!=="short" && s!=="wait" && s!=="visited") return "";
   const on = s==="visited";
-  return `<button onclick="${akcja}" title="${on?"Cofnij do ⭐ Shortlisty":"Awansuj do 🔝 Top"}"`
+  return `<button onclick="${akcja}" title="${on?"Cofnij do ⏳ Poczekalni":"Awansuj do 🔝 Top"}"`
        + `${on?' style="background:#f5a300;border-color:#f5a300;color:#1f1e1b"':''}>`
        + `${etykieta||"🔝 Top"}</button>`;
+}
+// ⏳ POCZEKALNIA (2026-09-20, prośba Mateusza: „oferty, które nie będą w Top, ale będą
+// już PO shortliście; mogę zdegradować z Topu albo awansować z shortlisty").
+// Ten sam warunek widoczności co btnTop i z tego samego powodu (§24): przycisk lejka
+// na ofercie nieprzejrzanej byłby zaproszeniem do przeskoczenia całego lejka.
+function btnWait(o, akcja, etykieta){
+  const s = norm(o.st);
+  if(s!=="short" && s!=="wait" && s!=="visited") return "";
+  const on = s==="wait";
+  return `<button onclick="${akcja}" title="${on?"Cofnij do ⭐ Shortlisty":"Przenieś do ⏳ Poczekalni"}"`
+       + `${on?' style="background:#f5a300;border-color:#f5a300;color:#1f1e1b"':''}>`
+       + `${etykieta||"⏳ Poczekalnia"}</button>`;
 }
 const mapsUrl = q2 => "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q2);
 const norm = s => (s==="seen"?"rej":(s||"new"));
 // LEJEK (2026-08-25, prośba Mateusza): do przejrzenia → ⭐ Shortlist → 🔝 Top.
 // „visited" = byłem tam / to jest ścisła czołówka. Osobny status, a nie flaga na
 // shortliście, bo ma własną zakładkę, własną pinezkę i własny wpis w dzienniku decyzji.
-const decit = o => { const s=norm(o.st); return (s==="short"||s==="visited"||s==="rej"||s==="hidden")?s:""; };
+const decit = o => { const s=norm(o.st); return (s==="short"||s==="wait"||s==="visited"||s==="rej"||s==="hidden")?s:""; };
 // UKRYWANIE (2026-08-07, prośba Mateusza: „chcę móc wyrzucać z mapy oferty ze źle
 // podpiętą lokalizacją"). Realizowane jako status='hidden', NIE jako DELETE z bazy.
 //
@@ -591,7 +616,7 @@ function updateCounter(){
  const byDay={};
  // Awans na Top to też decyzja — bez tego licznik „dziś przejrzane" milczałby
  // akurat o najważniejszych ruchach dnia.
- DECS.forEach(r=>{ if(r.status!=="short"&&r.status!=="visited"&&r.status!=="rej") return; const d=new Date(r.decided_at); if(isNaN(d)) return; const k=dayKey(d); (byDay[k]=byDay[k]||new Set()).add(r.offer_id); });
+ DECS.forEach(r=>{ if(r.status!=="short"&&r.status!=="wait"&&r.status!=="visited"&&r.status!=="rej") return; const d=new Date(r.decided_at); if(isNaN(d)) return; const k=dayKey(d); (byDay[k]=byDay[k]||new Set()).add(r.offer_id); });
  const todayN=(byDay[dayKey(new Date())]||new Set()).size;
  let sum=0; for(let i=0;i<7;i++){ const dt=new Date(); dt.setHours(0,0,0,0); dt.setDate(dt.getDate()-i); sum+=(byDay[dayKey(dt)]||new Set()).size; }
  el.innerHTML=`📋 <span class="lbl">Dziś przejrzane:</span> <b>${todayN}</b> <span class="sep">·</span> <span class="lbl">śr. z 7 dni:</span> <b>${(sum/7).toFixed(1)}</b><span class="lbl">/dzień</span>`;
@@ -606,7 +631,7 @@ function passFilters(o){
  if(flt!=="hidden" && s==="hidden") return false;
  if(flt==="hidden") return s==="hidden";
  if(flt==="todo"&&s) return false;
- if((flt==="short"||flt==="visited"||flt==="rej")&&s!==flt) return false;
+ if((flt==="short"||flt==="wait"||flt==="visited"||flt==="rej")&&s!==flt) return false;
  if(pmin!=null&&(o.pr==null||o.pr<pmin)) return false;
  if(pmax!=null&&(o.pr==null||o.pr>pmax)) return false;
  if(q){ const hay=((o.t||"")+" "+(o.loc||"")+" "+(o.adr||"")+" "+(o.n||"")).toLowerCase(); if(!hay.includes(q)) return false; }
@@ -876,7 +901,11 @@ async function setSt(o, st){
  // kolejnym szczeblem tego samego lejka, więc krok w tył to jeden szczebel — inaczej
  // jedno omyłkowe tapnięcie kasowałoby też wcześniejszą decyzję o shortliście
  // i oferta wracałaby na stos 2600 nieprzejrzanych.
- const target = (norm(o.st)===st) ? (st==="visited" ? "short" : "new") : st;
+ // 2026-09-20: po dołożeniu ⏳ Poczekalni szczebel NIŻEJ od Topu to już nie shortlista,
+ // tylko Poczekalnia — zasada „krok w tył to jeden szczebel" zostaje bez zmian, zmienia
+ // się tylko to, co jest tym jednym szczeblem. Cofnięcie Poczekalni wraca na shortlistę.
+ const nizej = {visited:"wait", wait:"short"};
+ const target = (norm(o.st)===st) ? (nizej[st] || "new") : st;
  const prev=o.st; o.st=target; render(); if(cur&&cur.id===o.id) drawD();
  toast(target==="new" ? "Cofnięto"
        : target==="hidden" ? "Ukryte — zobaczysz je w zakładce 🚫 Ukryte"
@@ -889,7 +918,7 @@ async function setSt(o, st){
  else { DECS.push({offer_id:o.id, status:target, decided_at:new Date().toISOString()}); }
  if(view==="stats") renderStats();
  // auto-przeskok do następnej oferty po ocenie z poziomu modala (nie przy cofnięciu / nie z poziomu listy)
- if(cur && cur.id===o.id && (target==="short"||target==="visited"||target==="rej"||target==="hidden")) nextOffer();
+ if(cur && cur.id===o.id && (target==="short"||target==="wait"||target==="visited"||target==="rej"||target==="hidden")) nextOffer();
 }
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.style.display="block"; clearTimeout(t._x); t._x=setTimeout(()=>t.style.display="none",1600); }
 
@@ -913,7 +942,7 @@ function renderTopComparison(rows,g){
     <div class="topcmp-head-title">${ranks.has(o.id)?`<span class="topcmp-rank">#${ranks.get(o.id)}</span>`:""}${txt(topCmpName(o))}</div>
     <div class="topcmp-head-meta">${o.pr?fmt(o.pr)+" zł":"cena?"}${o.a?" · "+fmt(o.a)+" m²":""}${o.pr&&o.a?" · "+fmt(Math.round(o.pr/o.a))+" zł/m²":""}</div>
     <div class="topcmp-metrics"><span class="topcmp-metric${s.count?"":" muted"}" data-top-metric="avg" data-offer="${esc(o.id)}">${avg} / 5</span><span class="topcmp-metric${s.count?"":" muted"}" data-top-metric="complete" data-offer="${esc(o.id)}">${s.count}/${s.total}</span></div>
-    <div class="topcmp-actions"><button onclick="event.stopPropagation();openById(${jsq(o.id)})">👁 Podgląd</button><details class="topcmp-more" onclick="event.stopPropagation()"><summary aria-label="Więcej akcji">•••</summary><div class="topcmp-more-menu">${map}${listing}<button onclick="setStId(${jsq(o.id)},'visited')">↓ Do shortlisty</button></div></details></div>
+    <div class="topcmp-actions"><button onclick="event.stopPropagation();openById(${jsq(o.id)})">👁 Podgląd</button><details class="topcmp-more" onclick="event.stopPropagation()"><summary aria-label="Więcej akcji">•••</summary><div class="topcmp-more-menu">${map}${listing}<button onclick="setStId(${jsq(o.id)},'visited')">↓ Do ⏳ Poczekalni</button></div></details></div>
    </div></div><span class="topcmp-col-resizer" role="separator" aria-orientation="vertical" aria-label="Zmień wspólną szerokość kolumn ofert" onpointerdown="topStartColumnResize(event,${jsq(o.id)})"></span></th>`;
  }).join("");
  const body=fields.map(([field,label])=>{
@@ -972,7 +1001,7 @@ function render(){
    <p>${txt(o.t)}</p><small>${txt(cap(o.loc))} · ${esc(o.po||"")} · ogł.: ${esc(o.li||"?")}</small></div></div>
    <div class="ft">${s==="hidden"
      ? `<button onclick="setStId(${jsq(o.id)},'hidden')">↩︎ Przywróć</button>`
-     : `<button onclick="setStId(${jsq(o.id)},'short')">⭐ Shortlist</button>${btnTop(o,`setStId(${jsq(o.id)},'visited')`)}<button onclick="setStId(${jsq(o.id)},'rej')">✕ Odrzuć</button><button class="ukryj" onclick="setStId(${jsq(o.id)},'hidden')" title="Ukryj — zniknie z mapy i list">🚫</button>`}${linkOglosz(o.u,"Otwórz ogłoszenie")}</div>`;
+     : `<button onclick="setStId(${jsq(o.id)},'short')">⭐ Shortlist</button>${btnWait(o,`setStId(${jsq(o.id)},'wait')`,"⏳")}${btnTop(o,`setStId(${jsq(o.id)},'visited')`)}<button onclick="setStId(${jsq(o.id)},'rej')">✕ Odrzuć</button><button class="ukryj" onclick="setStId(${jsq(o.id)},'hidden')" title="Ukryj — zniknie z mapy i list">🚫</button>`}${linkOglosz(o.u,"Otwórz ogłoszenie")}</div>`;
   g.appendChild(d);
  });
 }
@@ -1139,7 +1168,7 @@ function drawA(){ const a=document.getElementById("ac"); if(!a)return; if(!cur){
  const uk=decit(cur)==="hidden";
  a.innerHTML=`<div class="acts">${uk
    ? `<button onclick="setSt(cur,'hidden')">↩︎ Przywróć</button>`
-   : `<button onclick="setSt(cur,'short')">⭐ Shortlist</button>${btnTop(cur,"setSt(cur,'visited')")}<button onclick="setSt(cur,'rej')">✕ Odrzuć</button><button onclick="setSt(cur,'hidden')" title="Ukryj">🚫 Ukryj</button>`}${linkOglosz(cur.u,"Otwórz ogłoszenie")}</div>`; }
+   : `<button onclick="setSt(cur,'short')">⭐ Shortlist</button>${btnWait(cur,"setSt(cur,'wait')","⏳ Poczekalnia")}${btnTop(cur,"setSt(cur,'visited')")}<button onclick="setSt(cur,'rej')">✕ Odrzuć</button><button onclick="setSt(cur,'hidden')" title="Ukryj">🚫 Ukryj</button>`}${linkOglosz(cur.u,"Otwórz ogłoszenie")}</div>`; }
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
 
 document.getElementById("tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; tab=b.dataset.c; localStorage.vTab=tab; render(); });
@@ -1184,7 +1213,7 @@ const cenaKrotko = p => p==null ? "" :
   (p>=1e6 ? (p/1e6).toFixed(2).replace(/\.?0+$/,"").replace(".",",")+"M"
           : Math.round(p/1000)+"k");
 let MAP=null, MPOINTS=null, MRINGS=null, mapLoaded=false, mapDirty=true;
-let mapSt = readLS("vMapSt", ["new","short","visited"]);
+let mapSt = readLS("vMapSt", ["new","short","wait","visited"]);
 // MIGRACJA 2026-08-25. Filtr statusu na mapie siedzi w localStorage, więc telefon
 // Mateusza ma tam zapisane ["new","short"] sprzed lejka — a to znaczy, że pierwsza
 // oferta awansowana na 🔝 Top ZNIKNĘŁABY z mapy bez żadnego komunikatu i wyglądało
@@ -1193,6 +1222,15 @@ let mapSt = readLS("vMapSt", ["new","short","visited"]);
 if(!localStorage.vMapStTop){
   if(!mapSt.includes("visited")){ mapSt = mapSt.concat("visited"); writeLS("vMapSt", mapSt); }
   try{ localStorage.vMapStTop="1"; }catch(e){}
+}
+// MIGRACJA 2026-09-20 — dokładnie ta sama pułapka co wyżej, tylko dla ⏳ Poczekalni.
+// Zapisany w localStorage filtr mapy NIE ZNA nowego statusu, więc pierwsza oferta
+// przeniesiona do Poczekalni zniknęłaby z mapy bez komunikatu i wyglądało by to jak
+// zgubiony rekord. Dokładamy „wait" RAZ, pod własnym kluczem, żeby nie nadpisywać
+// wyboru przy każdym wejściu — Mateusz ma prawo Poczekalnię z mapy zdjąć.
+if(!localStorage.vMapStWait){
+  if(!mapSt.includes("wait")){ mapSt = mapSt.concat("wait"); writeLS("vMapSt", mapSt); }
+  try{ localStorage.vMapStWait="1"; }catch(e){}
 }
 let mapCat = readLS("vMapCat", ["m_dz","m_dom","jez_dz","jez_dom"]);
 
@@ -1223,7 +1261,7 @@ function mapRows(){
 }
 
 function pinIcon(o){
- const s=norm(o.st), cls = s==="visited"?"st-visited":s==="short"?"st-short":s==="rej"?"st-rej":"st-new";
+ const s=norm(o.st), cls = s==="visited"?"st-visited":s==="wait"?"st-wait":s==="short"?"st-short":s==="rej"?"st-rej":"st-new";
  const lab = o.pr ? `<span class="pinlab">${esc(cenaKrotko(o.pr))}</span>` : "";
  // Widoczny rozmiar jest w CSS, ale obszar dotykowy pozostaje stały (28×28 px).
  return L.divIcon({className:"map-pin-hit", iconSize:[28,28], iconAnchor:[14,14],
@@ -1249,7 +1287,7 @@ function popupHtml(o){
  return `<div class="pp">${img}<b>${o.pr?fmt(o.pr)+" zł":"cena?"}</b> <span style="color:#666">${o.a?fmt(o.a)+" m²":""}${p2}</span>
   <span class="pl">${txt(cap(o.loc))} · ${esc(o.po||"")}${s?" · "+statusLabel(s):""}${dyst}</span>
   ${txt((o.t||"").slice(0,90))}
-  <div class="pa"><button onclick="mapSet(${oid},'short')">⭐</button>${btnTop(o,`mapSet(${oid},'visited')`,"🔝")}<button onclick="mapSet(${oid},'rej')">✕</button>
+  <div class="pa"><button onclick="mapSet(${oid},'short')">⭐</button>${btnWait(o,`mapSet(${oid},'wait')`,"⏳")}${btnTop(o,`mapSet(${oid},'visited')`,"🔝")}<button onclick="mapSet(${oid},'rej')">✕</button>
    <button class="hid" onclick="mapSet(${oid},'hidden')" title="Ukryj — zniknie z mapy i list">🚫</button>
    <button onclick="mapOpen(${oid})">Szczegóły</button>
    ${linkOglosz(o.u,"Ogłoszenie")}</div></div>`;
@@ -1499,12 +1537,12 @@ const panel = (title,sub,html)=>`<div class="panel"><h3>${title}</h3>${sub?`<div
 const bar = (label,val,max,valTxt)=>{ const w=max?Math.round(val/max*100):0; return `<div class="bar-row"><span class="lbl">${esc(label)}</span><span class="bar-track"><span class="bar-fill" style="width:${w}%"></span></span><span class="val">${valTxt??val}</span></div>`; };
 
 function panelLejek(rows){
- const c={new:0,short:0,visited:0,rej:0}; rows.forEach(o=>{ const k=norm(o.st); c[k]=(c[k]||0)+1; });
+ const c={new:0,short:0,wait:0,visited:0,rej:0}; rows.forEach(o=>{ const k=norm(o.st); c[k]=(c[k]||0)+1; });
  // Top liczy się do „ocenionych" tak samo jak shortlist — to decyzja na TAK, tylko
  // mocniejsza. Gdyby wypadał z mianownika, procent odrzuceń rósłby przy każdym awansie.
- const decided=c.short+c.visited+c.rej, rejPct=decided?Math.round(c.rej/decided*100):0;
- return panel("Przegląd","Lejek: do przejrzenia → ⭐ shortlist → 🔝 Top.",
-  `<div class="kpi"><div class="box"><b>${c.new}</b><span>do przejrzenia</span></div><div class="box"><b class="grow">${c.short}</b><span>⭐ shortlist</span></div><div class="box"><b class="grow">${c.visited}</b><span>🔝 Top</span></div><div class="box"><b class="gred">${c.rej}</b><span>✕ odrzucone</span></div><div class="box"><b>${rejPct}%</b><span>odrzuceń z ocenionych</span></div></div>`);
+ const decided=c.short+c.wait+c.visited+c.rej, rejPct=decided?Math.round(c.rej/decided*100):0;
+ return panel("Przegląd","Lejek: do przejrzenia → ⭐ shortlist → ⏳ poczekalnia → 🔝 Top.",
+  `<div class="kpi"><div class="box"><b>${c.new}</b><span>do przejrzenia</span></div><div class="box"><b class="grow">${c.short}</b><span>⭐ shortlist</span></div><div class="box"><b class="grow">${c.wait}</b><span>⏳ Poczekalnia</span></div><div class="box"><b class="grow">${c.visited}</b><span>🔝 Top</span></div><div class="box"><b class="gred">${c.rej}</b><span>✕ odrzucone</span></div><div class="box"><b>${rejPct}%</b><span>odrzuceń z ocenionych</span></div></div>`);
 }
 function panelBenchmark(rows){
  const g={}; rows.forEach(o=>{ const p=pm2(o); if(p==null||!o.loc)return; (g[o.loc]=g[o.loc]||[]).push(o); });
@@ -1545,7 +1583,8 @@ function renderStats(){
  const rows=statSet();
  const tabs=`<div class="stat-tabs">`+[["all","Wszystkie"],["m_dz","🏠 Działki"],["m_dom","🏠 Domy"],["jez_dz","🌊 Jez. działki"],["jez_dom","🌊 Jez. domy"]].map(([v,l])=>`<button class="${statCat===v?"on":""}" onclick="statCat='${v}';renderStats()">${l}</button>`).join("")+`</div>`;
  document.getElementById("stats").innerHTML = tabs + panelLejek(rows) + panelBenchmark(rows) + panelOkazje(rows)
-   + panelShortlist("visited","🔝 Top","Tu trafią oferty awansowane z shortlisty.","Ścisła czołówka — to, po co ten system istnieje.")
+   + panelShortlist("visited","🔝 Top","Tu trafią oferty awansowane z shortlisty albo z poczekalni.","Ścisła czołówka — to, po co ten system istnieje.")
+   + panelShortlist("wait","⏳ Poczekalnia","Tu trafią oferty przeniesione z shortlisty albo zdegradowane z Topu.","Po shortliście, ale poza ścisłą czołówką.")
    + panelShortlist("short","⭐ Shortlist","Tu pojawią się oferty oznaczone ⭐ — zestawione do finalnej decyzji.","Faworyci czekający na awans do 🔝 Top.")
    + panelPodaz(rows);
 }

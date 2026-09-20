@@ -33,7 +33,12 @@
 //   ukrywanie wierszy, rozwijane komentarze i pełny podgląd po kliknięciu oferty.
 // v13 (2026-08-21): plakietka statusu wrocila na zdjecie (kotwiczyla sie do calej
 // karty i zakrywala przycisk 🚫) + przycisk „Otworz ogloszenie" w stopce karty.
-const C = "oferty-v25";
+// v26 (2026-09-20): ⏳ POCZEKALNIA — nowy szczebel lejka między ⭐ Shortlistą
+//   a 🔝 Topem (status "wait"). Awans z shortlisty, degradacja z Topu, własna
+//   zakładka, pinezka i panel statystyk. BUMP WERSJI JEST KONIECZNY: bez niego
+//   telefon serwowałby index.html ze starego cache i nowy szczebel nie pojawiłby
+//   się mimo wdrożenia.
+const C = "oferty-v26";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",
