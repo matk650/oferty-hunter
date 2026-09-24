@@ -38,7 +38,9 @@
 //   zakładka, pinezka i panel statystyk. BUMP WERSJI JEST KONIECZNY: bez niego
 //   telefon serwowałby index.html ze starego cache i nowy szczebel nie pojawiłby
 //   się mimo wdrożenia.
-const C = "oferty-v26";
+// v27 (2026-09-24): odrzucone, ukryte, shortlist i poczekalnia są domyślnie
+// sortowane według daty wejścia do aktualnego statusu; Top bez zmian.
+const C = "oferty-v27";
 const SHELL = [
   "./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./apple-touch-icon.png",

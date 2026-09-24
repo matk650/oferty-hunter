@@ -421,6 +421,7 @@ body.fs-lock{overflow:hidden}           /* tło nie przewija się pod mapą */
 <div class="bar2">
  <select class="ctrl" id="sort" aria-label="Sortowanie">
   <option value="added_desc">Ostatnio dodane</option>
+  <option value="status_desc">Ostatnio na liście</option>
   <option value="listed_desc">Najnowsze ogłoszenia</option>
   <option value="price_asc">Cena ↑</option>
   <option value="price_desc">Cena ↓</option>
@@ -462,7 +463,7 @@ const SB_URL = "https://gbmvooprdfqufptfggdb.supabase.co";
 const SB_KEY = "sb_publishable_-CNmiowgRI-WSnxnR42cOw_o0EFCRid";
 const sb = supabase.createClient(SB_URL, SB_KEY);
 // lista: tylko kolumny potrzebne do kart/filtrów/statystyk. notes/address/opis/params doładowywane przy otwarciu oferty.
-const LIST_COLS = "id,cat,title,url,price,area,photos,loc,added,listed,portal,status,orig_price,lat,lon,phone";
+const LIST_COLS = "id,cat,title,url,price,area,photos,loc,added,listed,portal,status,updated_at,orig_price,lat,lon,phone";
 
 let O = [];
 let tab = localStorage.vTab || "m_dz", flt = "todo", sortBy="added_desc", cur=null, ci=0;
@@ -643,7 +644,10 @@ function sortRows(rows){
    price_asc:(a,b)=>nn(a.pr)-nn(b.pr), price_desc:(a,b)=>nnd(b.pr)-nnd(a.pr),
    pm2_asc:(a,b)=>nn(pm2(a))-nn(pm2(b)), area_desc:(a,b)=>nnd(b.a)-nnd(a.a),
    listed_desc:(a,b)=>String(b.li||"").localeCompare(String(a.li||"")),
-   added_desc:(a,b)=>String(b.d||"").localeCompare(String(a.d||"")) }[sortBy];
+   added_desc:(a,b)=>String(b.d||"").localeCompare(String(a.d||"")),
+   status_desc:(a,b)=>String(b.sc||"").localeCompare(String(a.sc||""))
+     ||String(b.d||"").localeCompare(String(a.d||""))
+     ||String(a.id).localeCompare(String(b.id)) }[sortBy];
  return rows.sort(f);
 }
 
@@ -906,12 +910,13 @@ async function setSt(o, st){
  // się tylko to, co jest tym jednym szczeblem. Cofnięcie Poczekalni wraca na shortlistę.
  const nizej = {visited:"wait", wait:"short"};
  const target = (norm(o.st)===st) ? (nizej[st] || "new") : st;
- const prev=o.st; o.st=target; render(); if(cur&&cur.id===o.id) drawD();
+ const prev=o.st, prevChanged=o.sc;
+ o.st=target; o.sc=new Date().toISOString(); render(); if(cur&&cur.id===o.id) drawD();
  toast(target==="new" ? "Cofnięto"
        : target==="hidden" ? "Ukryte — zobaczysz je w zakładce 🚫 Ukryte"
        : statusLabel(target));
  const { error } = await sb.from("offers").update({status:target}).eq("id", o.id);
- if(error){ o.st=prev; render(); if(cur&&cur.id===o.id) drawD(); toast("Błąd zapisu — spróbuj ponownie"); return; }
+ if(error){ o.st=prev; o.sc=prevChanged; render(); if(cur&&cur.id===o.id) drawD(); toast("Błąd zapisu — spróbuj ponownie"); return; }
  // dziennik aktywności — z obsługą błędu (cicha porażka psuła kalendarz)
  const { error:de } = await sb.from("decisions").insert({offer_id:o.id, status:target});
  if(de){ console.warn("decisions insert nieudany:", de.message); }
@@ -1172,7 +1177,15 @@ function drawA(){ const a=document.getElementById("ac"); if(!a)return; if(!cur){
 function nav(k){ const n=(cur.ph||[]).length; if(!n)return; ci=(ci+k+n)%n; draw(); }
 
 document.getElementById("tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; tab=b.dataset.c; localStorage.vTab=tab; render(); });
-document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ flt=c.dataset.f; render(); });
+const STATUS_DATE_FILTERS=new Set(["short","wait","rej","hidden"]);
+document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+ flt=c.dataset.f;
+ // Własna kolejność Top pozostaje nietknięta. Inne wskazane listy pokazują
+ // najpierw oferty ostatnio przeniesione na tę listę.
+ sortBy=STATUS_DATE_FILTERS.has(flt)?"status_desc":"added_desc";
+ document.getElementById("sort").value=sortBy;
+ render();
+});
 document.getElementById("sort").value=sortBy;
 document.getElementById("sort").onchange=e=>{ sortBy=e.target.value; render(); };
 const deb=(fn,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};};
@@ -1593,7 +1606,7 @@ document.getElementById("mapToggle").onclick=()=>setView(view==="map"?"list":"ma
 // Mapa i statystyki nie mogą być otwarte razem, a odświeżenie danych z bazy musi
 // przerysować pinezki — inaczej po nocnym publishu mapa pokazywałaby wczorajszy stan.
 
-const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",d:r.added,po:r.portal,st:r.status||"new",li:(r.listed||""),adr:r.address||"",lat:r.lat,lon:r.lon,tel:r.phone||"",op:r.orig_price});
+const mapRow = r => ({id:r.id,c:r.cat,t:r.title,u:r.url,pr:r.price,a:r.area,ph:r.photos||[],n:r.notes||"",loc:r.loc||"",d:r.added,po:r.portal,st:r.status||"new",sc:r.status_changed_at||"",upd:r.updated_at||"",li:(r.listed||""),adr:r.address||"",lat:r.lat,lon:r.lon,tel:r.phone||"",op:r.orig_price});
 
 // FIX 2026-08-06: PostgREST ma serwerowy limit db-max-rows=1000. Dotad load() robil
 // goly .select() bez .range(), wiec przy 2059 wierszach aplikacja pokazywala 1000 —
@@ -1620,7 +1633,28 @@ async function fetchAllRows(table, cols, sortKey, tieKey){
  }
  return { data: out, error: null };
 }
-const fetchAllOffers = () => fetchAllRows("offers", LIST_COLS, "added", "id");
+// Umożliwia wdrożenie UI bez przestoju także wtedy, gdy migracja SQL jeszcze
+// czeka na uruchomienie. Po migracji priorytet ma dedykowana data statusu.
+let hasStatusTimeColumn = null;
+async function fetchAllOffers(){
+ if(hasStatusTimeColumn!==false){
+   const result=await fetchAllRows("offers",LIST_COLS+",status_changed_at","added","id");
+   if(!result.error){ hasStatusTimeColumn=true; return result; }
+   if(result.error.code!=="42703"&&result.error.code!=="PGRST204") return result;
+   hasStatusTimeColumn=false;
+ }
+ return fetchAllRows("offers",LIST_COLS,"added","id");
+}
+function applyStatusDates(){
+ const latest=new Map();
+ for(const d of DECS){
+   const key=d.offer_id+"|"+d.status, ts=String(d.decided_at||"");
+   if(ts>String(latest.get(key)||"")) latest.set(key,ts);
+ }
+ for(const o of O){
+   if(!o.sc) o.sc=latest.get(o.id+"|"+norm(o.st))||o.upd||String(o.d||"");
+ }
+}
 
 async function load(){
  const { data, error } = await fetchAllOffers();
@@ -1633,6 +1667,7 @@ async function load(){
  // ⭐/✕ — po przekroczeniu 1000 licznik dziennego przegladu zaczalby zanizac po cichu)
  const dr = await fetchAllRows("decisions", "id,offer_id,status,decided_at", "decided_at", "offer_id");
  DECS = dr.data||[];
+ applyStatusDates();
  loadTopReviewsFromDecisions();
  await loadNotesIndex();
  lastLoad=Date.now();
@@ -1643,7 +1678,9 @@ function subscribe(){
  sb.channel("offers-rt").on("postgres_changes",{event:"*",schema:"public",table:"offers"}, payload=>{
    const r=payload.new||payload.old; if(!r) return;
    if(payload.eventType==="DELETE"){ O=O.filter(o=>o.id!==r.id); }
-   else { const o=O.find(x=>x.id===r.id); const m=mapRow(payload.new); if(o){ Object.assign(o,m); } else { O.push(m); } }
+   else { const o=O.find(x=>x.id===r.id); const m=mapRow(payload.new);
+     if(o){ if(!m.sc&&m.st===o.st) m.sc=o.sc; else if(!m.sc) m.sc=m.upd||new Date().toISOString(); Object.assign(o,m); }
+     else { m.sc=m.sc||m.upd||String(m.d||""); O.push(m); } }
    render(); mapDirty=true; if(view==="map") drawMap();
    if(cur){ const c=O.find(x=>x.id===cur.id); if(c){ const de=cur.de,prm=cur.prm,ns=cur.notesList; cur=c; cur.de=de; cur.prm=prm; cur.notesList=ns; drawD(); } }
  }).subscribe(s=>{ setDot._s=(s==="SUBSCRIBED"?"live":"off"); setDot(setDot._s); render(); });
